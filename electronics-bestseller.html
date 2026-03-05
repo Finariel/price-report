@@ -1,0 +1,2752 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Electronics Bestseller</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f5f5f7;
+    color: #1d1d1f;
+    font-size: 14px;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: linear-gradient(135deg, #1d1d1f 0%, #3a3a3c 100%);
+    color: #fff;
+    padding: 2rem 2rem 1.8rem;
+  }
+  .header h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .header .subtitle { color: #aeaeb2; font-size: 0.9rem; }
+  .meta-chips {
+    display: flex; flex-wrap: wrap; gap: 0.5rem;
+    margin-top: 1.2rem;
+  }
+  .chip {
+    background: rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.82rem;
+    color: #e5e5ea;
+  }
+
+  /* ── Tab-Navigation ── */
+  .tab-nav {
+    background: #fff;
+    border-bottom: 1px solid #e5e5ea;
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem;
+    overflow-x: auto;
+  }
+  .tab-btn {
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 0.8rem 0.9rem;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: #636366;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .tab-btn:hover { color: #1d1d1f; border-bottom-color: #c7c7cc; }
+  .tab-btn.active { color: #0071e3; border-bottom-color: #0071e3; font-weight: 600; }
+  .tab-btn.no-data { opacity: 0.45; }
+
+  /* ── Inhalt ── */
+  .content { max-width: 1400px; margin: 0 auto; padding: 1.5rem 2rem; }
+
+  /* ── Sektionen ── */
+  .section {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+  .section-header {
+    padding: 1.1rem 1.5rem 0.8rem;
+    border-bottom: 1px solid #f2f2f7;
+  }
+  .section-header h2 { font-size: 1.1rem; font-weight: 600; }
+  .section-header p  { color: #636366; font-size: 0.85rem; margin-top: 0.25rem; }
+  .section-body { padding: 0; overflow-x: auto; }
+
+  /* ── Tabelle ── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.87rem;
+  }
+  .data-table th {
+    background: #f2f2f7;
+    font-weight: 600;
+    padding: 0.6rem 0.75rem;
+    text-align: left;
+    border-bottom: 2px solid #e5e5ea;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+  .data-table th:hover { background: #e9e9ef; }
+  .data-table th.sorted-asc::after  { content: " ▲"; font-size: 0.75em; }
+  .data-table th.sorted-desc::after { content: " ▼"; font-size: 0.75em; }
+  .data-table td {
+    padding: 0.48rem 0.75rem;
+    border-bottom: 1px solid #f2f2f7;
+    vertical-align: middle;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td       { background: rgba(0,0,0,0.015); }
+
+  /* Spaltenbreiten */
+  .col-rank  { width: 40px;  text-align: center; font-weight: 600; color: #636366; }
+  .col-name  { min-width: 240px; }
+  .col-price { width: 110px; text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .col-avg30 { width: 100px; text-align: right; font-variant-numeric: tabular-nums; color: #636366; }
+  .col-atl   { width: 100px; text-align: right; font-variant-numeric: tabular-nums; color: #636366; }
+  .col-pct   { width: 90px;  text-align: right; font-variant-numeric: tabular-nums; }
+  .col-ampel { width: 50px;  text-align: center; font-size: 1.1rem; }
+
+  /* Links */
+  .col-name a { color: #0071e3; text-decoration: none; }
+  .col-name a:hover { text-decoration: underline; }
+
+  /* ── Ampel-Zeilenfarben ── */
+  .row-star   td { background: #fffde7; }
+  .row-green  td { background: #f0fdf4; }
+  .row-yellow td { background: #fefce8; }
+  .row-red    td { }
+  .row-grey   td { color: #8e8e93; }
+  .row-star td .col-price,
+  .row-green td .col-price  { color: #1a7f37; }
+  .row-red td .col-price    { color: #c0392b; }
+
+  /* ── Apple-Highlight ── */
+  .row-apple td {
+    background: linear-gradient(90deg, rgba(0,113,227,0.04) 0%, transparent 100%) !important;
+    border-left: 3px solid rgba(0,113,227,0.25);
+  }
+  .row-apple.row-star td {
+    background: linear-gradient(90deg, rgba(0,113,227,0.08) 0%, #fffde7 100%) !important;
+  }
+  .row-apple.row-green td {
+    background: linear-gradient(90deg, rgba(0,113,227,0.06) 0%, #f0fdf4 100%) !important;
+  }
+
+  /* ── % zu ATL Farben ── */
+  td.col-pct[data-val^="-"], td.col-pct[data-val="0.0"] { color: #1a7f37; font-weight: 600; }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    color: #aeaeb2;
+    font-size: 0.82rem;
+    padding: 2rem;
+  }
+
+  /* ── Legende ── */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 0.8rem 1.5rem;
+    background: #fafafa;
+    border-bottom: 1px solid #f2f2f7;
+    font-size: 0.82rem;
+    color: #636366;
+  }
+  .legend span { display: flex; align-items: center; gap: 0.3rem; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🛒 Electronics Bestseller</h1>
+  <div class="subtitle">Tägliche Top 25 pro Kategorie — Amazon.de</div>
+  <div class="meta-chips">
+    <span class="chip">📅 Stand: 05.03.2026 07:45 Uhr</span>
+    <span class="chip">📦 1289 Produkte in DB</span>
+    <span class="chip">📊 18 Kategorien</span>
+    <span class="chip">🍎 76 Apple-Produkte</span>
+  </div>
+</div>
+
+<nav class="tab-nav" id="tab-nav">
+<button class="tab-btn active no-data" onclick="showTab('smartphones')" id="btn-smartphones">📱 Smartphones</button>
+<button class="tab-btn  no-data" onclick="showTab('notebooks')" id="btn-notebooks">💻 Notebooks</button>
+<button class="tab-btn  no-data" onclick="showTab('desktop')" id="btn-desktop">🖥 Desktop-PCs</button>
+<button class="tab-btn " onclick="showTab('tablets')" id="btn-tablets">📟 Tablets</button>
+<button class="tab-btn " onclick="showTab('kopfhoerer')" id="btn-kopfhoerer">🎧 Kopfhörer</button>
+<button class="tab-btn " onclick="showTab('smartwatches')" id="btn-smartwatches">⌚ Smartwatches</button>
+<button class="tab-btn " onclick="showTab('monitore')" id="btn-monitore">🖥 Monitore</button>
+<button class="tab-btn " onclick="showTab('kameras')" id="btn-kameras">📷 Kameras</button>
+<button class="tab-btn " onclick="showTab('fernseher')" id="btn-fernseher">📺 Fernseher</button>
+<button class="tab-btn " onclick="showTab('lautsprecher')" id="btn-lautsprecher">🔊 Lautsprecher</button>
+<button class="tab-btn " onclick="showTab('playstation')" id="btn-playstation">🎮 PlayStation 5</button>
+<button class="tab-btn " onclick="showTab('switch')" id="btn-switch">🕹 Nintendo Switch</button>
+<button class="tab-btn " onclick="showTab('xbox')" id="btn-xbox">🎯 Xbox Series</button>
+<button class="tab-btn " onclick="showTab('videospiele')" id="btn-videospiele">👾 Videospiele</button>
+<button class="tab-btn " onclick="showTab('zubehoer')" id="btn-zubehoer">⌨️ Computer-Zubehör</button>
+<button class="tab-btn " onclick="showTab('drucker')" id="btn-drucker">🖨 Drucker</button>
+<button class="tab-btn " onclick="showTab('powerbanks')" id="btn-powerbanks">🔋 Powerbanks</button>
+<button class="tab-btn " onclick="showTab('netzwerk')" id="btn-netzwerk">📡 Netzwerk</button>
+<button class="tab-btn " onclick="showTab('ssds')" id="btn-ssds">💾 Externe SSDs</button>
+<button class="tab-btn " onclick="showTab('smarthome')" id="btn-smarthome">🏠 Smart Home</button>
+<button class="tab-btn " onclick="showTab('ereader')" id="btn-ereader">📖 E-Reader</button>
+
+</nav>
+
+<div class="content">
+
+  <div class="legend">
+    <span>⭐ Alltime-Low</span>
+    <span>🟢 Top-Preis (≤10% über ATL)</span>
+    <span>🟡 Normaler Preis</span>
+    <span>🔴 Teuer</span>
+    <span>⚪ Wenig Daten</span>
+    <span>🍎 Apple-Produkt</span>
+  </div>
+
+  
+    <div id="tab-smartphones" class="tab-content" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <h2>📱 Smartphones</h2>
+          <p>Noch keine Daten — entweder fetch_daily.py ausführen oder
+             Node-ID in categories.json prüfen.</p>
+        </div>
+      </div>
+    </div>
+    <div id="tab-notebooks" class="tab-content" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <h2>💻 Notebooks</h2>
+          <p>Noch keine Daten — entweder fetch_daily.py ausführen oder
+             Node-ID in categories.json prüfen.</p>
+        </div>
+      </div>
+    </div>
+    <div id="tab-desktop" class="tab-content" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <h2>🖥 Desktop-PCs</h2>
+          <p>Noch keine Daten — entweder fetch_daily.py ausführen oder
+             Node-ID in categories.json prüfen.</p>
+        </div>
+      </div>
+    </div>
+    <div id="tab-tablets" class="tab-content" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <h2>📟 Tablets</h2>
+          <p>10 Bestseller heute · 2 🍎 Apple</p>
+        </div>
+        <div class="section-body">
+          <table class="data-table" id="tbl-tablets">
+            <thead>
+              <tr>
+                <th class="col-rank"  data-sort="num"  title="Rang heute">#</th>
+                <th class="col-name"  data-sort="str"  title="Produktname">Produkt</th>
+                <th class="col-price" data-sort="num"  title="Aktueller Preis">Akt. Preis</th>
+                <th class="col-avg30" data-sort="num"  title="Durchschnitt letzte 30 Tage">Ø 30T</th>
+                <th class="col-atl"   data-sort="num"  title="Alltime-Low">ATL</th>
+                <th class="col-pct"   data-sort="num"  title="% über Alltime-Low">% zu ATL</th>
+                <th class="col-ampel" data-sort="num"  title="Bewertung">⚡</th>
+              </tr>
+            </thead>
+            <tbody>
+      <tr class="row-green">
+        <td class="col-rank" data-val="1">1</td>
+        <td class="col-name" data-val="samsung galaxy tab a11+, ai tablet, 11 zoll displa">
+          <a href="https://www.amazon.de/dp/B0FWKK9VK3" target="_blank" rel="noopener">Samsung Galaxy Tab A11+, AI Tablet, 11 Zoll Display, 90 Hz Bildwiederh…</a>
+        </td>
+        <td class="col-price" data-val="224.99">224,99 €</td>
+        <td class="col-avg30" data-val="245.66">245,66 €</td>
+        <td class="col-atl"   data-val="219.00">219,00 €</td>
+        <td class="col-pct"   data-val="2.7">+2.7 %</td>
+        <td class="col-ampel" data-val="1" title="Top-Preis">🟢</td>
+      </tr>
+      <tr class="row-green row-apple">
+        <td class="col-rank" data-val="2">2</td>
+        <td class="col-name" data-val="apple ipad air 11" mit m3 chip: apple intelligence">
+          <a href="https://www.amazon.de/dp/B0DZ76JZ9Q" target="_blank" rel="noopener">🍎 Apple iPad Air 11" mit M3 Chip: Apple Intelligence, Liquid Retina Di…</a>
+        </td>
+        <td class="col-price" data-val="524.00">524,00 €</td>
+        <td class="col-avg30" data-val="531.80">531,80 €</td>
+        <td class="col-atl"   data-val="499.00">499,00 €</td>
+        <td class="col-pct"   data-val="5.0">+5.0 %</td>
+        <td class="col-ampel" data-val="1" title="Top-Preis">🟢</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="3">3</td>
+        <td class="col-name" data-val="b0cxkqycpg">
+          <a href="https://www.amazon.de/dp/B0CXKQYCPG" target="_blank" rel="noopener">B0CXKQYCPG</a>
+        </td>
+        <td class="col-price" data-val="214.99">214,99 €</td>
+        <td class="col-avg30" data-val="214.99">214,99 €</td>
+        <td class="col-atl"   data-val="214.99">214,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="4">4</td>
+        <td class="col-name" data-val="b0f26dm59v">
+          <a href="https://www.amazon.de/dp/B0F26DM59V" target="_blank" rel="noopener">B0F26DM59V</a>
+        </td>
+        <td class="col-price" data-val="129.99">129,99 €</td>
+        <td class="col-avg30" data-val="129.99">129,99 €</td>
+        <td class="col-atl"   data-val="129.99">129,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="5">5</td>
+        <td class="col-name" data-val="b0fnwryrfn">
+          <a href="https://www.amazon.de/dp/B0FNWRYRFN" target="_blank" rel="noopener">B0FNWRYRFN</a>
+        </td>
+        <td class="col-price" data-val="89.99">89,99 €</td>
+        <td class="col-avg30" data-val="89.99">89,99 €</td>
+        <td class="col-atl"   data-val="89.99">89,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="6">6</td>
+        <td class="col-name" data-val="doogee u11 android 16 tablet 11 zoll gemini ai 16g">
+          <a href="https://www.amazon.de/dp/B0DJW6MYRL" target="_blank" rel="noopener">DOOGEE U11 Android 16 Tablet 11 Zoll Gemini AI 16GB RAM +128GB ROM (2T…</a>
+        </td>
+        <td class="col-price" data-val="109.99">109,99 €</td>
+        <td class="col-avg30" data-val="109.99">109,99 €</td>
+        <td class="col-atl"   data-val="94.97">94,97 €</td>
+        <td class="col-pct"   data-val="15.8">+15.8 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="7">7</td>
+        <td class="col-name" data-val="b0cvdjyyrr">
+          <a href="https://www.amazon.de/dp/B0CVDJYYRR" target="_blank" rel="noopener">B0CVDJYYRR</a>
+        </td>
+        <td class="col-price" data-val="159.99">159,99 €</td>
+        <td class="col-avg30" data-val="159.99">159,99 €</td>
+        <td class="col-atl"   data-val="159.99">159,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="8">8</td>
+        <td class="col-name" data-val="lenovo tab tablet | 10.1" full hd display | mediat">
+          <a href="https://www.amazon.de/dp/B0DJWBDNCW" target="_blank" rel="noopener">Lenovo Tab Tablet | 10.1" Full HD Display | MediaTek G85 | 4GB RAM | 6…</a>
+        </td>
+        <td class="col-price" data-val="122.00">122,00 €</td>
+        <td class="col-avg30" data-val="123.47">123,47 €</td>
+        <td class="col-atl"   data-val="95.00">95,00 €</td>
+        <td class="col-pct"   data-val="28.4">+28.4 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="9">9</td>
+        <td class="col-name" data-val="b0fp55yvsr">
+          <a href="https://www.amazon.de/dp/B0FP55YVSR" target="_blank" rel="noopener">B0FP55YVSR</a>
+        </td>
+        <td class="col-price" data-val="109.99">109,99 €</td>
+        <td class="col-avg30" data-val="109.99">109,99 €</td>
+        <td class="col-atl"   data-val="109.99">109,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-star row-apple">
+        <td class="col-rank" data-val="10">10</td>
+        <td class="col-name" data-val="apple ipad mini (a17 pro): 8,3'' liquid retina dis">
+          <a href="https://www.amazon.de/dp/B0DK3Z3S7T" target="_blank" rel="noopener">🍎 Apple iPad mini (A17 Pro): 8,3'' Liquid Retina Display, 128 GB, WLAN…</a>
+        </td>
+        <td class="col-price" data-val="499.00">499,00 €</td>
+        <td class="col-avg30" data-val="499.00">499,00 €</td>
+        <td class="col-atl"   data-val="499.00">499,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="0" title="Alltime-Low!">⭐</td>
+      </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="tab-kopfhoerer" class="tab-content" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <h2>🎧 Kopfhörer</h2>
+          <p>10 Bestseller heute · 3 🍎 Apple</p>
+        </div>
+        <div class="section-body">
+          <table class="data-table" id="tbl-kopfhoerer">
+            <thead>
+              <tr>
+                <th class="col-rank"  data-sort="num"  title="Rang heute">#</th>
+                <th class="col-name"  data-sort="str"  title="Produktname">Produkt</th>
+                <th class="col-price" data-sort="num"  title="Aktueller Preis">Akt. Preis</th>
+                <th class="col-avg30" data-sort="num"  title="Durchschnitt letzte 30 Tage">Ø 30T</th>
+                <th class="col-atl"   data-sort="num"  title="Alltime-Low">ATL</th>
+                <th class="col-pct"   data-sort="num"  title="% über Alltime-Low">% zu ATL</th>
+                <th class="col-ampel" data-sort="num"  title="Bewertung">⚡</th>
+              </tr>
+            </thead>
+            <tbody>
+      <tr class="row-star row-apple">
+        <td class="col-rank" data-val="1">1</td>
+        <td class="col-name" data-val="apple airpods pro 3 kabellose in‑ear kopfhörer, ak">
+          <a href="https://www.amazon.de/dp/B0FQF32239" target="_blank" rel="noopener">🍎 Apple AirPods Pro 3 Kabellose In‑Ear Kopfhörer, Aktive Geräuschunter…</a>
+        </td>
+        <td class="col-price" data-val="203.99">203,99 €</td>
+        <td class="col-avg30" data-val="212.20">212,20 €</td>
+        <td class="col-atl"   data-val="203.99">203,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="0" title="Alltime-Low!">⭐</td>
+      </tr>
+      <tr class="row-yellow row-apple">
+        <td class="col-rank" data-val="2">2</td>
+        <td class="col-name" data-val="apple earpods (usb-c) ​​​​​​​">
+          <a href="https://www.amazon.de/dp/B0DCNWN8NZ" target="_blank" rel="noopener">🍎 Apple EarPods (USB-C) ​​​​​​​</a>
+        </td>
+        <td class="col-price" data-val="15.99">15,99 €</td>
+        <td class="col-avg30" data-val="16.06">16,06 €</td>
+        <td class="col-atl"   data-val="13.90">13,90 €</td>
+        <td class="col-pct"   data-val="15.0">+15.0 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="3">3</td>
+        <td class="col-name" data-val="soundcore by anker p20i kabellose bluetooth kopfhö">
+          <a href="https://www.amazon.de/dp/B0BTYCRJSS" target="_blank" rel="noopener">soundcore by Anker P20i Kabellose Bluetooth Kopfhörer in-Ear, 10mm Tre…</a>
+        </td>
+        <td class="col-price" data-val="19.99">19,99 €</td>
+        <td class="col-avg30" data-val="26.63">26,63 €</td>
+        <td class="col-atl"   data-val="19.99">19,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-star">
+        <td class="col-rank" data-val="4">4</td>
+        <td class="col-name" data-val="soundcore by anker q20i kabelloser bluetooth over-">
+          <a href="https://www.amazon.de/dp/B0C3HCD34R" target="_blank" rel="noopener">soundcore by Anker Q20i kabelloser Bluetooth Over-Ear-Kopfhörer mit Hy…</a>
+        </td>
+        <td class="col-price" data-val="29.99">29,99 €</td>
+        <td class="col-avg30" data-val="29.99">29,99 €</td>
+        <td class="col-atl"   data-val="29.99">29,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="0" title="Alltime-Low!">⭐</td>
+      </tr>
+      <tr class="row-yellow row-apple">
+        <td class="col-rank" data-val="5">5</td>
+        <td class="col-name" data-val="apple airpods 4 kabellose kopfhörer, bluetooth kop">
+          <a href="https://www.amazon.de/dp/B0DGHWD7CT" target="_blank" rel="noopener">🍎 Apple AirPods 4 Kabellose Kopfhörer, Bluetooth Kopfhörer, Personalis…</a>
+        </td>
+        <td class="col-price" data-val="118.00">118,00 €</td>
+        <td class="col-avg30" data-val="117.00">117,00 €</td>
+        <td class="col-atl"   data-val="104.00">104,00 €</td>
+        <td class="col-pct"   data-val="13.5">+13.5 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="6">6</td>
+        <td class="col-name" data-val="jbl wave beam 2, kabellose bluetooth-in-ear-kopfhö">
+          <a href="https://www.amazon.de/dp/B0DHL93XCN" target="_blank" rel="noopener">JBL Wave Beam 2, Kabellose Bluetooth-In-Ear-Kopfhörer mit Noise-Cancel…</a>
+        </td>
+        <td class="col-price" data-val="49.99">49,99 €</td>
+        <td class="col-avg30" data-val="49.66">49,66 €</td>
+        <td class="col-atl"   data-val="44.00">44,00 €</td>
+        <td class="col-pct"   data-val="13.6">+13.6 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="7">7</td>
+        <td class="col-name" data-val="b0gl1b34dq">
+          <a href="https://www.amazon.de/dp/B0GL1B34DQ" target="_blank" rel="noopener">B0GL1B34DQ</a>
+        </td>
+        <td class="col-price" data-val="24.99">24,99 €</td>
+        <td class="col-avg30" data-val="24.99">24,99 €</td>
+        <td class="col-atl"   data-val="24.99">24,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="8">8</td>
+        <td class="col-name" data-val="b0byd8f9w7">
+          <a href="https://www.amazon.de/dp/B0BYD8F9W7" target="_blank" rel="noopener">B0BYD8F9W7</a>
+        </td>
+        <td class="col-price" data-val="27.99">27,99 €</td>
+        <td class="col-avg30" data-val="27.99">27,99 €</td>
+        <td class="col-atl"   data-val="27.99">27,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="9">9</td>
+        <td class="col-name" data-val="b0glg2j9rm">
+          <a href="https://www.amazon.de/dp/B0GLG2J9RM" target="_blank" rel="noopener">B0GLG2J9RM</a>
+        </td>
+        <td class="col-price" data-val="26.99">26,99 €</td>
+        <td class="col-avg30" data-val="26.99">26,99 €</td>
+        <td class="col-atl"   data-val="26.99">26,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="10">10</td>
+        <td class="col-name" data-val="b0btjd6lcl">
+          <a href="https://www.amazon.de/dp/B0BTJD6LCL" target="_blank" rel="noopener">B0BTJD6LCL</a>
+        </td>
+        <td class="col-price" data-val="29.97">29,97 €</td>
+        <td class="col-avg30" data-val="29.97">29,97 €</td>
+        <td class="col-atl"   data-val="29.97">29,97 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="tab-smartwatches" class="tab-content" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <h2>⌚ Smartwatches</h2>
+          <p>10 Bestseller heute · 2 🍎 Apple</p>
+        </div>
+        <div class="section-body">
+          <table class="data-table" id="tbl-smartwatches">
+            <thead>
+              <tr>
+                <th class="col-rank"  data-sort="num"  title="Rang heute">#</th>
+                <th class="col-name"  data-sort="str"  title="Produktname">Produkt</th>
+                <th class="col-price" data-sort="num"  title="Aktueller Preis">Akt. Preis</th>
+                <th class="col-avg30" data-sort="num"  title="Durchschnitt letzte 30 Tage">Ø 30T</th>
+                <th class="col-atl"   data-sort="num"  title="Alltime-Low">ATL</th>
+                <th class="col-pct"   data-sort="num"  title="% über Alltime-Low">% zu ATL</th>
+                <th class="col-ampel" data-sort="num"  title="Bewertung">⚡</th>
+              </tr>
+            </thead>
+            <tbody>
+      <tr class="row-star row-apple">
+        <td class="col-rank" data-val="1">1</td>
+        <td class="col-name" data-val="apple watch se 3 gps 40 mm smartwatch mit aluminiu">
+          <a href="https://www.amazon.de/dp/B0FQG55GFH" target="_blank" rel="noopener">🍎 Apple Watch SE 3 GPS 40 mm Smartwatch mit Aluminiumgehäuse in Polars…</a>
+        </td>
+        <td class="col-price" data-val="229.00">229,00 €</td>
+        <td class="col-avg30" data-val="237.57">237,57 €</td>
+        <td class="col-atl"   data-val="229.00">229,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="0" title="Alltime-Low!">⭐</td>
+      </tr>
+      <tr class="row-red row-apple">
+        <td class="col-rank" data-val="2">2</td>
+        <td class="col-name" data-val="apple watch series 11 gps 42 mm smartwatch mit alu">
+          <a href="https://www.amazon.de/dp/B0FQFRVB4N" target="_blank" rel="noopener">🍎 Apple Watch Series 11 GPS 42 mm Smartwatch mit Aluminiumgehäuse in R…</a>
+        </td>
+        <td class="col-price" data-val="429.00">429,00 €</td>
+        <td class="col-avg30" data-val="390.11">390,11 €</td>
+        <td class="col-atl"   data-val="379.00">379,00 €</td>
+        <td class="col-pct"   data-val="13.2">+13.2 %</td>
+        <td class="col-ampel" data-val="3" title="Teuer">🔴</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="3">3</td>
+        <td class="col-name" data-val="xiaomi redmi watch 5 active smartwatch, 2.0" lcd d">
+          <a href="https://www.amazon.de/dp/B0DFZPR9Z4" target="_blank" rel="noopener">Xiaomi Redmi Watch 5 Active Smartwatch, 2.0" LCD Display, 18 Tage Akku…</a>
+        </td>
+        <td class="col-price" data-val="29.99">29,99 €</td>
+        <td class="col-avg30" data-val="29.59">29,59 €</td>
+        <td class="col-atl"   data-val="25.49">25,49 €</td>
+        <td class="col-pct"   data-val="17.7">+17.7 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="4">4</td>
+        <td class="col-name" data-val="samsung galaxy fit3 smartwatch, fitness-uhr als fi">
+          <a href="https://www.amazon.de/dp/B0DBQLR92C" target="_blank" rel="noopener">Samsung Galaxy Fit3 Smartwatch, Fitness-Uhr als Fitness Tracker und Ak…</a>
+        </td>
+        <td class="col-price" data-val="42.99">42,99 €</td>
+        <td class="col-avg30" data-val="42.40">42,40 €</td>
+        <td class="col-atl"   data-val="33.61">33,61 €</td>
+        <td class="col-pct"   data-val="27.9">+27.9 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="5">5</td>
+        <td class="col-name" data-val="b0dyp9r6yt">
+          <a href="https://www.amazon.de/dp/B0DYP9R6YT" target="_blank" rel="noopener">B0DYP9R6YT</a>
+        </td>
+        <td class="col-price" data-val="69.00">69,00 €</td>
+        <td class="col-avg30" data-val="69.00">69,00 €</td>
+        <td class="col-atl"   data-val="69.00">69,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="6">6</td>
+        <td class="col-name" data-val="b0fbmbhzvg">
+          <a href="https://www.amazon.de/dp/B0FBMBHZVG" target="_blank" rel="noopener">B0FBMBHZVG</a>
+        </td>
+        <td class="col-price" data-val="247.77">247,77 €</td>
+        <td class="col-avg30" data-val="247.77">247,77 €</td>
+        <td class="col-atl"   data-val="247.77">247,77 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="7">7</td>
+        <td class="col-name" data-val="b0ff3m9jj3">
+          <a href="https://www.amazon.de/dp/B0FF3M9JJ3" target="_blank" rel="noopener">B0FF3M9JJ3</a>
+        </td>
+        <td class="col-price" data-val="3.92">3,92 €</td>
+        <td class="col-avg30" data-val="3.92">3,92 €</td>
+        <td class="col-atl"   data-val="3.92">3,92 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="8">8</td>
+        <td class="col-name" data-val="b0f29y8qyr">
+          <a href="https://www.amazon.de/dp/B0F29Y8QYR" target="_blank" rel="noopener">B0F29Y8QYR</a>
+        </td>
+        <td class="col-price" data-val="170.88">170,88 €</td>
+        <td class="col-avg30" data-val="170.88">170,88 €</td>
+        <td class="col-atl"   data-val="170.88">170,88 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="9">9</td>
+        <td class="col-name" data-val="b0bl27bc6g">
+          <a href="https://www.amazon.de/dp/B0BL27BC6G" target="_blank" rel="noopener">B0BL27BC6G</a>
+        </td>
+        <td class="col-price" data-val="29.99">29,99 €</td>
+        <td class="col-avg30" data-val="29.99">29,99 €</td>
+        <td class="col-atl"   data-val="29.99">29,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="10">10</td>
+        <td class="col-name" data-val="b0dy1jktrd">
+          <a href="https://www.amazon.de/dp/B0DY1JKTRD" target="_blank" rel="noopener">B0DY1JKTRD</a>
+        </td>
+        <td class="col-price" data-val="28.00">28,00 €</td>
+        <td class="col-avg30" data-val="28.00">28,00 €</td>
+        <td class="col-atl"   data-val="28.00">28,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="tab-monitore" class="tab-content" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <h2>🖥 Monitore</h2>
+          <p>10 Bestseller heute</p>
+        </div>
+        <div class="section-body">
+          <table class="data-table" id="tbl-monitore">
+            <thead>
+              <tr>
+                <th class="col-rank"  data-sort="num"  title="Rang heute">#</th>
+                <th class="col-name"  data-sort="str"  title="Produktname">Produkt</th>
+                <th class="col-price" data-sort="num"  title="Aktueller Preis">Akt. Preis</th>
+                <th class="col-avg30" data-sort="num"  title="Durchschnitt letzte 30 Tage">Ø 30T</th>
+                <th class="col-atl"   data-sort="num"  title="Alltime-Low">ATL</th>
+                <th class="col-pct"   data-sort="num"  title="% über Alltime-Low">% zu ATL</th>
+                <th class="col-ampel" data-sort="num"  title="Bewertung">⚡</th>
+              </tr>
+            </thead>
+            <tbody>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="1">1</td>
+        <td class="col-name" data-val="asus eye care vy249hgr - 24 zoll full hd monitor -">
+          <a href="https://www.amazon.de/dp/B0DN6NHW6F" target="_blank" rel="noopener">ASUS Eye Care VY249HGR - 24 Zoll Full HD Monitor - 120 Hz, 1ms MPRT, A…</a>
+        </td>
+        <td class="col-price" data-val="79.00">79,00 €</td>
+        <td class="col-avg30" data-val="77.96">77,96 €</td>
+        <td class="col-atl"   data-val="63.99">63,99 €</td>
+        <td class="col-pct"   data-val="23.5">+23.5 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="2">2</td>
+        <td class="col-name" data-val="b0dbpx1k7f">
+          <a href="https://www.amazon.de/dp/B0DBPX1K7F" target="_blank" rel="noopener">B0DBPX1K7F</a>
+        </td>
+        <td class="col-price" data-val="109.99">109,99 €</td>
+        <td class="col-avg30" data-val="109.99">109,99 €</td>
+        <td class="col-atl"   data-val="109.99">109,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="3">3</td>
+        <td class="col-name" data-val="b0d7cpsnsx">
+          <a href="https://www.amazon.de/dp/B0D7CPSNSX" target="_blank" rel="noopener">B0D7CPSNSX</a>
+        </td>
+        <td class="col-price" data-val="179.00">179,00 €</td>
+        <td class="col-avg30" data-val="179.00">179,00 €</td>
+        <td class="col-atl"   data-val="179.00">179,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="4">4</td>
+        <td class="col-name" data-val="b0byj79phh">
+          <a href="https://www.amazon.de/dp/B0BYJ79PHH" target="_blank" rel="noopener">B0BYJ79PHH</a>
+        </td>
+        <td class="col-price" data-val="67.99">67,99 €</td>
+        <td class="col-avg30" data-val="67.99">67,99 €</td>
+        <td class="col-atl"   data-val="67.99">67,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="5">5</td>
+        <td class="col-name" data-val="b0csy2cd9z">
+          <a href="https://www.amazon.de/dp/B0CSY2CD9Z" target="_blank" rel="noopener">B0CSY2CD9Z</a>
+        </td>
+        <td class="col-price" data-val="94.99">94,99 €</td>
+        <td class="col-avg30" data-val="94.99">94,99 €</td>
+        <td class="col-atl"   data-val="94.99">94,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="6">6</td>
+        <td class="col-name" data-val="b0cjccdv65">
+          <a href="https://www.amazon.de/dp/B0CJCCDV65" target="_blank" rel="noopener">B0CJCCDV65</a>
+        </td>
+        <td class="col-price" data-val="94.99">94,99 €</td>
+        <td class="col-avg30" data-val="94.99">94,99 €</td>
+        <td class="col-atl"   data-val="94.99">94,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="7">7</td>
+        <td class="col-name" data-val="b0fq5b9bb1">
+          <a href="https://www.amazon.de/dp/B0FQ5B9BB1" target="_blank" rel="noopener">B0FQ5B9BB1</a>
+        </td>
+        <td class="col-price" data-val="237.34">237,34 €</td>
+        <td class="col-avg30" data-val="237.34">237,34 €</td>
+        <td class="col-atl"   data-val="237.34">237,34 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="8">8</td>
+        <td class="col-name" data-val="b0ct5p2ds9">
+          <a href="https://www.amazon.de/dp/B0CT5P2DS9" target="_blank" rel="noopener">B0CT5P2DS9</a>
+        </td>
+        <td class="col-price" data-val="99999">—</td>
+        <td class="col-avg30" data-val="99999">—</td>
+        <td class="col-atl"   data-val="99999">—</td>
+        <td class="col-pct"   data-val="99999">—</td>
+        <td class="col-ampel" data-val="5" title="Kein Preis">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="9">9</td>
+        <td class="col-name" data-val="b0f37wxxd6">
+          <a href="https://www.amazon.de/dp/B0F37WXXD6" target="_blank" rel="noopener">B0F37WXXD6</a>
+        </td>
+        <td class="col-price" data-val="109.99">109,99 €</td>
+        <td class="col-avg30" data-val="109.99">109,99 €</td>
+        <td class="col-atl"   data-val="109.99">109,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="10">10</td>
+        <td class="col-name" data-val="b0f9yxhxrh">
+          <a href="https://www.amazon.de/dp/B0F9YXHXRH" target="_blank" rel="noopener">B0F9YXHXRH</a>
+        </td>
+        <td class="col-price" data-val="199.00">199,00 €</td>
+        <td class="col-avg30" data-val="199.00">199,00 €</td>
+        <td class="col-atl"   data-val="199.00">199,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="tab-kameras" class="tab-content" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <h2>📷 Kameras</h2>
+          <p>10 Bestseller heute</p>
+        </div>
+        <div class="section-body">
+          <table class="data-table" id="tbl-kameras">
+            <thead>
+              <tr>
+                <th class="col-rank"  data-sort="num"  title="Rang heute">#</th>
+                <th class="col-name"  data-sort="str"  title="Produktname">Produkt</th>
+                <th class="col-price" data-sort="num"  title="Aktueller Preis">Akt. Preis</th>
+                <th class="col-avg30" data-sort="num"  title="Durchschnitt letzte 30 Tage">Ø 30T</th>
+                <th class="col-atl"   data-sort="num"  title="Alltime-Low">ATL</th>
+                <th class="col-pct"   data-sort="num"  title="% über Alltime-Low">% zu ATL</th>
+                <th class="col-ampel" data-sort="num"  title="Bewertung">⚡</th>
+              </tr>
+            </thead>
+            <tbody>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="1">1</td>
+        <td class="col-name" data-val="kodak pixpro fz55-16 megapixel digitalkamera, 5x o">
+          <a href="https://www.amazon.de/dp/B0B15LMWVN" target="_blank" rel="noopener">KODAK Pixpro FZ55-16 Megapixel Digitalkamera, 5X optischer Zoom, 2.7 L…</a>
+        </td>
+        <td class="col-price" data-val="134.90">134,90 €</td>
+        <td class="col-avg30" data-val="134.90">134,90 €</td>
+        <td class="col-atl"   data-val="119.00">119,00 €</td>
+        <td class="col-pct"   data-val="13.4">+13.4 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="2">2</td>
+        <td class="col-name" data-val="b0f42mp6hm">
+          <a href="https://www.amazon.de/dp/B0F42MP6HM" target="_blank" rel="noopener">B0F42MP6HM</a>
+        </td>
+        <td class="col-price" data-val="26.99">26,99 €</td>
+        <td class="col-avg30" data-val="26.99">26,99 €</td>
+        <td class="col-atl"   data-val="26.99">26,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="3">3</td>
+        <td class="col-name" data-val="b0fmf1qlfz">
+          <a href="https://www.amazon.de/dp/B0FMF1QLFZ" target="_blank" rel="noopener">B0FMF1QLFZ</a>
+        </td>
+        <td class="col-price" data-val="59.99">59,99 €</td>
+        <td class="col-avg30" data-val="59.99">59,99 €</td>
+        <td class="col-atl"   data-val="59.99">59,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="4">4</td>
+        <td class="col-name" data-val="b0flxqvtlt">
+          <a href="https://www.amazon.de/dp/B0FLXQVTLT" target="_blank" rel="noopener">B0FLXQVTLT</a>
+        </td>
+        <td class="col-price" data-val="59.99">59,99 €</td>
+        <td class="col-avg30" data-val="59.99">59,99 €</td>
+        <td class="col-atl"   data-val="59.99">59,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="5">5</td>
+        <td class="col-name" data-val="b0fktmkczr">
+          <a href="https://www.amazon.de/dp/B0FKTMKCZR" target="_blank" rel="noopener">B0FKTMKCZR</a>
+        </td>
+        <td class="col-price" data-val="49.99">49,99 €</td>
+        <td class="col-avg30" data-val="49.99">49,99 €</td>
+        <td class="col-atl"   data-val="49.99">49,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="6">6</td>
+        <td class="col-name" data-val="b0fy6h38kh">
+          <a href="https://www.amazon.de/dp/B0FY6H38KH" target="_blank" rel="noopener">B0FY6H38KH</a>
+        </td>
+        <td class="col-price" data-val="47.98">47,98 €</td>
+        <td class="col-avg30" data-val="47.98">47,98 €</td>
+        <td class="col-atl"   data-val="47.98">47,98 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="7">7</td>
+        <td class="col-name" data-val="b0fvxyb8vm">
+          <a href="https://www.amazon.de/dp/B0FVXYB8VM" target="_blank" rel="noopener">B0FVXYB8VM</a>
+        </td>
+        <td class="col-price" data-val="36.99">36,99 €</td>
+        <td class="col-avg30" data-val="36.99">36,99 €</td>
+        <td class="col-atl"   data-val="36.99">36,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="8">8</td>
+        <td class="col-name" data-val="b0gf7zh2kn">
+          <a href="https://www.amazon.de/dp/B0GF7ZH2KN" target="_blank" rel="noopener">B0GF7ZH2KN</a>
+        </td>
+        <td class="col-price" data-val="47.99">47,99 €</td>
+        <td class="col-avg30" data-val="47.99">47,99 €</td>
+        <td class="col-atl"   data-val="47.99">47,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="9">9</td>
+        <td class="col-name" data-val="b0dy89z83g">
+          <a href="https://www.amazon.de/dp/B0DY89Z83G" target="_blank" rel="noopener">B0DY89Z83G</a>
+        </td>
+        <td class="col-price" data-val="86.80">86,80 €</td>
+        <td class="col-avg30" data-val="86.80">86,80 €</td>
+        <td class="col-atl"   data-val="86.80">86,80 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-green">
+        <td class="col-rank" data-val="10">10</td>
+        <td class="col-name" data-val="rollei minidigitalkamera vintage schwarz, 1080p fh">
+          <a href="https://www.amazon.de/dp/B0FQJR93Z7" target="_blank" rel="noopener">Rollei Minidigitalkamera Vintage Schwarz, 1080P FHD Kleine Retro Digit…</a>
+        </td>
+        <td class="col-price" data-val="29.99">29,99 €</td>
+        <td class="col-avg30" data-val="29.66">29,66 €</td>
+        <td class="col-atl"   data-val="29.00">29,00 €</td>
+        <td class="col-pct"   data-val="3.4">+3.4 %</td>
+        <td class="col-ampel" data-val="1" title="Top-Preis">🟢</td>
+      </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="tab-fernseher" class="tab-content" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <h2>📺 Fernseher</h2>
+          <p>10 Bestseller heute</p>
+        </div>
+        <div class="section-body">
+          <table class="data-table" id="tbl-fernseher">
+            <thead>
+              <tr>
+                <th class="col-rank"  data-sort="num"  title="Rang heute">#</th>
+                <th class="col-name"  data-sort="str"  title="Produktname">Produkt</th>
+                <th class="col-price" data-sort="num"  title="Aktueller Preis">Akt. Preis</th>
+                <th class="col-avg30" data-sort="num"  title="Durchschnitt letzte 30 Tage">Ø 30T</th>
+                <th class="col-atl"   data-sort="num"  title="Alltime-Low">ATL</th>
+                <th class="col-pct"   data-sort="num"  title="% über Alltime-Low">% zu ATL</th>
+                <th class="col-ampel" data-sort="num"  title="Bewertung">⚡</th>
+              </tr>
+            </thead>
+            <tbody>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="1">1</td>
+        <td class="col-name" data-val="b0czwndnxw">
+          <a href="https://www.amazon.de/dp/B0CZWNDNXW" target="_blank" rel="noopener">B0CZWNDNXW</a>
+        </td>
+        <td class="col-price" data-val="229.00">229,00 €</td>
+        <td class="col-avg30" data-val="229.00">229,00 €</td>
+        <td class="col-atl"   data-val="229.00">229,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="2">2</td>
+        <td class="col-name" data-val="b0f4548tcq">
+          <a href="https://www.amazon.de/dp/B0F4548TCQ" target="_blank" rel="noopener">B0F4548TCQ</a>
+        </td>
+        <td class="col-price" data-val="159.00">159,00 €</td>
+        <td class="col-avg30" data-val="159.00">159,00 €</td>
+        <td class="col-atl"   data-val="159.00">159,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="3">3</td>
+        <td class="col-name" data-val="b0f1mpwv27">
+          <a href="https://www.amazon.de/dp/B0F1MPWV27" target="_blank" rel="noopener">B0F1MPWV27</a>
+        </td>
+        <td class="col-price" data-val="349.00">349,00 €</td>
+        <td class="col-avg30" data-val="349.00">349,00 €</td>
+        <td class="col-atl"   data-val="349.00">349,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-green">
+        <td class="col-rank" data-val="4">4</td>
+        <td class="col-name" data-val="samsung crystal uhd 4k u7099f 43 zoll (108 cm) led">
+          <a href="https://www.amazon.de/dp/B0F5BR3WSK" target="_blank" rel="noopener">Samsung Crystal UHD 4K U7099F 43 Zoll (108 cm) LED Fernseher, Crystal …</a>
+        </td>
+        <td class="col-price" data-val="259.00">259,00 €</td>
+        <td class="col-avg30" data-val="265.00">265,00 €</td>
+        <td class="col-atl"   data-val="249.99">249,99 €</td>
+        <td class="col-pct"   data-val="3.6">+3.6 %</td>
+        <td class="col-ampel" data-val="1" title="Top-Preis">🟢</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="5">5</td>
+        <td class="col-name" data-val="b0dv94jcvx">
+          <a href="https://www.amazon.de/dp/B0DV94JCVX" target="_blank" rel="noopener">B0DV94JCVX</a>
+        </td>
+        <td class="col-price" data-val="333.99">333,99 €</td>
+        <td class="col-avg30" data-val="333.99">333,99 €</td>
+        <td class="col-atl"   data-val="333.99">333,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="6">6</td>
+        <td class="col-name" data-val="b0f5bp4kfm">
+          <a href="https://www.amazon.de/dp/B0F5BP4KFM" target="_blank" rel="noopener">B0F5BP4KFM</a>
+        </td>
+        <td class="col-price" data-val="599.00">599,00 €</td>
+        <td class="col-avg30" data-val="599.00">599,00 €</td>
+        <td class="col-atl"   data-val="599.00">599,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="7">7</td>
+        <td class="col-name" data-val="b0f62vgmhw">
+          <a href="https://www.amazon.de/dp/B0F62VGMHW" target="_blank" rel="noopener">B0F62VGMHW</a>
+        </td>
+        <td class="col-price" data-val="549.00">549,00 €</td>
+        <td class="col-avg30" data-val="549.00">549,00 €</td>
+        <td class="col-atl"   data-val="549.00">549,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="8">8</td>
+        <td class="col-name" data-val="b0by2th8b9">
+          <a href="https://www.amazon.de/dp/B0BY2TH8B9" target="_blank" rel="noopener">B0BY2TH8B9</a>
+        </td>
+        <td class="col-price" data-val="134.99">134,99 €</td>
+        <td class="col-avg30" data-val="134.99">134,99 €</td>
+        <td class="col-atl"   data-val="134.99">134,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="9">9</td>
+        <td class="col-name" data-val="b0g35kf6qb">
+          <a href="https://www.amazon.de/dp/B0G35KF6QB" target="_blank" rel="noopener">B0G35KF6QB</a>
+        </td>
+        <td class="col-price" data-val="141.26">141,26 €</td>
+        <td class="col-avg30" data-val="141.26">141,26 €</td>
+        <td class="col-atl"   data-val="141.26">141,26 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="10">10</td>
+        <td class="col-name" data-val="b0f62t33bj">
+          <a href="https://www.amazon.de/dp/B0F62T33BJ" target="_blank" rel="noopener">B0F62T33BJ</a>
+        </td>
+        <td class="col-price" data-val="439.00">439,00 €</td>
+        <td class="col-avg30" data-val="439.00">439,00 €</td>
+        <td class="col-atl"   data-val="439.00">439,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="tab-lautsprecher" class="tab-content" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <h2>🔊 Lautsprecher</h2>
+          <p>10 Bestseller heute</p>
+        </div>
+        <div class="section-body">
+          <table class="data-table" id="tbl-lautsprecher">
+            <thead>
+              <tr>
+                <th class="col-rank"  data-sort="num"  title="Rang heute">#</th>
+                <th class="col-name"  data-sort="str"  title="Produktname">Produkt</th>
+                <th class="col-price" data-sort="num"  title="Aktueller Preis">Akt. Preis</th>
+                <th class="col-avg30" data-sort="num"  title="Durchschnitt letzte 30 Tage">Ø 30T</th>
+                <th class="col-atl"   data-sort="num"  title="Alltime-Low">ATL</th>
+                <th class="col-pct"   data-sort="num"  title="% über Alltime-Low">% zu ATL</th>
+                <th class="col-ampel" data-sort="num"  title="Bewertung">⚡</th>
+              </tr>
+            </thead>
+            <tbody>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="1">1</td>
+        <td class="col-name" data-val="b0dlnvjxm2">
+          <a href="https://www.amazon.de/dp/B0DLNVJXM2" target="_blank" rel="noopener">B0DLNVJXM2</a>
+        </td>
+        <td class="col-price" data-val="8.78">8,78 €</td>
+        <td class="col-avg30" data-val="8.78">8,78 €</td>
+        <td class="col-atl"   data-val="8.78">8,78 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="2">2</td>
+        <td class="col-name" data-val="b0dz745rcw">
+          <a href="https://www.amazon.de/dp/B0DZ745RCW" target="_blank" rel="noopener">B0DZ745RCW</a>
+        </td>
+        <td class="col-price" data-val="19.99">19,99 €</td>
+        <td class="col-avg30" data-val="19.99">19,99 €</td>
+        <td class="col-atl"   data-val="19.99">19,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="3">3</td>
+        <td class="col-name" data-val="b0dcyr5vnr">
+          <a href="https://www.amazon.de/dp/B0DCYR5VNR" target="_blank" rel="noopener">B0DCYR5VNR</a>
+        </td>
+        <td class="col-price" data-val="27.45">27,45 €</td>
+        <td class="col-avg30" data-val="27.45">27,45 €</td>
+        <td class="col-atl"   data-val="27.45">27,45 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="4">4</td>
+        <td class="col-name" data-val="b01mtb55wh">
+          <a href="https://www.amazon.de/dp/B01MTB55WH" target="_blank" rel="noopener">B01MTB55WH</a>
+        </td>
+        <td class="col-price" data-val="25.49">25,49 €</td>
+        <td class="col-avg30" data-val="25.49">25,49 €</td>
+        <td class="col-atl"   data-val="25.49">25,49 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="5">5</td>
+        <td class="col-name" data-val="b0c1nk79fk">
+          <a href="https://www.amazon.de/dp/B0C1NK79FK" target="_blank" rel="noopener">B0C1NK79FK</a>
+        </td>
+        <td class="col-price" data-val="10.99">10,99 €</td>
+        <td class="col-avg30" data-val="10.99">10,99 €</td>
+        <td class="col-atl"   data-val="10.99">10,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="6">6</td>
+        <td class="col-name" data-val="b07vft4d6b">
+          <a href="https://www.amazon.de/dp/B07VFT4D6B" target="_blank" rel="noopener">B07VFT4D6B</a>
+        </td>
+        <td class="col-price" data-val="15.98">15,98 €</td>
+        <td class="col-avg30" data-val="15.98">15,98 €</td>
+        <td class="col-atl"   data-val="15.98">15,98 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="7">7</td>
+        <td class="col-name" data-val="notfall-solarradio,solarbaby selbstbetriebenes kur">
+          <a href="https://www.amazon.de/dp/B08V17BPBC" target="_blank" rel="noopener">Notfall-Solarradio,Solarbaby Selbstbetriebenes Kurbelradio mit LED-Tas…</a>
+        </td>
+        <td class="col-price" data-val="31.99">31,99 €</td>
+        <td class="col-avg30" data-val="30.99">30,99 €</td>
+        <td class="col-atl"   data-val="24.92">24,92 €</td>
+        <td class="col-pct"   data-val="28.4">+28.4 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="8">8</td>
+        <td class="col-name" data-val="b0cx5c6wp3">
+          <a href="https://www.amazon.de/dp/B0CX5C6WP3" target="_blank" rel="noopener">B0CX5C6WP3</a>
+        </td>
+        <td class="col-price" data-val="39.99">39,99 €</td>
+        <td class="col-avg30" data-val="39.99">39,99 €</td>
+        <td class="col-atl"   data-val="39.99">39,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="9">9</td>
+        <td class="col-name" data-val="b0bvmmpn54">
+          <a href="https://www.amazon.de/dp/B0BVMMPN54" target="_blank" rel="noopener">B0BVMMPN54</a>
+        </td>
+        <td class="col-price" data-val="10.99">10,99 €</td>
+        <td class="col-avg30" data-val="10.99">10,99 €</td>
+        <td class="col-atl"   data-val="10.99">10,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="10">10</td>
+        <td class="col-name" data-val="b0cf8x4h77">
+          <a href="https://www.amazon.de/dp/B0CF8X4H77" target="_blank" rel="noopener">B0CF8X4H77</a>
+        </td>
+        <td class="col-price" data-val="9.48">9,48 €</td>
+        <td class="col-avg30" data-val="9.48">9,48 €</td>
+        <td class="col-atl"   data-val="9.48">9,48 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="tab-playstation" class="tab-content" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <h2>🎮 PlayStation 5</h2>
+          <p>10 Bestseller heute</p>
+        </div>
+        <div class="section-body">
+          <table class="data-table" id="tbl-playstation">
+            <thead>
+              <tr>
+                <th class="col-rank"  data-sort="num"  title="Rang heute">#</th>
+                <th class="col-name"  data-sort="str"  title="Produktname">Produkt</th>
+                <th class="col-price" data-sort="num"  title="Aktueller Preis">Akt. Preis</th>
+                <th class="col-avg30" data-sort="num"  title="Durchschnitt letzte 30 Tage">Ø 30T</th>
+                <th class="col-atl"   data-sort="num"  title="Alltime-Low">ATL</th>
+                <th class="col-pct"   data-sort="num"  title="% über Alltime-Low">% zu ATL</th>
+                <th class="col-ampel" data-sort="num"  title="Bewertung">⚡</th>
+              </tr>
+            </thead>
+            <tbody>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="1">1</td>
+        <td class="col-name" data-val="b00gwuse1o">
+          <a href="https://www.amazon.de/dp/B00GWUSE1O" target="_blank" rel="noopener">B00GWUSE1O</a>
+        </td>
+        <td class="col-price" data-val="10.00">10,00 €</td>
+        <td class="col-avg30" data-val="10.00">10,00 €</td>
+        <td class="col-atl"   data-val="10.00">10,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="2">2</td>
+        <td class="col-name" data-val="resident evil™ requiem - [playstation 5]">
+          <a href="https://www.amazon.de/dp/B0FYFLVMML" target="_blank" rel="noopener">Resident Evil™ Requiem - [Playstation 5]</a>
+        </td>
+        <td class="col-price" data-val="79.99">79,99 €</td>
+        <td class="col-avg30" data-val="84.99">84,99 €</td>
+        <td class="col-atl"   data-val="79.99">79,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="3">3</td>
+        <td class="col-name" data-val="b0b27g2371">
+          <a href="https://www.amazon.de/dp/B0B27G2371" target="_blank" rel="noopener">B0B27G2371</a>
+        </td>
+        <td class="col-price" data-val="10.00">10,00 €</td>
+        <td class="col-avg30" data-val="10.00">10,00 €</td>
+        <td class="col-atl"   data-val="10.00">10,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="4">4</td>
+        <td class="col-name" data-val="b00ogu88ke">
+          <a href="https://www.amazon.de/dp/B00OGU88KE" target="_blank" rel="noopener">B00OGU88KE</a>
+        </td>
+        <td class="col-price" data-val="50.00">50,00 €</td>
+        <td class="col-avg30" data-val="50.00">50,00 €</td>
+        <td class="col-atl"   data-val="50.00">50,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="5">5</td>
+        <td class="col-name" data-val="b094wrt8pd">
+          <a href="https://www.amazon.de/dp/B094WRT8PD" target="_blank" rel="noopener">B094WRT8PD</a>
+        </td>
+        <td class="col-price" data-val="73.99">73,99 €</td>
+        <td class="col-avg30" data-val="73.99">73,99 €</td>
+        <td class="col-atl"   data-val="73.99">73,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="6">6</td>
+        <td class="col-name" data-val="weseary wg1 bluetooth headset, 2,4g wireless gamin">
+          <a href="https://www.amazon.de/dp/B0D6QBHSVH" target="_blank" rel="noopener">WESEARY WG1 Bluetooth Headset, 2,4G Wireless Gaming Headset mit Mikrof…</a>
+        </td>
+        <td class="col-price" data-val="32.27">32,27 €</td>
+        <td class="col-avg30" data-val="32.27">32,27 €</td>
+        <td class="col-atl"   data-val="32.27">32,27 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="7">7</td>
+        <td class="col-name" data-val="dualsense wireless-controller - midnight black [pl">
+          <a href="https://www.amazon.de/dp/B094WLFGD3" target="_blank" rel="noopener">DualSense Wireless-Controller - Midnight Black [PlayStation 5]</a>
+        </td>
+        <td class="col-price" data-val="67.90">67,90 €</td>
+        <td class="col-avg30" data-val="69.10">69,10 €</td>
+        <td class="col-atl"   data-val="42.00">42,00 €</td>
+        <td class="col-pct"   data-val="61.7">+61.7 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="8">8</td>
+        <td class="col-name" data-val="b0fp2s1mnb">
+          <a href="https://www.amazon.de/dp/B0FP2S1MNB" target="_blank" rel="noopener">B0FP2S1MNB</a>
+        </td>
+        <td class="col-price" data-val="507.98">507,98 €</td>
+        <td class="col-avg30" data-val="507.98">507,98 €</td>
+        <td class="col-atl"   data-val="507.98">507,98 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-star">
+        <td class="col-rank" data-val="9">9</td>
+        <td class="col-name" data-val="anno 117: pax romana - [playstation 5]">
+          <a href="https://www.amazon.de/dp/B0FC311597" target="_blank" rel="noopener">Anno 117: Pax Romana - [PlayStation 5]</a>
+        </td>
+        <td class="col-price" data-val="37.99">37,99 €</td>
+        <td class="col-avg30" data-val="42.83">42,83 €</td>
+        <td class="col-atl"   data-val="37.99">37,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="0" title="Alltime-Low!">⭐</td>
+      </tr>
+      <tr class="row-green">
+        <td class="col-rank" data-val="10">10</td>
+        <td class="col-name" data-val="disc-laufwerk für playstation 5 pro und ps5® digit">
+          <a href="https://www.amazon.de/dp/B0CMXL75GH" target="_blank" rel="noopener">Disc-Laufwerk für PlayStation 5 Pro und PS5® Digital Edition-Konsolen …</a>
+        </td>
+        <td class="col-price" data-val="79.99">79,99 €</td>
+        <td class="col-avg30" data-val="79.59">79,59 €</td>
+        <td class="col-atl"   data-val="76.87">76,87 €</td>
+        <td class="col-pct"   data-val="4.1">+4.1 %</td>
+        <td class="col-ampel" data-val="1" title="Top-Preis">🟢</td>
+      </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="tab-switch" class="tab-content" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <h2>🕹 Nintendo Switch</h2>
+          <p>10 Bestseller heute · 1 🍎 Apple</p>
+        </div>
+        <div class="section-body">
+          <table class="data-table" id="tbl-switch">
+            <thead>
+              <tr>
+                <th class="col-rank"  data-sort="num"  title="Rang heute">#</th>
+                <th class="col-name"  data-sort="str"  title="Produktname">Produkt</th>
+                <th class="col-price" data-sort="num"  title="Aktueller Preis">Akt. Preis</th>
+                <th class="col-avg30" data-sort="num"  title="Durchschnitt letzte 30 Tage">Ø 30T</th>
+                <th class="col-atl"   data-sort="num"  title="Alltime-Low">ATL</th>
+                <th class="col-pct"   data-sort="num"  title="% über Alltime-Low">% zu ATL</th>
+                <th class="col-ampel" data-sort="num"  title="Bewertung">⚡</th>
+              </tr>
+            </thead>
+            <tbody>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="1">1</td>
+        <td class="col-name" data-val="b07vhxlww7">
+          <a href="https://www.amazon.de/dp/B07VHXLWW7" target="_blank" rel="noopener">B07VHXLWW7</a>
+        </td>
+        <td class="col-price" data-val="25.00">25,00 €</td>
+        <td class="col-avg30" data-val="25.00">25,00 €</td>
+        <td class="col-atl"   data-val="25.00">25,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="2">2</td>
+        <td class="col-name" data-val="nintendo minecraft - [nintendo switch]">
+          <a href="https://www.amazon.de/dp/B06Y5VBFNB" target="_blank" rel="noopener">Nintendo Minecraft - [Nintendo Switch]</a>
+        </td>
+        <td class="col-price" data-val="23.99">23,99 €</td>
+        <td class="col-avg30" data-val="23.99">23,99 €</td>
+        <td class="col-atl"   data-val="17.54">17,54 €</td>
+        <td class="col-pct"   data-val="36.8">+36.8 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="3">3</td>
+        <td class="col-name" data-val="pokémon-legenden: z-a - [nintendo switch]">
+          <a href="https://www.amazon.de/dp/B0D1VP774H" target="_blank" rel="noopener">Pokémon-Legenden: Z-A - [Nintendo Switch]</a>
+        </td>
+        <td class="col-price" data-val="45.99">45,99 €</td>
+        <td class="col-avg30" data-val="44.27">44,27 €</td>
+        <td class="col-atl"   data-val="37.99">37,99 €</td>
+        <td class="col-pct"   data-val="21.1">+21.1 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="4">4</td>
+        <td class="col-name" data-val="b0c6yfl48z">
+          <a href="https://www.amazon.de/dp/B0C6YFL48Z" target="_blank" rel="noopener">B0C6YFL48Z</a>
+        </td>
+        <td class="col-price" data-val="67.10">67,10 €</td>
+        <td class="col-avg30" data-val="67.10">67,10 €</td>
+        <td class="col-atl"   data-val="67.10">67,10 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="5">5</td>
+        <td class="col-name" data-val="nintendo switch mario kart 8 deluxe">
+          <a href="https://www.amazon.de/dp/B01N4ND0F9" target="_blank" rel="noopener">Nintendo Switch Mario Kart 8 Deluxe</a>
+        </td>
+        <td class="col-price" data-val="49.88">49,88 €</td>
+        <td class="col-avg30" data-val="49.88">49,88 €</td>
+        <td class="col-atl"   data-val="35.99">35,99 €</td>
+        <td class="col-pct"   data-val="38.6">+38.6 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-star row-apple">
+        <td class="col-rank" data-val="6">6</td>
+        <td class="col-name" data-val="anker nano ii 65w usb c ladegerät netzteil mit sch">
+          <a href="https://www.amazon.de/dp/B094QKV6S8" target="_blank" rel="noopener">🍎 Anker Nano II 65W USB C Ladegerät Netzteil mit Schnellladeleistung, …</a>
+        </td>
+        <td class="col-price" data-val="19.99">19,99 €</td>
+        <td class="col-avg30" data-val="19.99">19,99 €</td>
+        <td class="col-atl"   data-val="19.99">19,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="0" title="Alltime-Low!">⭐</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="7">7</td>
+        <td class="col-name" data-val="b0cqn1mc42">
+          <a href="https://www.amazon.de/dp/B0CQN1MC42" target="_blank" rel="noopener">B0CQN1MC42</a>
+        </td>
+        <td class="col-price" data-val="30.66">30,66 €</td>
+        <td class="col-avg30" data-val="30.66">30,66 €</td>
+        <td class="col-atl"   data-val="30.66">30,66 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="8">8</td>
+        <td class="col-name" data-val="super mario galaxy + super mario galaxy 2">
+          <a href="https://www.amazon.de/dp/B0FR451FFZ" target="_blank" rel="noopener">Super Mario Galaxy + Super Mario Galaxy 2</a>
+        </td>
+        <td class="col-price" data-val="53.90">53,90 €</td>
+        <td class="col-avg30" data-val="53.90">53,90 €</td>
+        <td class="col-atl"   data-val="46.66">46,66 €</td>
+        <td class="col-pct"   data-val="15.5">+15.5 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="9">9</td>
+        <td class="col-name" data-val="sandisk microsdxc uhs-i speicherkarte für nintendo">
+          <a href="https://www.amazon.de/dp/B07QD6R5L7" target="_blank" rel="noopener">SanDisk microSDXC UHS-I Speicherkarte für Nintendo Switch 256 GB (U3, …</a>
+        </td>
+        <td class="col-price" data-val="34.99">34,99 €</td>
+        <td class="col-avg30" data-val="35.55">35,55 €</td>
+        <td class="col-atl"   data-val="22.99">22,99 €</td>
+        <td class="col-pct"   data-val="52.2">+52.2 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="10">10</td>
+        <td class="col-name" data-val="weseary wg1 bluetooth headset, 2,4g wireless gamin">
+          <a href="https://www.amazon.de/dp/B0D6QBHSVH" target="_blank" rel="noopener">WESEARY WG1 Bluetooth Headset, 2,4G Wireless Gaming Headset mit Mikrof…</a>
+        </td>
+        <td class="col-price" data-val="32.27">32,27 €</td>
+        <td class="col-avg30" data-val="32.27">32,27 €</td>
+        <td class="col-atl"   data-val="32.27">32,27 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="tab-xbox" class="tab-content" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <h2>🎯 Xbox Series</h2>
+          <p>10 Bestseller heute</p>
+        </div>
+        <div class="section-body">
+          <table class="data-table" id="tbl-xbox">
+            <thead>
+              <tr>
+                <th class="col-rank"  data-sort="num"  title="Rang heute">#</th>
+                <th class="col-name"  data-sort="str"  title="Produktname">Produkt</th>
+                <th class="col-price" data-sort="num"  title="Aktueller Preis">Akt. Preis</th>
+                <th class="col-avg30" data-sort="num"  title="Durchschnitt letzte 30 Tage">Ø 30T</th>
+                <th class="col-atl"   data-sort="num"  title="Alltime-Low">ATL</th>
+                <th class="col-pct"   data-sort="num"  title="% über Alltime-Low">% zu ATL</th>
+                <th class="col-ampel" data-sort="num"  title="Bewertung">⚡</th>
+              </tr>
+            </thead>
+            <tbody>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="1">1</td>
+        <td class="col-name" data-val="b0186l0uig">
+          <a href="https://www.amazon.de/dp/B0186L0UIG" target="_blank" rel="noopener">B0186L0UIG</a>
+        </td>
+        <td class="col-price" data-val="10.00">10,00 €</td>
+        <td class="col-avg30" data-val="10.00">10,00 €</td>
+        <td class="col-atl"   data-val="10.00">10,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-red">
+        <td class="col-rank" data-val="2">2</td>
+        <td class="col-name" data-val="xbox wireless controller - carbon black">
+          <a href="https://www.amazon.de/dp/B0F2NC69KK" target="_blank" rel="noopener">Xbox Wireless Controller - Carbon Black</a>
+        </td>
+        <td class="col-price" data-val="61.11">61,11 €</td>
+        <td class="col-avg30" data-val="52.61">52,61 €</td>
+        <td class="col-atl"   data-val="43.99">43,99 €</td>
+        <td class="col-pct"   data-val="38.9">+38.9 %</td>
+        <td class="col-ampel" data-val="3" title="Teuer">🔴</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="3">3</td>
+        <td class="col-name" data-val="resident evil™ requiem deluxe edition steelbook - ">
+          <a href="https://www.amazon.de/dp/B0FYGYJBPB" target="_blank" rel="noopener">Resident Evil™ Requiem Deluxe Edition Steelbook - [XBOX]</a>
+        </td>
+        <td class="col-price" data-val="94.99">94,99 €</td>
+        <td class="col-avg30" data-val="94.99">94,99 €</td>
+        <td class="col-atl"   data-val="94.99">94,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="4">4</td>
+        <td class="col-name" data-val="b07s85btz5">
+          <a href="https://www.amazon.de/dp/B07S85BTZ5" target="_blank" rel="noopener">B07S85BTZ5</a>
+        </td>
+        <td class="col-price" data-val="26.99">26,99 €</td>
+        <td class="col-avg30" data-val="26.99">26,99 €</td>
+        <td class="col-atl"   data-val="26.99">26,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-green">
+        <td class="col-rank" data-val="5">5</td>
+        <td class="col-name" data-val="steelseries arctis nova pro wireless - multi-syste">
+          <a href="https://www.amazon.de/dp/B09ZLRCH1H" target="_blank" rel="noopener">SteelSeries Arctis Nova Pro Wireless - Multi-System Gaming Headset (PC…</a>
+        </td>
+        <td class="col-price" data-val="239.99">239,99 €</td>
+        <td class="col-avg30" data-val="267.74">267,74 €</td>
+        <td class="col-atl"   data-val="229.00">229,00 €</td>
+        <td class="col-pct"   data-val="4.8">+4.8 %</td>
+        <td class="col-ampel" data-val="1" title="Top-Preis">🟢</td>
+      </tr>
+      <tr class="row-green">
+        <td class="col-rank" data-val="6">6</td>
+        <td class="col-name" data-val="xbox play usb-ladekit für xbox series x">
+          <a href="https://www.amazon.de/dp/B08FCXLB8Z" target="_blank" rel="noopener">Xbox Play USB-Ladekit für Xbox Series X</a>
+        </td>
+        <td class="col-price" data-val="19.99">19,99 €</td>
+        <td class="col-avg30" data-val="20.74">20,74 €</td>
+        <td class="col-atl"   data-val="18.81">18,81 €</td>
+        <td class="col-pct"   data-val="6.3">+6.3 %</td>
+        <td class="col-ampel" data-val="1" title="Top-Preis">🟢</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="7">7</td>
+        <td class="col-name" data-val="b09dpr2lzw">
+          <a href="https://www.amazon.de/dp/B09DPR2LZW" target="_blank" rel="noopener">B09DPR2LZW</a>
+        </td>
+        <td class="col-price" data-val="19.99">19,99 €</td>
+        <td class="col-avg30" data-val="19.99">19,99 €</td>
+        <td class="col-atl"   data-val="19.99">19,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="8">8</td>
+        <td class="col-name" data-val="steelseries arctis nova 5 wireless - gaming headse">
+          <a href="https://www.amazon.de/dp/B0D1KBNWHF" target="_blank" rel="noopener">SteelSeries Arctis Nova 5 Wireless - Gaming Headset- Multi-System -PC,…</a>
+        </td>
+        <td class="col-price" data-val="107.44">107,44 €</td>
+        <td class="col-avg30" data-val="102.36">102,36 €</td>
+        <td class="col-atl"   data-val="79.99">79,99 €</td>
+        <td class="col-pct"   data-val="34.3">+34.3 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="9">9</td>
+        <td class="col-name" data-val="gamesir g7 pro 1000hz controller mit ladestation f">
+          <a href="https://www.amazon.de/dp/B0FHHFBDNQ" target="_blank" rel="noopener">GameSir G7 Pro 1000Hz Controller mit Ladestation für Xbox Series X|S, …</a>
+        </td>
+        <td class="col-price" data-val="99.99">99,99 €</td>
+        <td class="col-avg30" data-val="99.99">99,99 €</td>
+        <td class="col-atl"   data-val="99.99">99,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-star">
+        <td class="col-rank" data-val="10">10</td>
+        <td class="col-name" data-val="jbl quantum 360 kabellose over-ear gaming-kopfhöre">
+          <a href="https://www.amazon.de/dp/B0D8QJRBV3" target="_blank" rel="noopener">JBL Quantum 360 Kabellose Over-Ear Gaming-Kopfhörer mit 2,4 GHz/Blueto…</a>
+        </td>
+        <td class="col-price" data-val="55.75">55,75 €</td>
+        <td class="col-avg30" data-val="74.87">74,87 €</td>
+        <td class="col-atl"   data-val="55.75">55,75 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="0" title="Alltime-Low!">⭐</td>
+      </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="tab-videospiele" class="tab-content" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <h2>👾 Videospiele</h2>
+          <p>10 Bestseller heute</p>
+        </div>
+        <div class="section-body">
+          <table class="data-table" id="tbl-videospiele">
+            <thead>
+              <tr>
+                <th class="col-rank"  data-sort="num"  title="Rang heute">#</th>
+                <th class="col-name"  data-sort="str"  title="Produktname">Produkt</th>
+                <th class="col-price" data-sort="num"  title="Aktueller Preis">Akt. Preis</th>
+                <th class="col-avg30" data-sort="num"  title="Durchschnitt letzte 30 Tage">Ø 30T</th>
+                <th class="col-atl"   data-sort="num"  title="Alltime-Low">ATL</th>
+                <th class="col-pct"   data-sort="num"  title="% über Alltime-Low">% zu ATL</th>
+                <th class="col-ampel" data-sort="num"  title="Bewertung">⚡</th>
+              </tr>
+            </thead>
+            <tbody>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="1">1</td>
+        <td class="col-name" data-val="luna premium">
+          <a href="https://www.amazon.de/dp/B085TRCCT6" target="_blank" rel="noopener">Luna Premium</a>
+        </td>
+        <td class="col-price" data-val="9.99">9,99 €</td>
+        <td class="col-avg30" data-val="9.99">9,99 €</td>
+        <td class="col-atl"   data-val="9.99">9,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="2">2</td>
+        <td class="col-name" data-val="b081kj2x4v">
+          <a href="https://www.amazon.de/dp/B081KJ2X4V" target="_blank" rel="noopener">B081KJ2X4V</a>
+        </td>
+        <td class="col-price" data-val="10.00">10,00 €</td>
+        <td class="col-avg30" data-val="10.00">10,00 €</td>
+        <td class="col-atl"   data-val="10.00">10,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="3">3</td>
+        <td class="col-name" data-val="b0cdk1xxv1">
+          <a href="https://www.amazon.de/dp/B0CDK1XXV1" target="_blank" rel="noopener">B0CDK1XXV1</a>
+        </td>
+        <td class="col-price" data-val="10.49">10,49 €</td>
+        <td class="col-avg30" data-val="10.49">10,49 €</td>
+        <td class="col-atl"   data-val="10.49">10,49 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="4">4</td>
+        <td class="col-name" data-val="b097f8h1mc">
+          <a href="https://www.amazon.de/dp/B097F8H1MC" target="_blank" rel="noopener">B097F8H1MC</a>
+        </td>
+        <td class="col-price" data-val="39.90">39,90 €</td>
+        <td class="col-avg30" data-val="39.90">39,90 €</td>
+        <td class="col-atl"   data-val="39.90">39,90 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="5">5</td>
+        <td class="col-name" data-val="logitech g502 hero high-performance gaming-maus mi">
+          <a href="https://www.amazon.de/dp/B07GS6ZS8J" target="_blank" rel="noopener">Logitech G502 HERO High-Performance Gaming-Maus mit HERO 25K DPI optis…</a>
+        </td>
+        <td class="col-price" data-val="34.99">34,99 €</td>
+        <td class="col-avg30" data-val="35.57">35,57 €</td>
+        <td class="col-atl"   data-val="29.00">29,00 €</td>
+        <td class="col-pct"   data-val="20.7">+20.7 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="6">6</td>
+        <td class="col-name" data-val="b092r5mcb3">
+          <a href="https://www.amazon.de/dp/B092R5MCB3" target="_blank" rel="noopener">B092R5MCB3</a>
+        </td>
+        <td class="col-price" data-val="18.36">18,36 €</td>
+        <td class="col-avg30" data-val="18.36">18,36 €</td>
+        <td class="col-atl"   data-val="18.36">18,36 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="7">7</td>
+        <td class="col-name" data-val="b0162xa64i">
+          <a href="https://www.amazon.de/dp/B0162XA64I" target="_blank" rel="noopener">B0162XA64I</a>
+        </td>
+        <td class="col-price" data-val="10.99">10,99 €</td>
+        <td class="col-avg30" data-val="10.99">10,99 €</td>
+        <td class="col-atl"   data-val="10.99">10,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="8">8</td>
+        <td class="col-name" data-val="logitech g g305 lightspeed kabellose gaming-maus m">
+          <a href="https://www.amazon.de/dp/B07CGNDZR3" target="_blank" rel="noopener">Logitech G G305 LIGHTSPEED kabellose Gaming-Maus mit HERO 12K DPI Sens…</a>
+        </td>
+        <td class="col-price" data-val="38.90">38,90 €</td>
+        <td class="col-avg30" data-val="38.30">38,30 €</td>
+        <td class="col-atl"   data-val="28.49">28,49 €</td>
+        <td class="col-pct"   data-val="36.5">+36.5 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="9">9</td>
+        <td class="col-name" data-val="b00mv1zani">
+          <a href="https://www.amazon.de/dp/B00MV1ZANI" target="_blank" rel="noopener">B00MV1ZANI</a>
+        </td>
+        <td class="col-price" data-val="5.99">5,99 €</td>
+        <td class="col-avg30" data-val="5.99">5,99 €</td>
+        <td class="col-atl"   data-val="5.99">5,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="10">10</td>
+        <td class="col-name" data-val="b0cyjf4kg7">
+          <a href="https://www.amazon.de/dp/B0CYJF4KG7" target="_blank" rel="noopener">B0CYJF4KG7</a>
+        </td>
+        <td class="col-price" data-val="65.00">65,00 €</td>
+        <td class="col-avg30" data-val="65.00">65,00 €</td>
+        <td class="col-atl"   data-val="65.00">65,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="tab-zubehoer" class="tab-content" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <h2>⌨️ Computer-Zubehör</h2>
+          <p>10 Bestseller heute · 1 🍎 Apple</p>
+        </div>
+        <div class="section-body">
+          <table class="data-table" id="tbl-zubehoer">
+            <thead>
+              <tr>
+                <th class="col-rank"  data-sort="num"  title="Rang heute">#</th>
+                <th class="col-name"  data-sort="str"  title="Produktname">Produkt</th>
+                <th class="col-price" data-sort="num"  title="Aktueller Preis">Akt. Preis</th>
+                <th class="col-avg30" data-sort="num"  title="Durchschnitt letzte 30 Tage">Ø 30T</th>
+                <th class="col-atl"   data-sort="num"  title="Alltime-Low">ATL</th>
+                <th class="col-pct"   data-sort="num"  title="% über Alltime-Low">% zu ATL</th>
+                <th class="col-ampel" data-sort="num"  title="Bewertung">⚡</th>
+              </tr>
+            </thead>
+            <tbody>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="1">1</td>
+        <td class="col-name" data-val="b08t1hr5cs">
+          <a href="https://www.amazon.de/dp/B08T1HR5CS" target="_blank" rel="noopener">B08T1HR5CS</a>
+        </td>
+        <td class="col-price" data-val="25.99">25,99 €</td>
+        <td class="col-avg30" data-val="25.99">25,99 €</td>
+        <td class="col-atl"   data-val="25.99">25,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="2">2</td>
+        <td class="col-name" data-val="b087dj43k3">
+          <a href="https://www.amazon.de/dp/B087DJ43K3" target="_blank" rel="noopener">B087DJ43K3</a>
+        </td>
+        <td class="col-price" data-val="12.90">12,90 €</td>
+        <td class="col-avg30" data-val="12.90">12,90 €</td>
+        <td class="col-atl"   data-val="12.90">12,90 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="3">3</td>
+        <td class="col-name" data-val="b004bemd5q">
+          <a href="https://www.amazon.de/dp/B004BEMD5Q" target="_blank" rel="noopener">B004BEMD5Q</a>
+        </td>
+        <td class="col-price" data-val="6.99">6,99 €</td>
+        <td class="col-avg30" data-val="6.99">6,99 €</td>
+        <td class="col-atl"   data-val="6.99">6,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="4">4</td>
+        <td class="col-name" data-val="b0dxdtx47w">
+          <a href="https://www.amazon.de/dp/B0DXDTX47W" target="_blank" rel="noopener">B0DXDTX47W</a>
+        </td>
+        <td class="col-price" data-val="10.98">10,98 €</td>
+        <td class="col-avg30" data-val="10.98">10,98 €</td>
+        <td class="col-atl"   data-val="10.98">10,98 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="5">5</td>
+        <td class="col-name" data-val="b09mq4kz27">
+          <a href="https://www.amazon.de/dp/B09MQ4KZ27" target="_blank" rel="noopener">B09MQ4KZ27</a>
+        </td>
+        <td class="col-price" data-val="6.46">6,46 €</td>
+        <td class="col-avg30" data-val="6.46">6,46 €</td>
+        <td class="col-atl"   data-val="6.46">6,46 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-yellow row-apple">
+        <td class="col-rank" data-val="6">6</td>
+        <td class="col-name" data-val="apple pencil pro: fortschrittliche tools, pixelgen">
+          <a href="https://www.amazon.de/dp/B0D3J7CKFR" target="_blank" rel="noopener">🍎 Apple Pencil Pro: Fortschrittliche Tools, pixelgenaue Präzision, Nei…</a>
+        </td>
+        <td class="col-price" data-val="130.75">130,75 €</td>
+        <td class="col-avg30" data-val="128.59">128,59 €</td>
+        <td class="col-atl"   data-val="99.00">99,00 €</td>
+        <td class="col-pct"   data-val="32.1">+32.1 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="7">7</td>
+        <td class="col-name" data-val="b0cfffsffn">
+          <a href="https://www.amazon.de/dp/B0CFFFSFFN" target="_blank" rel="noopener">B0CFFFSFFN</a>
+        </td>
+        <td class="col-price" data-val="8.01">8,01 €</td>
+        <td class="col-avg30" data-val="8.01">8,01 €</td>
+        <td class="col-atl"   data-val="8.01">8,01 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="8">8</td>
+        <td class="col-name" data-val="b0b9n3qsl3">
+          <a href="https://www.amazon.de/dp/B0B9N3QSL3" target="_blank" rel="noopener">B0B9N3QSL3</a>
+        </td>
+        <td class="col-price" data-val="5.97">5,97 €</td>
+        <td class="col-avg30" data-val="5.97">5,97 €</td>
+        <td class="col-atl"   data-val="5.97">5,97 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="9">9</td>
+        <td class="col-name" data-val="b08pvptnzl">
+          <a href="https://www.amazon.de/dp/B08PVPTNZL" target="_blank" rel="noopener">B08PVPTNZL</a>
+        </td>
+        <td class="col-price" data-val="7.48">7,48 €</td>
+        <td class="col-avg30" data-val="7.48">7,48 €</td>
+        <td class="col-atl"   data-val="7.48">7,48 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="10">10</td>
+        <td class="col-name" data-val="b08g47lrd7">
+          <a href="https://www.amazon.de/dp/B08G47LRD7" target="_blank" rel="noopener">B08G47LRD7</a>
+        </td>
+        <td class="col-price" data-val="11.99">11,99 €</td>
+        <td class="col-avg30" data-val="11.99">11,99 €</td>
+        <td class="col-atl"   data-val="11.99">11,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="tab-drucker" class="tab-content" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <h2>🖨 Drucker</h2>
+          <p>10 Bestseller heute · 1 🍎 Apple</p>
+        </div>
+        <div class="section-body">
+          <table class="data-table" id="tbl-drucker">
+            <thead>
+              <tr>
+                <th class="col-rank"  data-sort="num"  title="Rang heute">#</th>
+                <th class="col-name"  data-sort="str"  title="Produktname">Produkt</th>
+                <th class="col-price" data-sort="num"  title="Aktueller Preis">Akt. Preis</th>
+                <th class="col-avg30" data-sort="num"  title="Durchschnitt letzte 30 Tage">Ø 30T</th>
+                <th class="col-atl"   data-sort="num"  title="Alltime-Low">ATL</th>
+                <th class="col-pct"   data-sort="num"  title="% über Alltime-Low">% zu ATL</th>
+                <th class="col-ampel" data-sort="num"  title="Bewertung">⚡</th>
+              </tr>
+            </thead>
+            <tbody>
+      <tr class="row-red row-apple">
+        <td class="col-rank" data-val="1">1</td>
+        <td class="col-name" data-val="canon pixma tr4755i multifunktionsdrucker 4in1 (ti">
+          <a href="https://www.amazon.de/dp/B0DJBT238Z" target="_blank" rel="noopener">🍎 Canon PIXMA TR4755i Multifunktionsdrucker 4in1 (Tintenstrahl, Drucke…</a>
+        </td>
+        <td class="col-price" data-val="68.40">68,40 €</td>
+        <td class="col-avg30" data-val="63.86">63,86 €</td>
+        <td class="col-atl"   data-val="47.99">47,99 €</td>
+        <td class="col-pct"   data-val="42.5">+42.5 %</td>
+        <td class="col-ampel" data-val="3" title="Teuer">🔴</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="2">2</td>
+        <td class="col-name" data-val="hp color laser mfp 178nwg multifunktions-farblaser">
+          <a href="https://www.amazon.de/dp/B07SJHTWCY" target="_blank" rel="noopener">HP Color Laser MFP 178nwg Multifunktions-Farblaserdrucker, Drucken, Ko…</a>
+        </td>
+        <td class="col-price" data-val="237.00">237,00 €</td>
+        <td class="col-avg30" data-val="244.72">244,72 €</td>
+        <td class="col-atl"   data-val="177.60">177,60 €</td>
+        <td class="col-pct"   data-val="33.4">+33.4 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-star">
+        <td class="col-rank" data-val="3">3</td>
+        <td class="col-name" data-val="canon pixma ts4150i -wlan-multifunktionsdrucker mi">
+          <a href="https://www.amazon.de/dp/B0FPDCMBDS" target="_blank" rel="noopener">Canon PIXMA TS4150I -WLAN-Multifunktionsdrucker mit Papierkassette und…</a>
+        </td>
+        <td class="col-price" data-val="53.99">53,99 €</td>
+        <td class="col-avg30" data-val="59.59">59,59 €</td>
+        <td class="col-atl"   data-val="53.99">53,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="0" title="Alltime-Low!">⭐</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="4">4</td>
+        <td class="col-name" data-val="hp smart tank 5105 3-in-1 multifunktionsdrucker (w">
+          <a href="https://www.amazon.de/dp/B0BPJK37V7" target="_blank" rel="noopener">HP Smart Tank 5105 3-in-1 Multifunktionsdrucker (WLAN; Mobiles Drucken…</a>
+        </td>
+        <td class="col-price" data-val="162.96">162,96 €</td>
+        <td class="col-avg30" data-val="156.03">156,03 €</td>
+        <td class="col-atl"   data-val="107.79">107,79 €</td>
+        <td class="col-pct"   data-val="51.2">+51.2 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-green">
+        <td class="col-rank" data-val="5">5</td>
+        <td class="col-name" data-val="hp laserjet mfp m140w multifunktions-laserdrucker,">
+          <a href="https://www.amazon.de/dp/B09KVC77X4" target="_blank" rel="noopener">HP LaserJet MFP M140w Multifunktions-Laserdrucker, Monolaser, Drucker,…</a>
+        </td>
+        <td class="col-price" data-val="136.98">136,98 €</td>
+        <td class="col-avg30" data-val="143.13">143,13 €</td>
+        <td class="col-atl"   data-val="128.42">128,42 €</td>
+        <td class="col-pct"   data-val="6.7">+6.7 %</td>
+        <td class="col-ampel" data-val="1" title="Top-Preis">🟢</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="6">6</td>
+        <td class="col-name" data-val="epson ecotank et-2870 a4-multifunktions-wi-fi-tint">
+          <a href="https://www.amazon.de/dp/B0CPPKNRLJ" target="_blank" rel="noopener">Epson EcoTank ET-2870 A4-Multifunktions-Wi-Fi-Tintentankdrucker, mit e…</a>
+        </td>
+        <td class="col-price" data-val="189.99">189,99 €</td>
+        <td class="col-avg30" data-val="196.77">196,77 €</td>
+        <td class="col-atl"   data-val="162.99">162,99 €</td>
+        <td class="col-pct"   data-val="16.6">+16.6 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-red">
+        <td class="col-rank" data-val="7">7</td>
+        <td class="col-name" data-val="expression xp-3200 a4 kabelloser multifunktionstin">
+          <a href="https://www.amazon.de/dp/B0B8X3THPT" target="_blank" rel="noopener">Expression XP-3200 A4 kabelloser Multifunktionstintenstrahldrucker</a>
+        </td>
+        <td class="col-price" data-val="72.99">72,99 €</td>
+        <td class="col-avg30" data-val="67.51">67,51 €</td>
+        <td class="col-atl"   data-val="53.90">53,90 €</td>
+        <td class="col-pct"   data-val="35.4">+35.4 %</td>
+        <td class="col-ampel" data-val="3" title="Teuer">🔴</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="8">8</td>
+        <td class="col-name" data-val="b0fcssnxt4">
+          <a href="https://www.amazon.de/dp/B0FCSSNXT4" target="_blank" rel="noopener">B0FCSSNXT4</a>
+        </td>
+        <td class="col-price" data-val="58.99">58,99 €</td>
+        <td class="col-avg30" data-val="58.99">58,99 €</td>
+        <td class="col-atl"   data-val="58.99">58,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="9">9</td>
+        <td class="col-name" data-val="b0cy6b4vx6">
+          <a href="https://www.amazon.de/dp/B0CY6B4VX6" target="_blank" rel="noopener">B0CY6B4VX6</a>
+        </td>
+        <td class="col-price" data-val="333.55">333,55 €</td>
+        <td class="col-avg30" data-val="333.55">333,55 €</td>
+        <td class="col-atl"   data-val="333.55">333,55 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="10">10</td>
+        <td class="col-name" data-val="hp officejet pro 8122e multifunktionsdrucker, 6 mo">
+          <a href="https://www.amazon.de/dp/B0CQ2HF1S5" target="_blank" rel="noopener">HP OfficeJet Pro 8122e Multifunktionsdrucker, 6 Monate gratis drucken …</a>
+        </td>
+        <td class="col-price" data-val="115.95">115,95 €</td>
+        <td class="col-avg30" data-val="111.32">111,32 €</td>
+        <td class="col-atl"   data-val="89.25">89,25 €</td>
+        <td class="col-pct"   data-val="29.9">+29.9 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="tab-powerbanks" class="tab-content" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <h2>🔋 Powerbanks</h2>
+          <p>10 Bestseller heute</p>
+        </div>
+        <div class="section-body">
+          <table class="data-table" id="tbl-powerbanks">
+            <thead>
+              <tr>
+                <th class="col-rank"  data-sort="num"  title="Rang heute">#</th>
+                <th class="col-name"  data-sort="str"  title="Produktname">Produkt</th>
+                <th class="col-price" data-sort="num"  title="Aktueller Preis">Akt. Preis</th>
+                <th class="col-avg30" data-sort="num"  title="Durchschnitt letzte 30 Tage">Ø 30T</th>
+                <th class="col-atl"   data-sort="num"  title="Alltime-Low">ATL</th>
+                <th class="col-pct"   data-sort="num"  title="% über Alltime-Low">% zu ATL</th>
+                <th class="col-ampel" data-sort="num"  title="Bewertung">⚡</th>
+              </tr>
+            </thead>
+            <tbody>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="1">1</td>
+        <td class="col-name" data-val="b0dcyr5vnr">
+          <a href="https://www.amazon.de/dp/B0DCYR5VNR" target="_blank" rel="noopener">B0DCYR5VNR</a>
+        </td>
+        <td class="col-price" data-val="27.45">27,45 €</td>
+        <td class="col-avg30" data-val="27.45">27,45 €</td>
+        <td class="col-atl"   data-val="27.45">27,45 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="2">2</td>
+        <td class="col-name" data-val="b0cz9lh53b">
+          <a href="https://www.amazon.de/dp/B0CZ9LH53B" target="_blank" rel="noopener">B0CZ9LH53B</a>
+        </td>
+        <td class="col-price" data-val="23.98">23,98 €</td>
+        <td class="col-avg30" data-val="23.98">23,98 €</td>
+        <td class="col-atl"   data-val="23.98">23,98 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="3">3</td>
+        <td class="col-name" data-val="b0g16f7wrm">
+          <a href="https://www.amazon.de/dp/B0G16F7WRM" target="_blank" rel="noopener">B0G16F7WRM</a>
+        </td>
+        <td class="col-price" data-val="18.04">18,04 €</td>
+        <td class="col-avg30" data-val="18.04">18,04 €</td>
+        <td class="col-atl"   data-val="18.04">18,04 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="4">4</td>
+        <td class="col-name" data-val="b0cth7l29z">
+          <a href="https://www.amazon.de/dp/B0CTH7L29Z" target="_blank" rel="noopener">B0CTH7L29Z</a>
+        </td>
+        <td class="col-price" data-val="33.99">33,99 €</td>
+        <td class="col-avg30" data-val="33.99">33,99 €</td>
+        <td class="col-atl"   data-val="33.99">33,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="5">5</td>
+        <td class="col-name" data-val="b0f29j6h1v">
+          <a href="https://www.amazon.de/dp/B0F29J6H1V" target="_blank" rel="noopener">B0F29J6H1V</a>
+        </td>
+        <td class="col-price" data-val="39.98">39,98 €</td>
+        <td class="col-avg30" data-val="39.98">39,98 €</td>
+        <td class="col-atl"   data-val="39.98">39,98 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="6">6</td>
+        <td class="col-name" data-val="b07ypsz566">
+          <a href="https://www.amazon.de/dp/B07YPSZ566" target="_blank" rel="noopener">B07YPSZ566</a>
+        </td>
+        <td class="col-price" data-val="26.99">26,99 €</td>
+        <td class="col-avg30" data-val="26.99">26,99 €</td>
+        <td class="col-atl"   data-val="26.99">26,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="7">7</td>
+        <td class="col-name" data-val="b0f7xfp2mq">
+          <a href="https://www.amazon.de/dp/B0F7XFP2MQ" target="_blank" rel="noopener">B0F7XFP2MQ</a>
+        </td>
+        <td class="col-price" data-val="25.25">25,25 €</td>
+        <td class="col-avg30" data-val="25.25">25,25 €</td>
+        <td class="col-atl"   data-val="25.25">25,25 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="8">8</td>
+        <td class="col-name" data-val="ugreen nexode power bank 145w max 25000mah externe">
+          <a href="https://www.amazon.de/dp/B0BJQ7F16T" target="_blank" rel="noopener">UGREEN Nexode Power Bank 145W Max 25000mAh externer Akku mit 3 Anschlü…</a>
+        </td>
+        <td class="col-price" data-val="49.99">49,99 €</td>
+        <td class="col-avg30" data-val="49.99">49,99 €</td>
+        <td class="col-atl"   data-val="49.99">49,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="9">9</td>
+        <td class="col-name" data-val="b0dcbb2ytr">
+          <a href="https://www.amazon.de/dp/B0DCBB2YTR" target="_blank" rel="noopener">B0DCBB2YTR</a>
+        </td>
+        <td class="col-price" data-val="79.99">79,99 €</td>
+        <td class="col-avg30" data-val="79.99">79,99 €</td>
+        <td class="col-atl"   data-val="79.99">79,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="10">10</td>
+        <td class="col-name" data-val="b0d7dkj75m">
+          <a href="https://www.amazon.de/dp/B0D7DKJ75M" target="_blank" rel="noopener">B0D7DKJ75M</a>
+        </td>
+        <td class="col-price" data-val="53.99">53,99 €</td>
+        <td class="col-avg30" data-val="53.99">53,99 €</td>
+        <td class="col-atl"   data-val="53.99">53,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="tab-netzwerk" class="tab-content" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <h2>📡 Netzwerk</h2>
+          <p>10 Bestseller heute</p>
+        </div>
+        <div class="section-body">
+          <table class="data-table" id="tbl-netzwerk">
+            <thead>
+              <tr>
+                <th class="col-rank"  data-sort="num"  title="Rang heute">#</th>
+                <th class="col-name"  data-sort="str"  title="Produktname">Produkt</th>
+                <th class="col-price" data-sort="num"  title="Aktueller Preis">Akt. Preis</th>
+                <th class="col-avg30" data-sort="num"  title="Durchschnitt letzte 30 Tage">Ø 30T</th>
+                <th class="col-atl"   data-sort="num"  title="Alltime-Low">ATL</th>
+                <th class="col-pct"   data-sort="num"  title="% über Alltime-Low">% zu ATL</th>
+                <th class="col-ampel" data-sort="num"  title="Bewertung">⚡</th>
+              </tr>
+            </thead>
+            <tbody>
+      <tr class="row-green">
+        <td class="col-rank" data-val="1">1</td>
+        <td class="col-name" data-val="fritz!box 5690 pro (wi-fi 7 premium dsl- und glasf">
+          <a href="https://www.amazon.de/dp/B0D8JCN5P4" target="_blank" rel="noopener">FRITZ!Box 5690 Pro (Wi-Fi 7 Premium DSL- und Glasfaser-Router mit Trib…</a>
+        </td>
+        <td class="col-price" data-val="295.00">295,00 €</td>
+        <td class="col-avg30" data-val="295.00">295,00 €</td>
+        <td class="col-atl"   data-val="284.90">284,90 €</td>
+        <td class="col-pct"   data-val="3.5">+3.5 %</td>
+        <td class="col-ampel" data-val="1" title="Top-Preis">🟢</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="2">2</td>
+        <td class="col-name" data-val="fritz!box 7530 ax | dsl-router | wi-fi 6 bis zu 2.">
+          <a href="https://www.amazon.de/dp/B08BZPXCKD" target="_blank" rel="noopener">FRITZ!Box 7530 AX | DSL-Router | Wi-Fi 6 bis zu 2.400 MBit/s | intelli…</a>
+        </td>
+        <td class="col-price" data-val="144.80">144,80 €</td>
+        <td class="col-avg30" data-val="188.44">188,44 €</td>
+        <td class="col-atl"   data-val="129.00">129,00 €</td>
+        <td class="col-pct"   data-val="12.2">+12.2 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-green">
+        <td class="col-rank" data-val="3">3</td>
+        <td class="col-name" data-val="fritz!box 7690 (wi-fi 7 dsl-router mit 5.760 mbit/">
+          <a href="https://www.amazon.de/dp/B0D63DSFJ6" target="_blank" rel="noopener">FRITZ!Box 7690 (Wi-Fi 7 DSL-Router mit 5.760 MBit/s (5GHz) & 1.376 MBi…</a>
+        </td>
+        <td class="col-price" data-val="234.00">234,00 €</td>
+        <td class="col-avg30" data-val="230.90">230,90 €</td>
+        <td class="col-atl"   data-val="219.00">219,00 €</td>
+        <td class="col-pct"   data-val="6.8">+6.8 %</td>
+        <td class="col-ampel" data-val="1" title="Top-Preis">🟢</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="4">4</td>
+        <td class="col-name" data-val="fritz!box 5590 fiber | router für einen glasfasera">
+          <a href="https://www.amazon.de/dp/B09ZD4LFR3" target="_blank" rel="noopener">FRITZ!Box 5590 Fiber | Router für einen Glasfaseranschluss (Wi-Fi 6, b…</a>
+        </td>
+        <td class="col-price" data-val="219.90">219,90 €</td>
+        <td class="col-avg30" data-val="219.90">219,90 €</td>
+        <td class="col-atl"   data-val="199.00">199,00 €</td>
+        <td class="col-pct"   data-val="10.5">+10.5 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="5">5</td>
+        <td class="col-name" data-val="tp-link tl-wr902ac ac750 wlan nano router (433mbit">
+          <a href="https://www.amazon.de/dp/B01MY5JIJ0" target="_blank" rel="noopener">TP-Link TL-WR902AC AC750 WLAN Nano Router (433Mbit/s (5GHz) +300Mbit/s…</a>
+        </td>
+        <td class="col-price" data-val="22.37">22,37 €</td>
+        <td class="col-avg30" data-val="22.37">22,37 €</td>
+        <td class="col-atl"   data-val="19.90">19,90 €</td>
+        <td class="col-pct"   data-val="12.4">+12.4 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="6">6</td>
+        <td class="col-name" data-val="tp-link archer ax55 wi-fi 6 wlan router, 2402 mbit">
+          <a href="https://www.amazon.de/dp/B09BMXXW6N" target="_blank" rel="noopener">TP-Link Archer AX55 Wi-Fi 6 WLAN Router, 2402 Mbit/s 5 GHz, 574 Mbit/s…</a>
+        </td>
+        <td class="col-price" data-val="48.90">48,90 €</td>
+        <td class="col-avg30" data-val="48.90">48,90 €</td>
+        <td class="col-atl"   data-val="37.90">37,90 €</td>
+        <td class="col-pct"   data-val="29.0">+29.0 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="7">7</td>
+        <td class="col-name" data-val="fritz!box 5530 fiber | router für einen glasfasera">
+          <a href="https://www.amazon.de/dp/B08RB83RZ4" target="_blank" rel="noopener">FRITZ!Box 5530 Fiber | Router für einen Glasfaseranschluss (Glasfaserm…</a>
+        </td>
+        <td class="col-price" data-val="169.99">169,99 €</td>
+        <td class="col-avg30" data-val="167.50">167,50 €</td>
+        <td class="col-atl"   data-val="144.99">144,99 €</td>
+        <td class="col-pct"   data-val="17.2">+17.2 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-green">
+        <td class="col-rank" data-val="8">8</td>
+        <td class="col-name" data-val="fritz!box 7590 ax | dsl-router | wi-fi 6 bis zu 3.">
+          <a href="https://www.amazon.de/dp/B09RLYH43B" target="_blank" rel="noopener">Fritz!Box 7590 AX | DSL-Router | Wi-Fi 6 bis zu 3.600 MBit/s | intelli…</a>
+        </td>
+        <td class="col-price" data-val="209.99">209,99 €</td>
+        <td class="col-avg30" data-val="214.94">214,94 €</td>
+        <td class="col-atl"   data-val="199.00">199,00 €</td>
+        <td class="col-pct"   data-val="5.5">+5.5 %</td>
+        <td class="col-ampel" data-val="1" title="Top-Preis">🟢</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="9">9</td>
+        <td class="col-name" data-val="b07sjtr4dd">
+          <a href="https://www.amazon.de/dp/B07SJTR4DD" target="_blank" rel="noopener">B07SJTR4DD</a>
+        </td>
+        <td class="col-price" data-val="91.96">91,96 €</td>
+        <td class="col-avg30" data-val="91.96">91,96 €</td>
+        <td class="col-atl"   data-val="91.96">91,96 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="10">10</td>
+        <td class="col-name" data-val="b01lxpjcqn">
+          <a href="https://www.amazon.de/dp/B01LXPJCQN" target="_blank" rel="noopener">B01LXPJCQN</a>
+        </td>
+        <td class="col-price" data-val="36.59">36,59 €</td>
+        <td class="col-avg30" data-val="36.59">36,59 €</td>
+        <td class="col-atl"   data-val="36.59">36,59 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="tab-ssds" class="tab-content" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <h2>💾 Externe SSDs</h2>
+          <p>10 Bestseller heute</p>
+        </div>
+        <div class="section-body">
+          <table class="data-table" id="tbl-ssds">
+            <thead>
+              <tr>
+                <th class="col-rank"  data-sort="num"  title="Rang heute">#</th>
+                <th class="col-name"  data-sort="str"  title="Produktname">Produkt</th>
+                <th class="col-price" data-sort="num"  title="Aktueller Preis">Akt. Preis</th>
+                <th class="col-avg30" data-sort="num"  title="Durchschnitt letzte 30 Tage">Ø 30T</th>
+                <th class="col-atl"   data-sort="num"  title="Alltime-Low">ATL</th>
+                <th class="col-pct"   data-sort="num"  title="% über Alltime-Low">% zu ATL</th>
+                <th class="col-ampel" data-sort="num"  title="Bewertung">⚡</th>
+              </tr>
+            </thead>
+            <tbody>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="1">1</td>
+        <td class="col-name" data-val="b0bltdtd86">
+          <a href="https://www.amazon.de/dp/B0BLTDTD86" target="_blank" rel="noopener">B0BLTDTD86</a>
+        </td>
+        <td class="col-price" data-val="302.18">302,18 €</td>
+        <td class="col-avg30" data-val="302.18">302,18 €</td>
+        <td class="col-atl"   data-val="302.18">302,18 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="2">2</td>
+        <td class="col-name" data-val="corsair vengeancelpx32gb (2x 16gb) ddr4 3200(pc4-2">
+          <a href="https://www.amazon.de/dp/B07RW6Z692" target="_blank" rel="noopener">Corsair VENGEANCELPX32GB (2X 16GB) DDR4 3200(Pc4-25600) C16 1.35V Desk…</a>
+        </td>
+        <td class="col-price" data-val="223.99">223,99 €</td>
+        <td class="col-avg30" data-val="231.04">231,04 €</td>
+        <td class="col-atl"   data-val="46.90">46,90 €</td>
+        <td class="col-pct"   data-val="377.6">+377.6 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="3">3</td>
+        <td class="col-name" data-val="b0dhfd5625">
+          <a href="https://www.amazon.de/dp/B0DHFD5625" target="_blank" rel="noopener">B0DHFD5625</a>
+        </td>
+        <td class="col-price" data-val="424.80">424,80 €</td>
+        <td class="col-avg30" data-val="424.80">424,80 €</td>
+        <td class="col-atl"   data-val="424.80">424,80 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="4">4</td>
+        <td class="col-name" data-val="b08j3ngcmh">
+          <a href="https://www.amazon.de/dp/B08J3NGCMH" target="_blank" rel="noopener">B08J3NGCMH</a>
+        </td>
+        <td class="col-price" data-val="47.99">47,99 €</td>
+        <td class="col-avg30" data-val="47.99">47,99 €</td>
+        <td class="col-atl"   data-val="47.99">47,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="5">5</td>
+        <td class="col-name" data-val="b01biwkp58">
+          <a href="https://www.amazon.de/dp/B01BIWKP58" target="_blank" rel="noopener">B01BIWKP58</a>
+        </td>
+        <td class="col-price" data-val="79.90">79,90 €</td>
+        <td class="col-avg30" data-val="79.90">79,90 €</td>
+        <td class="col-atl"   data-val="79.90">79,90 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="6">6</td>
+        <td class="col-name" data-val="crucial ddr5 ram 16gb 5600mhz sodimm, arbeitsspeic">
+          <a href="https://www.amazon.de/dp/B0BLTGMCB7" target="_blank" rel="noopener">Crucial DDR5 RAM 16GB 5600MHz SODIMM, Arbeitsspeicher für Laptop/Noteb…</a>
+        </td>
+        <td class="col-price" data-val="181.87">181,87 €</td>
+        <td class="col-avg30" data-val="178.63">178,63 €</td>
+        <td class="col-atl"   data-val="37.90">37,90 €</td>
+        <td class="col-pct"   data-val="379.9">+379.9 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="7">7</td>
+        <td class="col-name" data-val="b0d25crrpw">
+          <a href="https://www.amazon.de/dp/B0D25CRRPW" target="_blank" rel="noopener">B0D25CRRPW</a>
+        </td>
+        <td class="col-price" data-val="188.99">188,99 €</td>
+        <td class="col-avg30" data-val="188.99">188,99 €</td>
+        <td class="col-atl"   data-val="188.99">188,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="8">8</td>
+        <td class="col-name" data-val="b0145wdni4">
+          <a href="https://www.amazon.de/dp/B0145WDNI4" target="_blank" rel="noopener">B0145WDNI4</a>
+        </td>
+        <td class="col-price" data-val="24.99">24,99 €</td>
+        <td class="col-avg30" data-val="24.99">24,99 €</td>
+        <td class="col-atl"   data-val="24.99">24,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="9">9</td>
+        <td class="col-name" data-val="b09yhkbnms">
+          <a href="https://www.amazon.de/dp/B09YHKBNMS" target="_blank" rel="noopener">B09YHKBNMS</a>
+        </td>
+        <td class="col-price" data-val="47.99">47,99 €</td>
+        <td class="col-avg30" data-val="47.99">47,99 €</td>
+        <td class="col-atl"   data-val="47.99">47,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="10">10</td>
+        <td class="col-name" data-val="corsair vengeance rgb ddr5 ram 32gb (2x16gb) 6000m">
+          <a href="https://www.amazon.de/dp/B0CJ8ZJPF3" target="_blank" rel="noopener">CORSAIR VENGEANCE RGB DDR5 RAM 32GB (2x16GB) 6000MHz CL36-44-44-96 1.3…</a>
+        </td>
+        <td class="col-price" data-val="438.45">438,45 €</td>
+        <td class="col-avg30" data-val="447.93">447,93 €</td>
+        <td class="col-atl"   data-val="99.90">99,90 €</td>
+        <td class="col-pct"   data-val="338.9">+338.9 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="tab-smarthome" class="tab-content" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <h2>🏠 Smart Home</h2>
+          <p>10 Bestseller heute</p>
+        </div>
+        <div class="section-body">
+          <table class="data-table" id="tbl-smarthome">
+            <thead>
+              <tr>
+                <th class="col-rank"  data-sort="num"  title="Rang heute">#</th>
+                <th class="col-name"  data-sort="str"  title="Produktname">Produkt</th>
+                <th class="col-price" data-sort="num"  title="Aktueller Preis">Akt. Preis</th>
+                <th class="col-avg30" data-sort="num"  title="Durchschnitt letzte 30 Tage">Ø 30T</th>
+                <th class="col-atl"   data-sort="num"  title="Alltime-Low">ATL</th>
+                <th class="col-pct"   data-sort="num"  title="% über Alltime-Low">% zu ATL</th>
+                <th class="col-ampel" data-sort="num"  title="Bewertung">⚡</th>
+              </tr>
+            </thead>
+            <tbody>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="1">1</td>
+        <td class="col-name" data-val="b0f94pv9qj">
+          <a href="https://www.amazon.de/dp/B0F94PV9QJ" target="_blank" rel="noopener">B0F94PV9QJ</a>
+        </td>
+        <td class="col-price" data-val="44.99">44,99 €</td>
+        <td class="col-avg30" data-val="44.99">44,99 €</td>
+        <td class="col-atl"   data-val="44.99">44,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="2">2</td>
+        <td class="col-name" data-val="b0b6gkhs2s">
+          <a href="https://www.amazon.de/dp/B0B6GKHS2S" target="_blank" rel="noopener">B0B6GKHS2S</a>
+        </td>
+        <td class="col-price" data-val="41.99">41,99 €</td>
+        <td class="col-avg30" data-val="41.99">41,99 €</td>
+        <td class="col-atl"   data-val="41.99">41,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="3">3</td>
+        <td class="col-name" data-val="b0d23y1n3y">
+          <a href="https://www.amazon.de/dp/B0D23Y1N3Y" target="_blank" rel="noopener">B0D23Y1N3Y</a>
+        </td>
+        <td class="col-price" data-val="54.99">54,99 €</td>
+        <td class="col-avg30" data-val="54.99">54,99 €</td>
+        <td class="col-atl"   data-val="54.99">54,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="4">4</td>
+        <td class="col-name" data-val="b0dhlv4p1b">
+          <a href="https://www.amazon.de/dp/B0DHLV4P1B" target="_blank" rel="noopener">B0DHLV4P1B</a>
+        </td>
+        <td class="col-price" data-val="79.99">79,99 €</td>
+        <td class="col-avg30" data-val="79.99">79,99 €</td>
+        <td class="col-atl"   data-val="79.99">79,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="5">5</td>
+        <td class="col-name" data-val="ring chime (neueste generation) | optimierte akust">
+          <a href="https://www.amazon.de/dp/B0FBCH91T7" target="_blank" rel="noopener">Ring Chime (neueste Generation) | Optimierte akustische Benachrichtigu…</a>
+        </td>
+        <td class="col-price" data-val="34.99">34,99 €</td>
+        <td class="col-avg30" data-val="34.99">34,99 €</td>
+        <td class="col-atl"   data-val="34.99">34,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="6">6</td>
+        <td class="col-name" data-val="b0bzwqp9z1">
+          <a href="https://www.amazon.de/dp/B0BZWQP9Z1" target="_blank" rel="noopener">B0BZWQP9Z1</a>
+        </td>
+        <td class="col-price" data-val="92.99">92,99 €</td>
+        <td class="col-avg30" data-val="92.99">92,99 €</td>
+        <td class="col-atl"   data-val="92.99">92,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="7">7</td>
+        <td class="col-name" data-val="b07x37dt9m">
+          <a href="https://www.amazon.de/dp/B07X37DT9M" target="_blank" rel="noopener">B07X37DT9M</a>
+        </td>
+        <td class="col-price" data-val="14.99">14,99 €</td>
+        <td class="col-avg30" data-val="14.99">14,99 €</td>
+        <td class="col-atl"   data-val="14.99">14,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="8">8</td>
+        <td class="col-name" data-val="b0djdthmfp">
+          <a href="https://www.amazon.de/dp/B0DJDTHMFP" target="_blank" rel="noopener">B0DJDTHMFP</a>
+        </td>
+        <td class="col-price" data-val="54.99">54,99 €</td>
+        <td class="col-avg30" data-val="54.99">54,99 €</td>
+        <td class="col-atl"   data-val="54.99">54,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="9">9</td>
+        <td class="col-name" data-val="b0c5qxcp7z">
+          <a href="https://www.amazon.de/dp/B0C5QXCP7Z" target="_blank" rel="noopener">B0C5QXCP7Z</a>
+        </td>
+        <td class="col-price" data-val="74.99">74,99 €</td>
+        <td class="col-avg30" data-val="74.99">74,99 €</td>
+        <td class="col-atl"   data-val="74.99">74,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="10">10</td>
+        <td class="col-name" data-val="b0ckgq5913">
+          <a href="https://www.amazon.de/dp/B0CKGQ5913" target="_blank" rel="noopener">B0CKGQ5913</a>
+        </td>
+        <td class="col-price" data-val="79.99">79,99 €</td>
+        <td class="col-avg30" data-val="79.99">79,99 €</td>
+        <td class="col-atl"   data-val="79.99">79,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="tab-ereader" class="tab-content" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <h2>📖 E-Reader</h2>
+          <p>10 Bestseller heute</p>
+        </div>
+        <div class="section-body">
+          <table class="data-table" id="tbl-ereader">
+            <thead>
+              <tr>
+                <th class="col-rank"  data-sort="num"  title="Rang heute">#</th>
+                <th class="col-name"  data-sort="str"  title="Produktname">Produkt</th>
+                <th class="col-price" data-sort="num"  title="Aktueller Preis">Akt. Preis</th>
+                <th class="col-avg30" data-sort="num"  title="Durchschnitt letzte 30 Tage">Ø 30T</th>
+                <th class="col-atl"   data-sort="num"  title="Alltime-Low">ATL</th>
+                <th class="col-pct"   data-sort="num"  title="% über Alltime-Low">% zu ATL</th>
+                <th class="col-ampel" data-sort="num"  title="Bewertung">⚡</th>
+              </tr>
+            </thead>
+            <tbody>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="1">1</td>
+        <td class="col-name" data-val="b0cp31jrlk">
+          <a href="https://www.amazon.de/dp/B0CP31JRLK" target="_blank" rel="noopener">B0CP31JRLK</a>
+        </td>
+        <td class="col-price" data-val="119.99">119,99 €</td>
+        <td class="col-avg30" data-val="119.99">119,99 €</td>
+        <td class="col-atl"   data-val="119.99">119,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="2">2</td>
+        <td class="col-name" data-val="amazon kindle paperwhite (neueste generation) – un">
+          <a href="https://www.amazon.de/dp/B0CFPWLGF2" target="_blank" rel="noopener">Amazon Kindle Paperwhite (neueste Generation) – Unser schnellster Kind…</a>
+        </td>
+        <td class="col-price" data-val="179.99">179,99 €</td>
+        <td class="col-avg30" data-val="179.99">179,99 €</td>
+        <td class="col-atl"   data-val="139.99">139,99 €</td>
+        <td class="col-pct"   data-val="28.6">+28.6 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="3">3</td>
+        <td class="col-name" data-val="amazon kindle paperwhite signature edition (neuest">
+          <a href="https://www.amazon.de/dp/B0CFPN47NY" target="_blank" rel="noopener">Amazon Kindle Paperwhite Signature Edition (neueste Generation) – Unse…</a>
+        </td>
+        <td class="col-price" data-val="199.99">199,99 €</td>
+        <td class="col-avg30" data-val="199.99">199,99 €</td>
+        <td class="col-atl"   data-val="159.99">159,99 €</td>
+        <td class="col-pct"   data-val="25.0">+25.0 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-red">
+        <td class="col-rank" data-val="4">4</td>
+        <td class="col-name" data-val="amazon kindle colorsoft signature edition (neueste">
+          <a href="https://www.amazon.de/dp/B0CX8YKQ2H" target="_blank" rel="noopener">Amazon Kindle Colorsoft Signature Edition (neueste Generation) – Mit F…</a>
+        </td>
+        <td class="col-price" data-val="289.99">289,99 €</td>
+        <td class="col-avg30" data-val="244.99">244,99 €</td>
+        <td class="col-atl"   data-val="199.99">199,99 €</td>
+        <td class="col-pct"   data-val="45.0">+45.0 %</td>
+        <td class="col-ampel" data-val="3" title="Teuer">🔴</td>
+      </tr>
+      <tr class="row-red">
+        <td class="col-rank" data-val="5">5</td>
+        <td class="col-name" data-val="amazon kindle colorsoft (neueste generation) – mit">
+          <a href="https://www.amazon.de/dp/B0CX8MQF7R" target="_blank" rel="noopener">Amazon Kindle Colorsoft (neueste Generation) – Mit Farb-Display und Fr…</a>
+        </td>
+        <td class="col-price" data-val="259.99">259,99 €</td>
+        <td class="col-avg30" data-val="229.99">229,99 €</td>
+        <td class="col-atl"   data-val="174.99">174,99 €</td>
+        <td class="col-pct"   data-val="48.6">+48.6 %</td>
+        <td class="col-ampel" data-val="3" title="Teuer">🔴</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="6">6</td>
+        <td class="col-name" data-val="zertifiziert und generalüberholt amazon kindle col">
+          <a href="https://www.amazon.de/dp/B0CX8RQGP4" target="_blank" rel="noopener">Zertifiziert und generalüberholt Amazon Kindle Colorsoft (neueste gene…</a>
+        </td>
+        <td class="col-price" data-val="233.99">233,99 €</td>
+        <td class="col-avg30" data-val="218.32">218,32 €</td>
+        <td class="col-atl"   data-val="186.99">186,99 €</td>
+        <td class="col-pct"   data-val="25.1">+25.1 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-yellow">
+        <td class="col-rank" data-val="7">7</td>
+        <td class="col-name" data-val="zertifiziert und generalüberholt amazon kindle pap">
+          <a href="https://www.amazon.de/dp/B0CFP51XNG" target="_blank" rel="noopener">Zertifiziert und generalüberholt Amazon Kindle Paperwhite (16 GB) – Un…</a>
+        </td>
+        <td class="col-price" data-val="152.99">152,99 €</td>
+        <td class="col-avg30" data-val="152.99">152,99 €</td>
+        <td class="col-atl"   data-val="99.49">99,49 €</td>
+        <td class="col-pct"   data-val="53.8">+53.8 %</td>
+        <td class="col-ampel" data-val="2" title="Normal">🟡</td>
+      </tr>
+      <tr class="row-red">
+        <td class="col-rank" data-val="8">8</td>
+        <td class="col-name" data-val="zertifiziert und generalüberholt kindle scribe, de">
+          <a href="https://www.amazon.de/dp/B09W87V89G" target="_blank" rel="noopener">Zertifiziert und generalüberholt Kindle Scribe, der erste Kindle mit S…</a>
+        </td>
+        <td class="col-price" data-val="404.99">404,99 €</td>
+        <td class="col-avg30" data-val="369.74">369,74 €</td>
+        <td class="col-atl"   data-val="242.99">242,99 €</td>
+        <td class="col-pct"   data-val="66.7">+66.7 %</td>
+        <td class="col-ampel" data-val="3" title="Teuer">🔴</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="9">9</td>
+        <td class="col-name" data-val="b0cz9t8h8n">
+          <a href="https://www.amazon.de/dp/B0CZ9T8H8N" target="_blank" rel="noopener">B0CZ9T8H8N</a>
+        </td>
+        <td class="col-price" data-val="469.99">469,99 €</td>
+        <td class="col-avg30" data-val="469.99">469,99 €</td>
+        <td class="col-atl"   data-val="469.99">469,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="10">10</td>
+        <td class="col-name" data-val="b0cp317938">
+          <a href="https://www.amazon.de/dp/B0CP317938" target="_blank" rel="noopener">B0CP317938</a>
+        </td>
+        <td class="col-price" data-val="129.99">129,99 €</td>
+        <td class="col-avg30" data-val="129.99">129,99 €</td>
+        <td class="col-atl"   data-val="129.99">129,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+</div>
+
+<div class="footer">
+  Electronics Bestseller — generiert am 05.03.2026 07:45 Uhr &nbsp;|&nbsp;
+  Quelle: Amazon.de + Keepa-Historien &nbsp;|&nbsp;
+  Alle Preise inkl. MwSt.
+</div>
+
+<script>
+// ── Tab-Navigation ─────────────────────────────────────────────────
+const FIRST_CAT = "smartphones";
+
+function showTab(catId) {
+  // Alle verstecken
+  document.querySelectorAll(".tab-content").forEach(el => el.style.display = "none");
+  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+
+  // Gewünschte anzeigen
+  const section = document.getElementById("tab-" + catId);
+  if (section) section.style.display = "block";
+  const btn = document.getElementById("btn-" + catId);
+  if (btn) btn.classList.add("active");
+
+  // Scroll-Position merken
+  try { sessionStorage.setItem("activeTab", catId); } catch(e) {}
+}
+
+// Beim Laden: erste Kategorie oder gespeicherte
+window.addEventListener("DOMContentLoaded", () => {
+  let activeTab = FIRST_CAT;
+  try {
+    const saved = sessionStorage.getItem("activeTab");
+    if (saved && document.getElementById("tab-" + saved)) {
+      activeTab = saved;
+    }
+  } catch(e) {}
+  showTab(activeTab);
+});
+
+// ── Sortierbare Tabellen ───────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".data-table").forEach(table => {
+    const headers = table.querySelectorAll("th[data-sort]");
+    headers.forEach((th, colIdx) => {
+      th.style.cursor = "pointer";
+      let asc = true;
+      th.addEventListener("click", () => {
+        const tbody = table.querySelector("tbody");
+        const rows  = Array.from(tbody.querySelectorAll("tr"));
+        const sortType = th.dataset.sort;
+
+        rows.sort((a, b) => {
+          const aVal = a.cells[colIdx]?.dataset.val || "";
+          const bVal = b.cells[colIdx]?.dataset.val || "";
+          if (sortType === "num") {
+            return (parseFloat(aVal) - parseFloat(bVal)) * (asc ? 1 : -1);
+          }
+          return aVal.localeCompare(bVal, "de") * (asc ? 1 : -1);
+        });
+
+        rows.forEach(r => tbody.appendChild(r));
+
+        // Header-Markierung aktualisieren
+        headers.forEach(h => h.classList.remove("sorted-asc", "sorted-desc"));
+        th.classList.add(asc ? "sorted-asc" : "sorted-desc");
+        asc = !asc;
+      });
+    });
+  });
+});
+</script>
+
+</body>
+</html>
