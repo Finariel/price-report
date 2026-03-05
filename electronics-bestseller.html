@@ -122,14 +122,14 @@
   .col-name a:hover { text-decoration: underline; }
 
   /* ── Ampel-Zeilenfarben ── */
-  .row-star   td { background: #fffde7; }
-  .row-green  td { background: #f0fdf4; }
+  .row-star   td { background: #d1fae5; }           /* ATL = kräftiges Grün */
+  .row-green  td { background: #f0fdf4; }           /* ≤10% über ATL = helles Grün */
   .row-yellow td { background: #fefce8; }
   .row-red    td { }
   .row-grey   td { color: #8e8e93; }
-  .row-star td .col-price,
-  .row-green td .col-price  { color: #1a7f37; }
-  .row-red td .col-price    { color: #c0392b; }
+  .row-star  td .col-price  { color: #059669; font-weight: 700; }  /* ATL-Preis: fettes Grün */
+  .row-green td .col-price  { color: #1a7f37; font-weight: 600; }
+  .row-red   td .col-price  { color: #c0392b; }
 
   /* ── Apple-Highlight ── */
   .row-apple td {
@@ -180,14 +180,15 @@
   <h1>🛒 Electronics Bestseller</h1>
   <div class="subtitle">Tägliche Top 10 pro Kategorie — Amazon.de</div>
   <div class="meta-chips">
-    <span class="chip">📅 Stand: 05.03.2026 13:55 Uhr</span>
+    <span class="chip">📅 Stand: 05.03.2026 19:50 Uhr</span>
     <span class="chip">📦 1307 Produkte in DB</span>
     <span class="chip">📊 18 Kategorien</span>
-    <span class="chip">🍎 88 Apple-Produkte</span>
+    <span class="chip">🍎 38 Apple-Produkte</span>
   </div>
 </div>
 
 <nav class="tab-nav" id="tab-nav">
+<button class="tab-btn" onclick="showTab('atl')" id="btn-atl">⭐ ATL (127)</button>
 <button class="tab-btn" onclick="showTab('alle')" id="btn-alle">📋 Alle</button>
 <button class="tab-btn no-data" onclick="showTab('smartphones')" id="btn-smartphones">📱 Smartphones</button>
 <button class="tab-btn no-data" onclick="showTab('notebooks')" id="btn-notebooks">💻 Notebooks</button>
@@ -216,7 +217,7 @@
 <div class="content">
 
   <div class="legend">
-    <span>⭐ Alltime-Low</span>
+    <span style="color:#059669;font-weight:600;">⭐ Alltime-Low</span>
     <span>🟢 Top-Preis (≤10% über ATL)</span>
     <span>🟡 Normaler Preis</span>
     <span>🔴 Teuer</span>
@@ -224,7 +225,1556 @@
     <span>🍎 Apple-Produkt</span>
   </div>
 
-      <div id="tab-alle" class="tab-content" style="display:none">
+      <div id="tab-atl" class="tab-content" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <h2>⭐ Alltime-Low Produkte</h2>
+          <p>127 Produkte aktuell auf oder unter dem Alltime-Low</p>
+        </div>
+        <div class="section-body">
+          <table class="data-table" id="tbl-atl">
+            <thead>
+              <tr>
+                <th class="col-rank"  data-sort="num"  title="Rang">#</th>
+                <th class="col-cat"   title="Kategorie">Kategorie</th>
+                <th class="col-name"  data-sort="str"  title="Produktname">Produkt</th>
+                <th class="col-price" data-sort="num"  title="Aktueller Preis">Akt. Preis</th>
+                <th class="col-avg30" data-sort="num"  title="Durchschnitt letzte 30 Tage">Ø 30T</th>
+                <th class="col-atl"   data-sort="num"  title="Alltime-Low">ATL</th>
+                <th class="col-pct"   data-sort="num"  title="% über Alltime-Low">% zu ATL</th>
+                <th class="col-ampel" data-sort="num"  title="Bewertung">⚡</th>
+              </tr>
+            </thead>
+            <tbody>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="1">1</td>
+        <td class="col-cat">📟 Tablets</td>
+        <td class="col-name" data-val="fire hd 10 kids pro-tablet (neueste generation), f">
+          <a href="https://www.amazon.de/dp/B0CXKQYCPG" target="_blank" rel="noopener">Fire HD 10 Kids Pro-Tablet (Neueste Generation), für Kinder ab dem Gru…</a>
+        </td>
+        <td class="col-price" data-val="214.99">214,99 €</td>
+        <td class="col-avg30" data-val="214.99">214,99 €</td>
+        <td class="col-atl"   data-val="214.99">214,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="2">2</td>
+        <td class="col-cat">📟 Tablets</td>
+        <td class="col-name" data-val="svitoo tablet mit tastatur und stift 10 zoll andro">
+          <a href="https://www.amazon.de/dp/B0F26DM59V" target="_blank" rel="noopener">SVITOO Tablet mit Tastatur und Stift 10 Zoll Android 16 (Modell 2026),…</a>
+        </td>
+        <td class="col-price" data-val="129.99">129,99 €</td>
+        <td class="col-avg30" data-val="129.99">129,99 €</td>
+        <td class="col-atl"   data-val="129.99">129,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="3">3</td>
+        <td class="col-cat">📟 Tablets</td>
+        <td class="col-name" data-val="2026 verbessertes tablet, android 15 tablet 10 zol">
+          <a href="https://www.amazon.de/dp/B0FNWRYRFN" target="_blank" rel="noopener">2026 Verbessertes Tablet, Android 15 Tablet 10 Zoll mit Bluetooth-Laut…</a>
+        </td>
+        <td class="col-price" data-val="89.99">89,99 €</td>
+        <td class="col-avg30" data-val="89.99">89,99 €</td>
+        <td class="col-atl"   data-val="89.99">89,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="4">4</td>
+        <td class="col-cat">📟 Tablets</td>
+        <td class="col-name" data-val="amazon fire hd 8 kids-tablet (neueste generation),">
+          <a href="https://www.amazon.de/dp/B0CVDJYYRR" target="_blank" rel="noopener">Amazon Fire HD 8 Kids-Tablet (Neueste Generation), für Kinder von 3-7 …</a>
+        </td>
+        <td class="col-price" data-val="159.99">159,99 €</td>
+        <td class="col-avg30" data-val="159.99">159,99 €</td>
+        <td class="col-atl"   data-val="159.99">159,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="5">5</td>
+        <td class="col-cat">📟 Tablets</td>
+        <td class="col-name" data-val="tablet 11 zoll mit hülle, android 16 system mit ge">
+          <a href="https://www.amazon.de/dp/B0FP55YVSR" target="_blank" rel="noopener">Tablet 11 Zoll mit Hülle, Android 16 System mit Gemini AI, 20GB RAM + …</a>
+        </td>
+        <td class="col-price" data-val="109.99">109,99 €</td>
+        <td class="col-avg30" data-val="109.99">109,99 €</td>
+        <td class="col-atl"   data-val="109.99">109,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-star row-apple">
+        <td class="col-rank" data-val="6">6</td>
+        <td class="col-cat">📟 Tablets</td>
+        <td class="col-name" data-val="apple ipad mini (a17 pro): 8,3'' liquid retina dis">
+          <a href="https://www.amazon.de/dp/B0DK3Z3S7T" target="_blank" rel="noopener">🍎 Apple iPad mini (A17 Pro): 8,3'' Liquid Retina Display, 128 GB, WLAN…</a>
+        </td>
+        <td class="col-price" data-val="499.00">499,00 €</td>
+        <td class="col-avg30" data-val="499.00">499,00 €</td>
+        <td class="col-atl"   data-val="499.00">499,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="0" title="Alltime-Low!">⭐</td>
+      </tr>
+      <tr class="row-star row-apple">
+        <td class="col-rank" data-val="7">7</td>
+        <td class="col-cat">🎧 Kopfhörer</td>
+        <td class="col-name" data-val="apple airpods pro 3 kabellose in‑ear kopfhörer, ak">
+          <a href="https://www.amazon.de/dp/B0FQF32239" target="_blank" rel="noopener">🍎 Apple AirPods Pro 3 Kabellose In‑Ear Kopfhörer, Aktive Geräuschunter…</a>
+        </td>
+        <td class="col-price" data-val="203.99">203,99 €</td>
+        <td class="col-avg30" data-val="212.20">212,20 €</td>
+        <td class="col-atl"   data-val="203.99">203,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="0" title="Alltime-Low!">⭐</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="8">8</td>
+        <td class="col-cat">🎧 Kopfhörer</td>
+        <td class="col-name" data-val="soundcore by anker p20i kabellose bluetooth kopfhö">
+          <a href="https://www.amazon.de/dp/B0BTYCRJSS" target="_blank" rel="noopener">soundcore by Anker P20i Kabellose Bluetooth Kopfhörer in-Ear, 10mm Tre…</a>
+        </td>
+        <td class="col-price" data-val="19.99">19,99 €</td>
+        <td class="col-avg30" data-val="26.63">26,63 €</td>
+        <td class="col-atl"   data-val="19.99">19,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-star">
+        <td class="col-rank" data-val="9">9</td>
+        <td class="col-cat">🎧 Kopfhörer</td>
+        <td class="col-name" data-val="soundcore by anker q20i kabelloser bluetooth over-">
+          <a href="https://www.amazon.de/dp/B0C3HCD34R" target="_blank" rel="noopener">soundcore by Anker Q20i kabelloser Bluetooth Over-Ear-Kopfhörer mit Hy…</a>
+        </td>
+        <td class="col-price" data-val="29.99">29,99 €</td>
+        <td class="col-avg30" data-val="29.99">29,99 €</td>
+        <td class="col-atl"   data-val="29.99">29,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="0" title="Alltime-Low!">⭐</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="10">10</td>
+        <td class="col-cat">🎧 Kopfhörer</td>
+        <td class="col-name" data-val="2026 bluetooth kopfhörer, kopfhörer kabellos bluet">
+          <a href="https://www.amazon.de/dp/B0GL1B34DQ" target="_blank" rel="noopener">2026 Bluetooth Kopfhörer, Kopfhörer Kabellos Bluetooth 5.4, 50 Std Spi…</a>
+        </td>
+        <td class="col-price" data-val="24.99">24,99 €</td>
+        <td class="col-avg30" data-val="24.99">24,99 €</td>
+        <td class="col-atl"   data-val="24.99">24,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="11">11</td>
+        <td class="col-cat">🎧 Kopfhörer</td>
+        <td class="col-name" data-val="btootos bluetooth kopfhörer, kopfhörer kabellos bl">
+          <a href="https://www.amazon.de/dp/B0BYD8F9W7" target="_blank" rel="noopener">Btootos Bluetooth Kopfhörer, Kopfhörer Kabellos Bluetooth 5.4 Sport In…</a>
+        </td>
+        <td class="col-price" data-val="27.99">27,99 €</td>
+        <td class="col-avg30" data-val="27.99">27,99 €</td>
+        <td class="col-atl"   data-val="27.99">27,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="12">12</td>
+        <td class="col-cat">🎧 Kopfhörer</td>
+        <td class="col-name" data-val="bluetooth 5.4 kopfhörer sport, 75std 2026 kopfhöre">
+          <a href="https://www.amazon.de/dp/B0GLG2J9RM" target="_blank" rel="noopener">Bluetooth 5.4 Kopfhörer Sport, 75Std 2026 Kopfhörer Kabellos Bluetooth…</a>
+        </td>
+        <td class="col-price" data-val="26.99">26,99 €</td>
+        <td class="col-avg30" data-val="26.99">26,99 €</td>
+        <td class="col-atl"   data-val="26.99">26,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="13">13</td>
+        <td class="col-cat">🎧 Kopfhörer</td>
+        <td class="col-name" data-val="sony wh-ch520 kabellose bluetooth-kopfhörer - bis ">
+          <a href="https://www.amazon.de/dp/B0BTJD6LCL" target="_blank" rel="noopener">Sony WH-CH520 Kabellose Bluetooth-Kopfhörer - bis zu 50 Stunden Akkula…</a>
+        </td>
+        <td class="col-price" data-val="29.97">29,97 €</td>
+        <td class="col-avg30" data-val="29.97">29,97 €</td>
+        <td class="col-atl"   data-val="29.97">29,97 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-star row-apple">
+        <td class="col-rank" data-val="14">14</td>
+        <td class="col-cat">⌚ Smartwatches</td>
+        <td class="col-name" data-val="apple watch se 3 gps 40 mm smartwatch mit aluminiu">
+          <a href="https://www.amazon.de/dp/B0FQG55GFH" target="_blank" rel="noopener">🍎 Apple Watch SE 3 GPS 40 mm Smartwatch mit Aluminiumgehäuse in Polars…</a>
+        </td>
+        <td class="col-price" data-val="229.00">229,00 €</td>
+        <td class="col-avg30" data-val="237.57">237,57 €</td>
+        <td class="col-atl"   data-val="229.00">229,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="0" title="Alltime-Low!">⭐</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="15">15</td>
+        <td class="col-cat">⌚ Smartwatches</td>
+        <td class="col-name" data-val="amazfit bip 6 smart watch 46mm, 14 tage akku, 1.97">
+          <a href="https://www.amazon.de/dp/B0DYP9R6YT" target="_blank" rel="noopener">Amazfit Bip 6 Smart Watch 46mm, 14 Tage Akku, 1.97“ AMOLED, GPS & kost…</a>
+        </td>
+        <td class="col-price" data-val="69.00">69,00 €</td>
+        <td class="col-avg30" data-val="69.00">69,00 €</td>
+        <td class="col-atl"   data-val="69.00">69,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="16">16</td>
+        <td class="col-cat">⌚ Smartwatches</td>
+        <td class="col-name" data-val="samsung galaxy watch8 smartwatch mit galaxy ai, fi">
+          <a href="https://www.amazon.de/dp/B0FBMBHZVG" target="_blank" rel="noopener">Samsung Galaxy Watch8 Smartwatch mit Galaxy AI, Fitness-Uhr und Fitnes…</a>
+        </td>
+        <td class="col-price" data-val="247.77">247,77 €</td>
+        <td class="col-avg30" data-val="247.77">247,77 €</td>
+        <td class="col-atl"   data-val="247.77">247,77 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="17">17</td>
+        <td class="col-cat">⌚ Smartwatches</td>
+        <td class="col-name" data-val="fitorb smart ring pro - das original. high-tech fi">
+          <a href="https://www.amazon.de/dp/B0FF3M9JJ3" target="_blank" rel="noopener">Fitorb Smart Ring Pro - Das Original. High-Tech Fitness- & Gesundheits…</a>
+        </td>
+        <td class="col-price" data-val="3.92">3,92 €</td>
+        <td class="col-avg30" data-val="3.92">3,92 €</td>
+        <td class="col-atl"   data-val="3.92">3,92 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="18">18</td>
+        <td class="col-cat">⌚ Smartwatches</td>
+        <td class="col-name" data-val="huawei watch fit 4 pro smartwatch, sports fitness ">
+          <a href="https://www.amazon.de/dp/B0F29Y8QYR" target="_blank" rel="noopener">HUAWEI Watch FIT 4 Pro Smartwatch, Sports Fitness Tracker, GPS, 5ATM W…</a>
+        </td>
+        <td class="col-price" data-val="170.88">170,88 €</td>
+        <td class="col-avg30" data-val="170.88">170,88 €</td>
+        <td class="col-atl"   data-val="170.88">170,88 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="19">19</td>
+        <td class="col-cat">⌚ Smartwatches</td>
+        <td class="col-name" data-val="ruimen smartwatch mit telefonfunktion,smartwatch f">
+          <a href="https://www.amazon.de/dp/B0BL27BC6G" target="_blank" rel="noopener">RUIMEN Smartwatch mit Telefonfunktion,Smartwatch für Damen Herren HD-T…</a>
+        </td>
+        <td class="col-price" data-val="29.99">29,99 €</td>
+        <td class="col-avg30" data-val="29.99">29,99 €</td>
+        <td class="col-atl"   data-val="29.99">29,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="20">20</td>
+        <td class="col-cat">⌚ Smartwatches</td>
+        <td class="col-name" data-val="huawei band 10 smartwatch, ki-gestütztes fitness-t">
+          <a href="https://www.amazon.de/dp/B0DY1JKTRD" target="_blank" rel="noopener">HUAWEI Band 10 Smartwatch, KI-gestütztes Fitness-Tracking, Professione…</a>
+        </td>
+        <td class="col-price" data-val="28.00">28,00 €</td>
+        <td class="col-avg30" data-val="28.00">28,00 €</td>
+        <td class="col-atl"   data-val="28.00">28,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="21">21</td>
+        <td class="col-cat">🖥 Monitore</td>
+        <td class="col-name" data-val="minifire curved monitor 27 zoll 120hz, pc bildschi">
+          <a href="https://www.amazon.de/dp/B0DBPX1K7F" target="_blank" rel="noopener">Minifire Curved Monitor 27 Zoll 120Hz, PC Bildschirm mit Lautsprecher …</a>
+        </td>
+        <td class="col-price" data-val="109.99">109,99 €</td>
+        <td class="col-avg30" data-val="109.99">109,99 €</td>
+        <td class="col-atl"   data-val="109.99">109,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="22">22</td>
+        <td class="col-cat">🖥 Monitore</td>
+        <td class="col-name" data-val="aoc cq32g4ve 31.5 zoll curved, wqhd gaming monitor">
+          <a href="https://www.amazon.de/dp/B0D7CPSNSX" target="_blank" rel="noopener">AOC CQ32G4VE 31.5 Zoll Curved, WQHD Gaming Monitor, 180Hz, Fast VA Pan…</a>
+        </td>
+        <td class="col-price" data-val="179.00">179,00 €</td>
+        <td class="col-avg30" data-val="179.00">179,00 €</td>
+        <td class="col-atl"   data-val="179.00">179,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="23">23</td>
+        <td class="col-cat">🖥 Monitore</td>
+        <td class="col-name" data-val="yodoit portable monitor 15,6 zoll, tragbares ips d">
+          <a href="https://www.amazon.de/dp/B0BYJ79PHH" target="_blank" rel="noopener">Yodoit Portable Monitor 15,6 Zoll, Tragbares IPS Display | FHD 1920x10…</a>
+        </td>
+        <td class="col-price" data-val="67.99">67,99 €</td>
+        <td class="col-avg30" data-val="67.99">67,99 €</td>
+        <td class="col-atl"   data-val="67.99">67,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="24">24</td>
+        <td class="col-cat">🖥 Monitore</td>
+        <td class="col-name" data-val="minifire monitor 27 zoll bildschirm im rahmenlosen">
+          <a href="https://www.amazon.de/dp/B0CSY2CD9Z" target="_blank" rel="noopener">Minifire Monitor 27 Zoll Bildschirm im rahmenlosen Design, IPS, 120Hz,…</a>
+        </td>
+        <td class="col-price" data-val="94.99">94,99 €</td>
+        <td class="col-avg30" data-val="94.99">94,99 €</td>
+        <td class="col-atl"   data-val="94.99">94,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="25">25</td>
+        <td class="col-cat">🖥 Monitore</td>
+        <td class="col-name" data-val="arzopa tragbarer monitor, 15,6" 1920×1080 fhd ips ">
+          <a href="https://www.amazon.de/dp/B0CJCCDV65" target="_blank" rel="noopener">ARZOPA Tragbarer Monitor, 15,6" 1920×1080 FHD IPS Portabler Monitor fü…</a>
+        </td>
+        <td class="col-price" data-val="94.99">94,99 €</td>
+        <td class="col-avg30" data-val="94.99">94,99 €</td>
+        <td class="col-atl"   data-val="94.99">94,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="26">26</td>
+        <td class="col-cat">🖥 Monitore</td>
+        <td class="col-name" data-val="dell 27 plus usb-c monitor - s2725dc, qhd (2560x14">
+          <a href="https://www.amazon.de/dp/B0FQ5B9BB1" target="_blank" rel="noopener">Dell 27 Plus USB-C Monitor - S2725DC, QHD (2560x1440), 144Hz, IPS, 1ms…</a>
+        </td>
+        <td class="col-price" data-val="237.34">237,34 €</td>
+        <td class="col-avg30" data-val="237.34">237,34 €</td>
+        <td class="col-atl"   data-val="237.34">237,34 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="27">27</td>
+        <td class="col-cat">🖥 Monitore</td>
+        <td class="col-name" data-val="benq gw2790e 27 zoll eye-care gaming monitor, 100h">
+          <a href="https://www.amazon.de/dp/B0CT5P2DS9" target="_blank" rel="noopener">BenQ GW2790E 27 Zoll Eye-Care Gaming Monitor, 100Hz, 1920x1080p, IPS, …</a>
+        </td>
+        <td class="col-price" data-val="98.01">98,01 €</td>
+        <td class="col-avg30" data-val="98.01">98,01 €</td>
+        <td class="col-atl"   data-val="98.01">98,01 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="28">28</td>
+        <td class="col-cat">🖥 Monitore</td>
+        <td class="col-name" data-val="minifire 27 zoll curved gaming monitor - 160hz, fh">
+          <a href="https://www.amazon.de/dp/B0F37WXXD6" target="_blank" rel="noopener">Minifire 27 Zoll Curved Gaming Monitor - 160Hz, FHD(1920x1080), VA 150…</a>
+        </td>
+        <td class="col-price" data-val="109.99">109,99 €</td>
+        <td class="col-avg30" data-val="109.99">109,99 €</td>
+        <td class="col-atl"   data-val="109.99">109,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="29">29</td>
+        <td class="col-cat">🖥 Monitore</td>
+        <td class="col-name" data-val="asus tuf gaming vg27aql5a 27 zoll wqhd monitor (21">
+          <a href="https://www.amazon.de/dp/B0F9YXHXRH" target="_blank" rel="noopener">ASUS TUF Gaming VG27AQL5A 27 Zoll WQHD Monitor (210 Hz, 0.3ms GtG, Fre…</a>
+        </td>
+        <td class="col-price" data-val="199.00">199,00 €</td>
+        <td class="col-avg30" data-val="199.00">199,00 €</td>
+        <td class="col-atl"   data-val="199.00">199,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="30">30</td>
+        <td class="col-cat">📷 Kameras</td>
+        <td class="col-name" data-val="mystiluck sofortbildkamera kinder, 1080p hd kinder">
+          <a href="https://www.amazon.de/dp/B0F42MP6HM" target="_blank" rel="noopener">MYSTILUCK Sofortbildkamera Kinder, 1080P HD Kinderkamera Sofortbildkam…</a>
+        </td>
+        <td class="col-price" data-val="26.99">26,99 €</td>
+        <td class="col-avg30" data-val="26.99">26,99 €</td>
+        <td class="col-atl"   data-val="26.99">26,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="31">31</td>
+        <td class="col-cat">📷 Kameras</td>
+        <td class="col-name" data-val="digitalkamera 1080p 44mp fotokamera 16x digitalzoo">
+          <a href="https://www.amazon.de/dp/B0FMF1QLFZ" target="_blank" rel="noopener">Digitalkamera 1080P 44MP Fotokamera 16X Digitalzoom Kamera, Vlogging F…</a>
+        </td>
+        <td class="col-price" data-val="59.99">59,99 €</td>
+        <td class="col-avg30" data-val="59.99">59,99 €</td>
+        <td class="col-atl"   data-val="59.99">59,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="32">32</td>
+        <td class="col-cat">📷 Kameras</td>
+        <td class="col-name" data-val="digitalkamera 4k fotokamera 64mp kamera: vlogging ">
+          <a href="https://www.amazon.de/dp/B0FLXQVTLT" target="_blank" rel="noopener">Digitalkamera 4K Fotokamera 64MP Kamera: Vlogging Fotoapparat für Vide…</a>
+        </td>
+        <td class="col-price" data-val="59.99">59,99 €</td>
+        <td class="col-avg30" data-val="59.99">59,99 €</td>
+        <td class="col-atl"   data-val="59.99">59,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="33">33</td>
+        <td class="col-cat">📷 Kameras</td>
+        <td class="col-name" data-val="4k 64mp digitalkamera kamera fotokamera: 16x digit">
+          <a href="https://www.amazon.de/dp/B0FKTMKCZR" target="_blank" rel="noopener">4K 64MP Digitalkamera Kamera Fotokamera: 16X Digital Zoom Kompaktkamer…</a>
+        </td>
+        <td class="col-price" data-val="49.99">49,99 €</td>
+        <td class="col-avg30" data-val="49.99">49,99 €</td>
+        <td class="col-atl"   data-val="49.99">49,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="34">34</td>
+        <td class="col-cat">📷 Kameras</td>
+        <td class="col-name" data-val="digitalkamera 1080p fotokamera 44mp fotoapparat 16">
+          <a href="https://www.amazon.de/dp/B0FY6H38KH" target="_blank" rel="noopener">Digitalkamera 1080P Fotokamera 44MP Fotoapparat 16X Digitalzoom mit 32…</a>
+        </td>
+        <td class="col-price" data-val="47.98">47,98 €</td>
+        <td class="col-avg30" data-val="47.98">47,98 €</td>
+        <td class="col-atl"   data-val="47.98">47,98 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="35">35</td>
+        <td class="col-cat">📷 Kameras</td>
+        <td class="col-name" data-val="digitalkamera 50mp fotokamera 1080p videokamera mi">
+          <a href="https://www.amazon.de/dp/B0FVXYB8VM" target="_blank" rel="noopener">Digitalkamera 50MP Fotokamera 1080P Videokamera mit 16X Digitalzoom, 2…</a>
+        </td>
+        <td class="col-price" data-val="36.99">36,99 €</td>
+        <td class="col-avg30" data-val="36.99">36,99 €</td>
+        <td class="col-atl"   data-val="36.99">36,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="36">36</td>
+        <td class="col-cat">📷 Kameras</td>
+        <td class="col-name" data-val="digitalkamera 4k 64mp, 2.8 zoll uhd autofokus kame">
+          <a href="https://www.amazon.de/dp/B0GF7ZH2KN" target="_blank" rel="noopener">Digitalkamera 4K 64MP, 2.8 Zoll UHD Autofokus Kamera fotokamera, 32GB …</a>
+        </td>
+        <td class="col-price" data-val="47.99">47,99 €</td>
+        <td class="col-avg30" data-val="47.99">47,99 €</td>
+        <td class="col-atl"   data-val="47.99">47,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="37">37</td>
+        <td class="col-cat">📷 Kameras</td>
+        <td class="col-name" data-val="kodak pixpro c1 - ultrakompakte digitalkamera | 13">
+          <a href="https://www.amazon.de/dp/B0DY89Z83G" target="_blank" rel="noopener">Kodak Pixpro C1 - Ultrakompakte Digitalkamera | 13MP BSI CMOS, 4X Zoom…</a>
+        </td>
+        <td class="col-price" data-val="86.80">86,80 €</td>
+        <td class="col-avg30" data-val="86.80">86,80 €</td>
+        <td class="col-atl"   data-val="86.80">86,80 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="38">38</td>
+        <td class="col-cat">📺 Fernseher</td>
+        <td class="col-name" data-val="hisense 43e6nt 108cm (43 zoll) fernseher, 4k uhd s">
+          <a href="https://www.amazon.de/dp/B0CZWNDNXW" target="_blank" rel="noopener">Hisense 43E6NT 108cm (43 Zoll) Fernseher, 4K UHD Smart TV, Precision C…</a>
+        </td>
+        <td class="col-price" data-val="229.00">229,00 €</td>
+        <td class="col-avg30" data-val="229.00">229,00 €</td>
+        <td class="col-atl"   data-val="229.00">229,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="39">39</td>
+        <td class="col-cat">📺 Fernseher</td>
+        <td class="col-name" data-val="xiaomi tv f 32, 32 zoll (81 cm), hd, smart tv, fir">
+          <a href="https://www.amazon.de/dp/B0F4548TCQ" target="_blank" rel="noopener">Xiaomi TV F 32, 32 Zoll (81 cm), HD, Smart TV, Fire OS7, Triple Tuner …</a>
+        </td>
+        <td class="col-price" data-val="159.00">159,00 €</td>
+        <td class="col-avg30" data-val="159.00">159,00 €</td>
+        <td class="col-atl"   data-val="159.00">159,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="40">40</td>
+        <td class="col-cat">📺 Fernseher</td>
+        <td class="col-name" data-val="hisense 55e7q fehrnseher, 55 zoll, 4k uhd qled, sm">
+          <a href="https://www.amazon.de/dp/B0F1MPWV27" target="_blank" rel="noopener">Hisense 55E7Q Fehrnseher, 55 Zoll, 4K UHD QLED, Smart TV, Game Mode Pl…</a>
+        </td>
+        <td class="col-price" data-val="349.00">349,00 €</td>
+        <td class="col-avg30" data-val="349.00">349,00 €</td>
+        <td class="col-atl"   data-val="349.00">349,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="41">41</td>
+        <td class="col-cat">📺 Fernseher</td>
+        <td class="col-name" data-val="tcl 55v6c 55 zoll direct led tv, 4k hdr fernseher,">
+          <a href="https://www.amazon.de/dp/B0DV94JCVX" target="_blank" rel="noopener">TCL 55V6C 55 Zoll Direct LED TV, 4K HDR Fernseher, Smart TV mithilfe v…</a>
+        </td>
+        <td class="col-price" data-val="333.99">333,99 €</td>
+        <td class="col-avg30" data-val="333.99">333,99 €</td>
+        <td class="col-atl"   data-val="333.99">333,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="42">42</td>
+        <td class="col-cat">📺 Fernseher</td>
+        <td class="col-name" data-val="tcl 55c7k qd-mini led fernseher, 55 zoll, 4k hdr p">
+          <a href="https://www.amazon.de/dp/B0F5BP4KFM" target="_blank" rel="noopener">TCL 55C7K QD-Mini LED Fernseher, 55 Zoll, 4K HDR Premium, Dolby Vision…</a>
+        </td>
+        <td class="col-price" data-val="599.00">599,00 €</td>
+        <td class="col-avg30" data-val="599.00">599,00 €</td>
+        <td class="col-atl"   data-val="599.00">599,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="43">43</td>
+        <td class="col-cat">📺 Fernseher</td>
+        <td class="col-name" data-val="samsung crystal uhd u8079f 4k 65 zoll (163 cm) led">
+          <a href="https://www.amazon.de/dp/B0F62VGMHW" target="_blank" rel="noopener">Samsung Crystal UHD U8079F 4K 65 Zoll (163 cm) LED Fernseher, Crystal …</a>
+        </td>
+        <td class="col-price" data-val="549.00">549,00 €</td>
+        <td class="col-avg30" data-val="549.00">549,00 €</td>
+        <td class="col-atl"   data-val="549.00">549,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="44">44</td>
+        <td class="col-cat">📺 Fernseher</td>
+        <td class="col-name" data-val="dyon movie smart 32 vx - 32 zoll 80 cm smart tv mi">
+          <a href="https://www.amazon.de/dp/B0BY2TH8B9" target="_blank" rel="noopener">DYON Movie Smart 32 VX - 32 Zoll 80 cm Smart TV mit HD Triple Tuner (D…</a>
+        </td>
+        <td class="col-price" data-val="134.99">134,99 €</td>
+        <td class="col-avg30" data-val="134.99">134,99 €</td>
+        <td class="col-atl"   data-val="134.99">134,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="45">45</td>
+        <td class="col-cat">📺 Fernseher</td>
+        <td class="col-name" data-val="toshiba fernseher 32 zoll smart tv vidaa full hd f">
+          <a href="https://www.amazon.de/dp/B0G35KF6QB" target="_blank" rel="noopener">Toshiba Fernseher 32 Zoll Smart TV VIDAA Full HD Fernseher HDR Smart T…</a>
+        </td>
+        <td class="col-price" data-val="141.26">141,26 €</td>
+        <td class="col-avg30" data-val="141.26">141,26 €</td>
+        <td class="col-atl"   data-val="141.26">141,26 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="46">46</td>
+        <td class="col-cat">📺 Fernseher</td>
+        <td class="col-name" data-val="samsung qled q7f2 4k 55 zoll (138 cm) uhd fernsehe">
+          <a href="https://www.amazon.de/dp/B0F62T33BJ" target="_blank" rel="noopener">Samsung QLED Q7F2 4K 55 Zoll (138 cm) UHD Fernseher, Q4 AI Prozessor, …</a>
+        </td>
+        <td class="col-price" data-val="439.00">439,00 €</td>
+        <td class="col-avg30" data-val="439.00">439,00 €</td>
+        <td class="col-atl"   data-val="439.00">439,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="47">47</td>
+        <td class="col-cat">🔊 Lautsprecher</td>
+        <td class="col-name" data-val="usb c ladegerät, 40w 4 ports schnellladegerät, meh">
+          <a href="https://www.amazon.de/dp/B0DLNVJXM2" target="_blank" rel="noopener">USB C Ladegerät, 40W 4 Ports Schnellladegerät, Mehrfach Stecker Mit Po…</a>
+        </td>
+        <td class="col-price" data-val="8.78">8,78 €</td>
+        <td class="col-avg30" data-val="8.78">8,78 €</td>
+        <td class="col-atl"   data-val="8.78">8,78 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey row-apple">
+        <td class="col-rank" data-val="48">48</td>
+        <td class="col-cat">🔊 Lautsprecher</td>
+        <td class="col-name" data-val="apple 20w usb‑c power adapter (2025)">
+          <a href="https://www.amazon.de/dp/B0DZ745RCW" target="_blank" rel="noopener">🍎 Apple 20W USB‑C Power Adapter (2025)</a>
+        </td>
+        <td class="col-price" data-val="19.99">19,99 €</td>
+        <td class="col-avg30" data-val="19.99">19,99 €</td>
+        <td class="col-atl"   data-val="19.99">19,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="49">49</td>
+        <td class="col-cat">🔊 Lautsprecher</td>
+        <td class="col-name" data-val="iniu 45w power bank, ultra klein 20000mah powerban">
+          <a href="https://www.amazon.de/dp/B0DCYR5VNR" target="_blank" rel="noopener">INIU 45W Power Bank, Ultra Klein 20000mAh Powerbank iPhone mit Integri…</a>
+        </td>
+        <td class="col-price" data-val="27.45">27,45 €</td>
+        <td class="col-avg30" data-val="27.45">27,45 €</td>
+        <td class="col-atl"   data-val="27.45">27,45 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="50">50</td>
+        <td class="col-cat">🔊 Lautsprecher</td>
+        <td class="col-name" data-val="anker soundcore 2 bluetooth lautsprecher, fantasti">
+          <a href="https://www.amazon.de/dp/B01MTB55WH" target="_blank" rel="noopener">Anker SoundCore 2 Bluetooth Lautsprecher, Fantastischer Sound, Enormer…</a>
+        </td>
+        <td class="col-price" data-val="25.49">25,49 €</td>
+        <td class="col-avg30" data-val="25.49">25,49 €</td>
+        <td class="col-atl"   data-val="25.49">25,49 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="51">51</td>
+        <td class="col-cat">🔊 Lautsprecher</td>
+        <td class="col-name" data-val="blukar handyhalterung auto, handyhalter für autos ">
+          <a href="https://www.amazon.de/dp/B0C1NK79FK" target="_blank" rel="noopener">Blukar Handyhalterung Auto, Handyhalter für Autos Lüftung mit Upgraded…</a>
+        </td>
+        <td class="col-price" data-val="10.99">10,99 €</td>
+        <td class="col-avg30" data-val="10.99">10,99 €</td>
+        <td class="col-atl"   data-val="10.99">10,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="52">52</td>
+        <td class="col-cat">🔊 Lautsprecher</td>
+        <td class="col-name" data-val="lencent bluetooth fm transmitter auto, musik adapt">
+          <a href="https://www.amazon.de/dp/B07VFT4D6B" target="_blank" rel="noopener">LENCENT Bluetooth FM Transmitter Auto, Musik Adapter für Auto Radio, K…</a>
+        </td>
+        <td class="col-price" data-val="15.98">15,98 €</td>
+        <td class="col-avg30" data-val="15.98">15,98 €</td>
+        <td class="col-atl"   data-val="15.98">15,98 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="53">53</td>
+        <td class="col-cat">🔊 Lautsprecher</td>
+        <td class="col-name" data-val="jbl go 4 - schwarz – tragbare bluetooth-lautsprech">
+          <a href="https://www.amazon.de/dp/B0CX5C6WP3" target="_blank" rel="noopener">JBL Go 4 - Schwarz – Tragbare Bluetooth-Lautsprecher-Box mit JBL Pro S…</a>
+        </td>
+        <td class="col-price" data-val="39.99">39,99 €</td>
+        <td class="col-avg30" data-val="39.99">39,99 €</td>
+        <td class="col-atl"   data-val="39.99">39,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="54">54</td>
+        <td class="col-cat">🔊 Lautsprecher</td>
+        <td class="col-name" data-val="aioneus usb c ladegerät, 4 ports mehrfach ladegerä">
+          <a href="https://www.amazon.de/dp/B0BVMMPN54" target="_blank" rel="noopener">Aioneus USB C Ladegerät, 4 Ports Mehrfach Ladegerät mit USB-C und USB-…</a>
+        </td>
+        <td class="col-price" data-val="10.99">10,99 €</td>
+        <td class="col-avg30" data-val="10.99">10,99 €</td>
+        <td class="col-atl"   data-val="10.99">10,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="55">55</td>
+        <td class="col-cat">🔊 Lautsprecher</td>
+        <td class="col-name" data-val="anker 20w usb c ladegerät, ipad netzteil, usb-schn">
+          <a href="https://www.amazon.de/dp/B0CF8X4H77" target="_blank" rel="noopener">Anker 20W USB C Ladegerät, iPad Netzteil, USB-Schnellladenetzteil, iPa…</a>
+        </td>
+        <td class="col-price" data-val="9.48">9,48 €</td>
+        <td class="col-avg30" data-val="9.48">9,48 €</td>
+        <td class="col-atl"   data-val="9.48">9,48 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="56">56</td>
+        <td class="col-cat">🎮 PlayStation 5</td>
+        <td class="col-name" data-val="10€ playstation store guthaben | psn deutsches kon">
+          <a href="https://www.amazon.de/dp/B00GWUSE1O" target="_blank" rel="noopener">10€ PlayStation Store Guthaben | PSN Deutsches Konto [Code per Email]</a>
+        </td>
+        <td class="col-price" data-val="10.00">10,00 €</td>
+        <td class="col-avg30" data-val="10.00">10,00 €</td>
+        <td class="col-atl"   data-val="10.00">10,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="57">57</td>
+        <td class="col-cat">🎮 PlayStation 5</td>
+        <td class="col-name" data-val="resident evil™ requiem - [playstation 5]">
+          <a href="https://www.amazon.de/dp/B0FYFLVMML" target="_blank" rel="noopener">Resident Evil™ Requiem - [Playstation 5]</a>
+        </td>
+        <td class="col-price" data-val="79.99">79,99 €</td>
+        <td class="col-avg30" data-val="84.99">84,99 €</td>
+        <td class="col-atl"   data-val="79.99">79,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="58">58</td>
+        <td class="col-cat">🎮 PlayStation 5</td>
+        <td class="col-name" data-val="playstation guthaben für playstation plus essentia">
+          <a href="https://www.amazon.de/dp/B0B27G2371" target="_blank" rel="noopener">PlayStation Guthaben für PlayStation Plus Essential | 1 Monat | 10 EUR…</a>
+        </td>
+        <td class="col-price" data-val="10.00">10,00 €</td>
+        <td class="col-avg30" data-val="10.00">10,00 €</td>
+        <td class="col-atl"   data-val="10.00">10,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="59">59</td>
+        <td class="col-cat">🎮 PlayStation 5</td>
+        <td class="col-name" data-val="50€ playstation store guthaben | psn deutsches kon">
+          <a href="https://www.amazon.de/dp/B00OGU88KE" target="_blank" rel="noopener">50€ PlayStation Store Guthaben | PSN Deutsches Konto [Code per Email]</a>
+        </td>
+        <td class="col-price" data-val="50.00">50,00 €</td>
+        <td class="col-avg30" data-val="50.00">50,00 €</td>
+        <td class="col-atl"   data-val="50.00">50,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="60">60</td>
+        <td class="col-cat">🎮 PlayStation 5</td>
+        <td class="col-name" data-val="playstation dualsense® wireless-controller - cosmi">
+          <a href="https://www.amazon.de/dp/B094WRT8PD" target="_blank" rel="noopener">Playstation DualSense® Wireless-Controller - Cosmic Red</a>
+        </td>
+        <td class="col-price" data-val="73.99">73,99 €</td>
+        <td class="col-avg30" data-val="73.99">73,99 €</td>
+        <td class="col-atl"   data-val="73.99">73,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="61">61</td>
+        <td class="col-cat">🎮 PlayStation 5</td>
+        <td class="col-name" data-val="weseary wg1 bluetooth headset, 2,4g wireless gamin">
+          <a href="https://www.amazon.de/dp/B0D6QBHSVH" target="_blank" rel="noopener">WESEARY WG1 Bluetooth Headset, 2,4G Wireless Gaming Headset mit Mikrof…</a>
+        </td>
+        <td class="col-price" data-val="32.27">32,27 €</td>
+        <td class="col-avg30" data-val="32.27">32,27 €</td>
+        <td class="col-atl"   data-val="32.27">32,27 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="62">62</td>
+        <td class="col-cat">🎮 PlayStation 5</td>
+        <td class="col-name" data-val="playstation®5 konsole – 1tb">
+          <a href="https://www.amazon.de/dp/B0FP2S1MNB" target="_blank" rel="noopener">Playstation®5 Konsole – 1TB</a>
+        </td>
+        <td class="col-price" data-val="507.98">507,98 €</td>
+        <td class="col-avg30" data-val="507.98">507,98 €</td>
+        <td class="col-atl"   data-val="507.98">507,98 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-star">
+        <td class="col-rank" data-val="63">63</td>
+        <td class="col-cat">🎮 PlayStation 5</td>
+        <td class="col-name" data-val="anno 117: pax romana - [playstation 5]">
+          <a href="https://www.amazon.de/dp/B0FC311597" target="_blank" rel="noopener">Anno 117: Pax Romana - [PlayStation 5]</a>
+        </td>
+        <td class="col-price" data-val="37.99">37,99 €</td>
+        <td class="col-avg30" data-val="42.83">42,83 €</td>
+        <td class="col-atl"   data-val="37.99">37,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="0" title="Alltime-Low!">⭐</td>
+      </tr>
+      <tr class="row-star">
+        <td class="col-rank" data-val="64">64</td>
+        <td class="col-cat">🎮 PlayStation 5</td>
+        <td class="col-name" data-val="disc-laufwerk für playstation 5 pro und ps5® digit">
+          <a href="https://www.amazon.de/dp/B0CMXL75GH" target="_blank" rel="noopener">Disc-Laufwerk für PlayStation 5 Pro und PS5® Digital Edition-Konsolen …</a>
+        </td>
+        <td class="col-price" data-val="76.79">76,79 €</td>
+        <td class="col-avg30" data-val="79.27">79,27 €</td>
+        <td class="col-atl"   data-val="76.79">76,79 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="0" title="Alltime-Low!">⭐</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="65">65</td>
+        <td class="col-cat">🕹 Nintendo Switch</td>
+        <td class="col-name" data-val="nintendo eshop card | 25 eur guthaben | download c">
+          <a href="https://www.amazon.de/dp/B07VHXLWW7" target="_blank" rel="noopener">Nintendo eShop Card | 25 EUR Guthaben | Download Code (EU) | Switch</a>
+        </td>
+        <td class="col-price" data-val="25.00">25,00 €</td>
+        <td class="col-avg30" data-val="25.00">25,00 €</td>
+        <td class="col-atl"   data-val="25.00">25,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="66">66</td>
+        <td class="col-cat">🕹 Nintendo Switch</td>
+        <td class="col-name" data-val="nintendo joy-con 2er-set pastell-lila/pastell-grün">
+          <a href="https://www.amazon.de/dp/B0C6YFL48Z" target="_blank" rel="noopener">Nintendo Joy-Con 2er-Set Pastell-Lila/Pastell-Grün</a>
+        </td>
+        <td class="col-price" data-val="67.10">67,10 €</td>
+        <td class="col-avg30" data-val="67.10">67,10 €</td>
+        <td class="col-atl"   data-val="67.10">67,10 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-star">
+        <td class="col-rank" data-val="67">67</td>
+        <td class="col-cat">🕹 Nintendo Switch</td>
+        <td class="col-name" data-val="anker nano ii 65w usb c ladegerät netzteil mit sch">
+          <a href="https://www.amazon.de/dp/B094QKV6S8" target="_blank" rel="noopener">Anker Nano II 65W USB C Ladegerät Netzteil mit Schnellladeleistung, Ga…</a>
+        </td>
+        <td class="col-price" data-val="19.99">19,99 €</td>
+        <td class="col-avg30" data-val="19.99">19,99 €</td>
+        <td class="col-atl"   data-val="19.99">19,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="0" title="Alltime-Low!">⭐</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="68">68</td>
+        <td class="col-cat">🕹 Nintendo Switch</td>
+        <td class="col-name" data-val="ugreen nexode x usb c ladegerät 100w mini gan char">
+          <a href="https://www.amazon.de/dp/B0CQN1MC42" target="_blank" rel="noopener">UGREEN Nexode X USB C Ladegerät 100W Mini GaN Charger 3-Port PD Netzte…</a>
+        </td>
+        <td class="col-price" data-val="30.66">30,66 €</td>
+        <td class="col-avg30" data-val="30.66">30,66 €</td>
+        <td class="col-atl"   data-val="30.66">30,66 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="69">69</td>
+        <td class="col-cat">🕹 Nintendo Switch</td>
+        <td class="col-name" data-val="weseary wg1 bluetooth headset, 2,4g wireless gamin">
+          <a href="https://www.amazon.de/dp/B0D6QBHSVH" target="_blank" rel="noopener">WESEARY WG1 Bluetooth Headset, 2,4G Wireless Gaming Headset mit Mikrof…</a>
+        </td>
+        <td class="col-price" data-val="32.27">32,27 €</td>
+        <td class="col-avg30" data-val="32.27">32,27 €</td>
+        <td class="col-atl"   data-val="32.27">32,27 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="70">70</td>
+        <td class="col-cat">🎯 Xbox Series</td>
+        <td class="col-name" data-val="xbox guthaben | 10 eur | xbox series x|s, xbox one">
+          <a href="https://www.amazon.de/dp/B0186L0UIG" target="_blank" rel="noopener">Xbox Guthaben | 10 EUR | Xbox Series X|S, Xbox One & Windows [Download…</a>
+        </td>
+        <td class="col-price" data-val="10.00">10,00 €</td>
+        <td class="col-avg30" data-val="10.00">10,00 €</td>
+        <td class="col-atl"   data-val="10.00">10,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="71">71</td>
+        <td class="col-cat">🎯 Xbox Series</td>
+        <td class="col-name" data-val="resident evil™ requiem deluxe edition steelbook - ">
+          <a href="https://www.amazon.de/dp/B0FYGYJBPB" target="_blank" rel="noopener">Resident Evil™ Requiem Deluxe Edition Steelbook - [XBOX]</a>
+        </td>
+        <td class="col-price" data-val="94.99">94,99 €</td>
+        <td class="col-avg30" data-val="94.99">94,99 €</td>
+        <td class="col-atl"   data-val="94.99">94,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="72">72</td>
+        <td class="col-cat">🎯 Xbox Series</td>
+        <td class="col-name" data-val="xbox game pass ultimate – 1-monats-mitgliedschaft ">
+          <a href="https://www.amazon.de/dp/B07S85BTZ5" target="_blank" rel="noopener">Xbox Game Pass Ultimate – 1-Monats-Mitgliedschaft - Download Code</a>
+        </td>
+        <td class="col-price" data-val="26.99">26,99 €</td>
+        <td class="col-avg30" data-val="26.99">26,99 €</td>
+        <td class="col-atl"   data-val="26.99">26,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="73">73</td>
+        <td class="col-cat">🎯 Xbox Series</td>
+        <td class="col-name" data-val="ozeino gaming headset for xbox ps4 ps5 pc, ps4 hea">
+          <a href="https://www.amazon.de/dp/B09DPR2LZW" target="_blank" rel="noopener">Ozeino Gaming Headset for Xbox Ps4 Ps5 PC, Ps4 Headset with Microphone…</a>
+        </td>
+        <td class="col-price" data-val="19.99">19,99 €</td>
+        <td class="col-avg30" data-val="19.99">19,99 €</td>
+        <td class="col-atl"   data-val="19.99">19,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="74">74</td>
+        <td class="col-cat">🎯 Xbox Series</td>
+        <td class="col-name" data-val="gamesir g7 pro 1000hz controller mit ladestation f">
+          <a href="https://www.amazon.de/dp/B0FHHFBDNQ" target="_blank" rel="noopener">GameSir G7 Pro 1000Hz Controller mit Ladestation für Xbox Series X|S, …</a>
+        </td>
+        <td class="col-price" data-val="99.99">99,99 €</td>
+        <td class="col-avg30" data-val="99.99">99,99 €</td>
+        <td class="col-atl"   data-val="99.99">99,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-star">
+        <td class="col-rank" data-val="75">75</td>
+        <td class="col-cat">🎯 Xbox Series</td>
+        <td class="col-name" data-val="jbl quantum 360 kabellose over-ear gaming-kopfhöre">
+          <a href="https://www.amazon.de/dp/B0D8QJRBV3" target="_blank" rel="noopener">JBL Quantum 360 Kabellose Over-Ear Gaming-Kopfhörer mit 2,4 GHz/Blueto…</a>
+        </td>
+        <td class="col-price" data-val="54.83">54,83 €</td>
+        <td class="col-avg30" data-val="74.78">74,78 €</td>
+        <td class="col-atl"   data-val="54.83">54,83 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="0" title="Alltime-Low!">⭐</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="76">76</td>
+        <td class="col-cat">👾 Videospiele</td>
+        <td class="col-name" data-val="luna premium">
+          <a href="https://www.amazon.de/dp/B085TRCCT6" target="_blank" rel="noopener">Luna Premium</a>
+        </td>
+        <td class="col-price" data-val="9.99">9,99 €</td>
+        <td class="col-avg30" data-val="9.99">9,99 €</td>
+        <td class="col-atl"   data-val="9.99">9,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="77">77</td>
+        <td class="col-cat">👾 Videospiele</td>
+        <td class="col-name" data-val="roblox-geschenkgutschein |800 robux guthaben | ink">
+          <a href="https://www.amazon.de/dp/B081KJ2X4V" target="_blank" rel="noopener">Roblox-Geschenkgutschein |800 Robux Guthaben | inklusive exklusivem vi…</a>
+        </td>
+        <td class="col-price" data-val="10.00">10,00 €</td>
+        <td class="col-avg30" data-val="10.00">10,00 €</td>
+        <td class="col-atl"   data-val="10.00">10,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="78">78</td>
+        <td class="col-cat">👾 Videospiele</td>
+        <td class="col-name" data-val="zygomatic, dobble classic, eco-sleeves, familiensp">
+          <a href="https://www.amazon.de/dp/B0CDK1XXV1" target="_blank" rel="noopener">Zygomatic, Dobble Classic, Eco-Sleeves, Familienspiel, Kartenspiel, 2-…</a>
+        </td>
+        <td class="col-price" data-val="10.49">10,49 €</td>
+        <td class="col-avg30" data-val="10.49">10,49 €</td>
+        <td class="col-atl"   data-val="10.49">10,49 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="79">79</td>
+        <td class="col-cat">👾 Videospiele</td>
+        <td class="col-name" data-val="razer basilisk v3 - kabelgebundene, anpassbare gam">
+          <a href="https://www.amazon.de/dp/B097F8H1MC" target="_blank" rel="noopener">Razer Basilisk V3 - Kabelgebundene, anpassbare Gaming Maus mit Chroma …</a>
+        </td>
+        <td class="col-price" data-val="39.90">39,90 €</td>
+        <td class="col-avg30" data-val="39.90">39,90 €</td>
+        <td class="col-atl"   data-val="39.90">39,90 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="80">80</td>
+        <td class="col-cat">👾 Videospiele</td>
+        <td class="col-name" data-val="razer deathadder essential (2021) - kabelgebundene">
+          <a href="https://www.amazon.de/dp/B092R5MCB3" target="_blank" rel="noopener">Razer DeathAdder Essential (2021) - Kabelgebundene Gaming-Maus mit Opt…</a>
+        </td>
+        <td class="col-price" data-val="18.36">18,36 €</td>
+        <td class="col-avg30" data-val="18.36">18,36 €</td>
+        <td class="col-atl"   data-val="18.36">18,36 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="81">81</td>
+        <td class="col-cat">👾 Videospiele</td>
+        <td class="col-name" data-val="tecknet kabellose maus, 2.4g optische funkmaus mit">
+          <a href="https://www.amazon.de/dp/B0162XA64I" target="_blank" rel="noopener">TECKNET Kabellose Maus, 2.4G Optische Funkmaus mit USB Empfänger, 2600…</a>
+        </td>
+        <td class="col-price" data-val="10.99">10,99 €</td>
+        <td class="col-avg30" data-val="10.99">10,99 €</td>
+        <td class="col-atl"   data-val="10.99">10,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="82">82</td>
+        <td class="col-cat">👾 Videospiele</td>
+        <td class="col-name" data-val="tecknet mauspad, 280 x 210 mm gaming mousepad mit ">
+          <a href="https://www.amazon.de/dp/B00MV1ZANI" target="_blank" rel="noopener">TECKNET Mauspad, 280 x 210 mm Gaming Mousepad mit Wasserdicht und Ruts…</a>
+        </td>
+        <td class="col-price" data-val="5.99">5,99 €</td>
+        <td class="col-avg30" data-val="5.99">5,99 €</td>
+        <td class="col-atl"   data-val="5.99">5,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="83">83</td>
+        <td class="col-cat">👾 Videospiele</td>
+        <td class="col-name" data-val="logitech g pro x se kabelgebundenes gaming-headset">
+          <a href="https://www.amazon.de/dp/B0CYJF4KG7" target="_blank" rel="noopener">Logitech G Pro X SE kabelgebundenes Gaming-Headset mit Mikrofon: Abneh…</a>
+        </td>
+        <td class="col-price" data-val="65.00">65,00 €</td>
+        <td class="col-avg30" data-val="65.00">65,00 €</td>
+        <td class="col-atl"   data-val="65.00">65,00 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="84">84</td>
+        <td class="col-cat">⌨️ Computer-Zubehör</td>
+        <td class="col-name" data-val="hp inkjet printer, schwarz mit tricolor, multipack">
+          <a href="https://www.amazon.de/dp/B08T1HR5CS" target="_blank" rel="noopener">HP Inkjet Printer, Schwarz mit Tricolor, Multipack</a>
+        </td>
+        <td class="col-price" data-val="25.99">25,99 €</td>
+        <td class="col-avg30" data-val="25.99">25,99 €</td>
+        <td class="col-atl"   data-val="25.99">25,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="85">85</td>
+        <td class="col-cat">⌨️ Computer-Zubehör</td>
+        <td class="col-name" data-val="hp 305 (3ym61ae) original druckerpatrone schwarz f">
+          <a href="https://www.amazon.de/dp/B087DJ43K3" target="_blank" rel="noopener">HP 305 (3YM61AE) Original Druckerpatrone Schwarz für HP DeskJet 27xx, …</a>
+        </td>
+        <td class="col-price" data-val="12.90">12,90 €</td>
+        <td class="col-avg30" data-val="12.90">12,90 €</td>
+        <td class="col-atl"   data-val="12.90">12,90 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="86">86</td>
+        <td class="col-cat">⌨️ Computer-Zubehör</td>
+        <td class="col-name" data-val="kabeldirekt – 8k & 4k hdmi kabel – 2m – entwickelt">
+          <a href="https://www.amazon.de/dp/B004BEMD5Q" target="_blank" rel="noopener">KabelDirekt – 8K & 4K HDMI Kabel – 2m – Entwickelt in Deutschland – Fü…</a>
+        </td>
+        <td class="col-price" data-val="6.99">6,99 €</td>
+        <td class="col-avg30" data-val="6.99">6,99 €</td>
+        <td class="col-atl"   data-val="6.99">6,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="87">87</td>
+        <td class="col-cat">⌨️ Computer-Zubehör</td>
+        <td class="col-name" data-val="anker 240w usb c kabel, [2 stück 1,8m] pd 3.1 schn">
+          <a href="https://www.amazon.de/dp/B0DXDTX47W" target="_blank" rel="noopener">Anker 240W USB C Kabel, [2 Stück 1,8m] PD 3.1 Schnellladekabel USB C a…</a>
+        </td>
+        <td class="col-price" data-val="10.98">10,98 €</td>
+        <td class="col-avg30" data-val="10.98">10,98 €</td>
+        <td class="col-atl"   data-val="10.98">10,98 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="88">88</td>
+        <td class="col-cat">⌨️ Computer-Zubehör</td>
+        <td class="col-name" data-val="iniu usb c kabel, 100w [2m] pd3.0 schnellladekabel">
+          <a href="https://www.amazon.de/dp/B09MQ4KZ27" target="_blank" rel="noopener">INIU USB C Kabel, 100W [2m] PD3.0 Schnellladekabel USB C auf USBC, Nyl…</a>
+        </td>
+        <td class="col-price" data-val="6.46">6,46 €</td>
+        <td class="col-avg30" data-val="6.46">6,46 €</td>
+        <td class="col-atl"   data-val="6.46">6,46 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="89">89</td>
+        <td class="col-cat">⌨️ Computer-Zubehör</td>
+        <td class="col-name" data-val="ugreen hdmi 2.1 kabel 10k 8k 60hz 4k 240hz 165hz 1">
+          <a href="https://www.amazon.de/dp/B0CFFFSFFN" target="_blank" rel="noopener">UGREEN HDMI 2.1 Kabel 10K 8K 60Hz 4K 240Hz 165Hz 144Hz 120Hz 48Gbit/s …</a>
+        </td>
+        <td class="col-price" data-val="8.01">8,01 €</td>
+        <td class="col-avg30" data-val="8.01">8,01 €</td>
+        <td class="col-atl"   data-val="8.01">8,01 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="90">90</td>
+        <td class="col-cat">⌨️ Computer-Zubehör</td>
+        <td class="col-name" data-val="ugreen usb c auf usb 3.2 adapter 10gbps otg 2 stüc">
+          <a href="https://www.amazon.de/dp/B0B9N3QSL3" target="_blank" rel="noopener">UGREEN USB C auf USB 3.2 Adapter 10Gbps OTG 2 Stück USB C Stecker auf …</a>
+        </td>
+        <td class="col-price" data-val="5.97">5,97 €</td>
+        <td class="col-avg30" data-val="5.97">5,97 €</td>
+        <td class="col-atl"   data-val="5.97">5,97 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="91">91</td>
+        <td class="col-cat">⌨️ Computer-Zubehör</td>
+        <td class="col-name" data-val="anker usb c kabel 3m, 100w schnellladekabel usb c ">
+          <a href="https://www.amazon.de/dp/B08PVPTNZL" target="_blank" rel="noopener">Anker USB C Kabel 3m, 100W Schnellladekabel USB C auf USB C Kabel, PD …</a>
+        </td>
+        <td class="col-price" data-val="7.48">7,48 €</td>
+        <td class="col-avg30" data-val="7.48">7,48 €</td>
+        <td class="col-atl"   data-val="7.48">7,48 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="92">92</td>
+        <td class="col-cat">⌨️ Computer-Zubehör</td>
+        <td class="col-name" data-val="ddmall lan kabel cat8 5m, hochgeschwindigkeit ethe">
+          <a href="https://www.amazon.de/dp/B08G47LRD7" target="_blank" rel="noopener">DDMALL Lan Kabel CAT8 5m, Hochgeschwindigkeit Ethernet Kabel 40Gbps 20…</a>
+        </td>
+        <td class="col-price" data-val="11.99">11,99 €</td>
+        <td class="col-avg30" data-val="11.99">11,99 €</td>
+        <td class="col-atl"   data-val="11.99">11,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-star">
+        <td class="col-rank" data-val="93">93</td>
+        <td class="col-cat">🖨 Drucker</td>
+        <td class="col-name" data-val="canon pixma ts4150i -wlan-multifunktionsdrucker mi">
+          <a href="https://www.amazon.de/dp/B0FPDCMBDS" target="_blank" rel="noopener">Canon PIXMA TS4150I -WLAN-Multifunktionsdrucker mit Papierkassette und…</a>
+        </td>
+        <td class="col-price" data-val="53.99">53,99 €</td>
+        <td class="col-avg30" data-val="59.59">59,59 €</td>
+        <td class="col-atl"   data-val="53.99">53,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="0" title="Alltime-Low!">⭐</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="94">94</td>
+        <td class="col-cat">🖨 Drucker</td>
+        <td class="col-name" data-val="hp deskjet 2920 multifunktionsdrucker, 6 monate gr">
+          <a href="https://www.amazon.de/dp/B0FCSSNXT4" target="_blank" rel="noopener">HP DeskJet 2920 Multifunktionsdrucker, 6 Monate gratis drucken Instant…</a>
+        </td>
+        <td class="col-price" data-val="58.99">58,99 €</td>
+        <td class="col-avg30" data-val="58.99">58,99 €</td>
+        <td class="col-atl"   data-val="58.99">58,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="95">95</td>
+        <td class="col-cat">🖨 Drucker</td>
+        <td class="col-name" data-val="hp color laserjet pro mfp 3302fdwg multifunktions-">
+          <a href="https://www.amazon.de/dp/B0CY6B4VX6" target="_blank" rel="noopener">HP Color LaserJet Pro MFP 3302fdwg Multifunktions-Farblaserdrucker, Fa…</a>
+        </td>
+        <td class="col-price" data-val="333.55">333,55 €</td>
+        <td class="col-avg30" data-val="333.55">333,55 €</td>
+        <td class="col-atl"   data-val="333.55">333,55 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="96">96</td>
+        <td class="col-cat">🔋 Powerbanks</td>
+        <td class="col-name" data-val="iniu 45w power bank, ultra klein 20000mah powerban">
+          <a href="https://www.amazon.de/dp/B0DCYR5VNR" target="_blank" rel="noopener">INIU 45W Power Bank, Ultra Klein 20000mAh Powerbank iPhone mit Integri…</a>
+        </td>
+        <td class="col-price" data-val="27.45">27,45 €</td>
+        <td class="col-avg30" data-val="27.45">27,45 €</td>
+        <td class="col-atl"   data-val="27.45">27,45 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="97">97</td>
+        <td class="col-cat">🔋 Powerbanks</td>
+        <td class="col-name" data-val="anker zolo powerbank (2025 upgrade), 20000mah, 30w">
+          <a href="https://www.amazon.de/dp/B0CZ9LH53B" target="_blank" rel="noopener">Anker Zolo Powerbank (2025 Upgrade), 20000mAh, 30W High-Speed-Ladegerä…</a>
+        </td>
+        <td class="col-price" data-val="23.98">23,98 €</td>
+        <td class="col-avg30" data-val="23.98">23,98 €</td>
+        <td class="col-atl"   data-val="23.98">23,98 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="98">98</td>
+        <td class="col-cat">🔋 Powerbanks</td>
+        <td class="col-name" data-val="powerbank für magsafe, trkoy slim magnetische powe">
+          <a href="https://www.amazon.de/dp/B0G16F7WRM" target="_blank" rel="noopener">Powerbank für Magsafe, TRKOY Slim Magnetische Power Bank iPhone 5000mA…</a>
+        </td>
+        <td class="col-price" data-val="18.04">18,04 €</td>
+        <td class="col-avg30" data-val="18.04">18,04 €</td>
+        <td class="col-atl"   data-val="18.04">18,04 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="99">99</td>
+        <td class="col-cat">🔋 Powerbanks</td>
+        <td class="col-name" data-val="juovi tragbare powerbank 20000mah schnellladefunkt">
+          <a href="https://www.amazon.de/dp/B0CTH7L29Z" target="_blank" rel="noopener">JUOVI Tragbare Powerbank 20000mAh Schnellladefunktion, 45W Akku Pack P…</a>
+        </td>
+        <td class="col-price" data-val="33.99">33,99 €</td>
+        <td class="col-avg30" data-val="33.99">33,99 €</td>
+        <td class="col-atl"   data-val="33.99">33,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="100">100</td>
+        <td class="col-cat">🔋 Powerbanks</td>
+        <td class="col-name" data-val="anker nano powerbank, ultraschlanke 5000mah magnet">
+          <a href="https://www.amazon.de/dp/B0F29J6H1V" target="_blank" rel="noopener">Anker Nano Powerbank, Ultraschlanke 5000mAh Magnet-Powerbank, Qi2-zert…</a>
+        </td>
+        <td class="col-price" data-val="39.98">39,98 €</td>
+        <td class="col-avg30" data-val="39.98">39,98 €</td>
+        <td class="col-atl"   data-val="39.98">39,98 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="101">101</td>
+        <td class="col-cat">🔋 Powerbanks</td>
+        <td class="col-name" data-val="iniu power bank, 20000mah 20w klein schnellladefun">
+          <a href="https://www.amazon.de/dp/B07YPSZ566" target="_blank" rel="noopener">INIU Power Bank, 20000mAh 20W Klein Schnellladefunktion Powerbank 1 US…</a>
+        </td>
+        <td class="col-price" data-val="26.99">26,99 €</td>
+        <td class="col-avg30" data-val="26.99">26,99 €</td>
+        <td class="col-atl"   data-val="26.99">26,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="102">102</td>
+        <td class="col-cat">🔋 Powerbanks</td>
+        <td class="col-name" data-val="powerbank für magsafe, 12000mah magnetische power ">
+          <a href="https://www.amazon.de/dp/B0F7XFP2MQ" target="_blank" rel="noopener">Powerbank für Magsafe, 12000mAh Magnetische Power Bank, PD 22.5W USB-A…</a>
+        </td>
+        <td class="col-price" data-val="25.25">25,25 €</td>
+        <td class="col-avg30" data-val="25.25">25,25 €</td>
+        <td class="col-atl"   data-val="25.25">25,25 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="103">103</td>
+        <td class="col-cat">🔋 Powerbanks</td>
+        <td class="col-name" data-val="ugreen nexode power bank 145w max 25000mah externe">
+          <a href="https://www.amazon.de/dp/B0BJQ7F16T" target="_blank" rel="noopener">UGREEN Nexode Power Bank 145W Max 25000mAh externer Akku mit 3 Anschlü…</a>
+        </td>
+        <td class="col-price" data-val="49.99">49,99 €</td>
+        <td class="col-avg30" data-val="49.99">49,99 €</td>
+        <td class="col-atl"   data-val="49.99">49,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="104">104</td>
+        <td class="col-cat">🔋 Powerbanks</td>
+        <td class="col-name" data-val="anker laptop powerbank 165w 25000 mah, ladegerät m">
+          <a href="https://www.amazon.de/dp/B0DCBB2YTR" target="_blank" rel="noopener">Anker Laptop Powerbank 165W 25000 mAh, Ladegerät mit 70cm ausziehbarem…</a>
+        </td>
+        <td class="col-price" data-val="79.99">79,99 €</td>
+        <td class="col-avg30" data-val="79.99">79,99 €</td>
+        <td class="col-atl"   data-val="79.99">79,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="105">105</td>
+        <td class="col-cat">🔋 Powerbanks</td>
+        <td class="col-name" data-val="anker maggo powerbank, ultra-schlankes 10.000mah m">
+          <a href="https://www.amazon.de/dp/B0D7DKJ75M" target="_blank" rel="noopener">Anker MagGo Powerbank, Ultra-schlankes 10.000mAh magnetisches Akkupack…</a>
+        </td>
+        <td class="col-price" data-val="53.99">53,99 €</td>
+        <td class="col-avg30" data-val="53.99">53,99 €</td>
+        <td class="col-atl"   data-val="53.99">53,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="106">106</td>
+        <td class="col-cat">📡 Netzwerk</td>
+        <td class="col-name" data-val="avm fritz!box 7590 high-end wlan ac + n router (vd">
+          <a href="https://www.amazon.de/dp/B07SJTR4DD" target="_blank" rel="noopener">AVM FRITZ!Box 7590 High-End WLAN AC + N Router (VDSL-/ADSL, 4x4 MU-MIM…</a>
+        </td>
+        <td class="col-price" data-val="91.96">91,96 €</td>
+        <td class="col-avg30" data-val="91.96">91,96 €</td>
+        <td class="col-atl"   data-val="91.96">91,96 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="107">107</td>
+        <td class="col-cat">📡 Netzwerk</td>
+        <td class="col-name" data-val="avm fritz!box 7490 wlan ac + n router (vdsl/adsl, ">
+          <a href="https://www.amazon.de/dp/B01LXPJCQN" target="_blank" rel="noopener">AVM FRITZ!Box 7490 WLAN AC + N Router (VDSL/ADSL, 1.300 Mbit/s (5 GHz)…</a>
+        </td>
+        <td class="col-price" data-val="34.88">34,88 €</td>
+        <td class="col-avg30" data-val="34.88">34,88 €</td>
+        <td class="col-atl"   data-val="34.88">34,88 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="108">108</td>
+        <td class="col-cat">💾 Externe SSDs</td>
+        <td class="col-name" data-val="crucial ddr5 ram 32gb 5600mhz sodimm, arbeitsspeic">
+          <a href="https://www.amazon.de/dp/B0BLTDTD86" target="_blank" rel="noopener">Crucial DDR5 RAM 32GB 5600MHz SODIMM, Arbeitsspeicher für Laptop/Noteb…</a>
+        </td>
+        <td class="col-price" data-val="302.18">302,18 €</td>
+        <td class="col-avg30" data-val="302.18">302,18 €</td>
+        <td class="col-atl"   data-val="302.18">302,18 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="109">109</td>
+        <td class="col-cat">💾 Externe SSDs</td>
+        <td class="col-name" data-val="crucial pro ddr5 ram 32gb kit (2x16gb) 6400mhz cl3">
+          <a href="https://www.amazon.de/dp/B0DHFD5625" target="_blank" rel="noopener">Crucial Pro DDR5 RAM 32GB Kit (2x16GB) 6400MHz CL38, Overclocking Gami…</a>
+        </td>
+        <td class="col-price" data-val="424.80">424,80 €</td>
+        <td class="col-avg30" data-val="424.80">424,80 €</td>
+        <td class="col-atl"   data-val="424.80">424,80 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="110">110</td>
+        <td class="col-cat">💾 Externe SSDs</td>
+        <td class="col-name" data-val="16gb kit (2x8gb) ddr3l 1600 mhz sodimm pc3 pc3l 12">
+          <a href="https://www.amazon.de/dp/B08J3NGCMH" target="_blank" rel="noopener">16GB Kit (2x8GB) DDR3L 1600 MHz SODIMM PC3 PC3L 12800S 8GB 204-Pin 2Rx…</a>
+        </td>
+        <td class="col-price" data-val="47.99">47,99 €</td>
+        <td class="col-avg30" data-val="47.99">47,99 €</td>
+        <td class="col-atl"   data-val="47.99">47,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="111">111</td>
+        <td class="col-cat">💾 Externe SSDs</td>
+        <td class="col-name" data-val="crucial ddr4 ram 8gb 2400mhz sodimm cl17, arbeitss">
+          <a href="https://www.amazon.de/dp/B01BIWKP58" target="_blank" rel="noopener">Crucial DDR4 RAM 8GB 2400MHz SODIMM CL17, Arbeitsspeicher für Laptop/N…</a>
+        </td>
+        <td class="col-price" data-val="79.90">79,90 €</td>
+        <td class="col-avg30" data-val="79.90">79,90 €</td>
+        <td class="col-atl"   data-val="79.90">79,90 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="112">112</td>
+        <td class="col-cat">💾 Externe SSDs</td>
+        <td class="col-name" data-val="lexar sodimm ddr4 ram 16gb kit (2x8gb), 3200 mhz d">
+          <a href="https://www.amazon.de/dp/B0D25CRRPW" target="_blank" rel="noopener">Lexar SODIMM DDR4 RAM 16GB Kit (2x8GB), 3200 MHz DRAM, 260-Pin DDR4 SO…</a>
+        </td>
+        <td class="col-price" data-val="188.99">188,99 €</td>
+        <td class="col-avg30" data-val="188.99">188,99 €</td>
+        <td class="col-atl"   data-val="188.99">188,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="113">113</td>
+        <td class="col-cat">💾 Externe SSDs</td>
+        <td class="col-name" data-val="timetec 8gb ddr3l-1600mhz pc3l-12800 / pc3-12800 (">
+          <a href="https://www.amazon.de/dp/B0145WDNI4" target="_blank" rel="noopener">Timetec 8GB DDR3L-1600MHz PC3L-12800 / PC3-12800 (PC3L-12800S) Nicht-E…</a>
+        </td>
+        <td class="col-price" data-val="24.99">24,99 €</td>
+        <td class="col-avg30" data-val="24.99">24,99 €</td>
+        <td class="col-atl"   data-val="24.99">24,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="114">114</td>
+        <td class="col-cat">💾 Externe SSDs</td>
+        <td class="col-name" data-val="16gb ddr3 ram (2x8gb) pc3 -12800u ddr3-1600 udimm ">
+          <a href="https://www.amazon.de/dp/B09YHKBNMS" target="_blank" rel="noopener">16GB DDR3 RAM (2X8GB) PC3 -12800U DDR3-1600 UDIMM 2Rx8 DIMM DDR3 8GB 1…</a>
+        </td>
+        <td class="col-price" data-val="47.99">47,99 €</td>
+        <td class="col-avg30" data-val="47.99">47,99 €</td>
+        <td class="col-atl"   data-val="47.99">47,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="115">115</td>
+        <td class="col-cat">🏠 Smart Home</td>
+        <td class="col-name" data-val="blink außenkamera 2k+ (neueste generation) – kabel">
+          <a href="https://www.amazon.de/dp/B0F94PV9QJ" target="_blank" rel="noopener">Blink Außenkamera 2K+ (neueste Generation) – Kabellose, intelligente S…</a>
+        </td>
+        <td class="col-price" data-val="44.99">44,99 €</td>
+        <td class="col-avg30" data-val="44.99">44,99 €</td>
+        <td class="col-atl"   data-val="44.99">44,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="116">116</td>
+        <td class="col-cat">🏠 Smart Home</td>
+        <td class="col-name" data-val="ring innenkamera (indoor camera 2. gen.) | überwac">
+          <a href="https://www.amazon.de/dp/B0B6GKHS2S" target="_blank" rel="noopener">Ring Innenkamera (Indoor Camera 2. Gen.) | Überwachungskamera für den …</a>
+        </td>
+        <td class="col-price" data-val="41.99">41,99 €</td>
+        <td class="col-avg30" data-val="41.99">41,99 €</td>
+        <td class="col-atl"   data-val="41.99">41,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="117">117</td>
+        <td class="col-cat">🏠 Smart Home</td>
+        <td class="col-name" data-val="ring außenkamera plus akku (outdoor camera plus ne">
+          <a href="https://www.amazon.de/dp/B0D23Y1N3Y" target="_blank" rel="noopener">Ring Außenkamera Plus Akku (Outdoor Camera Plus neueste generation) | …</a>
+        </td>
+        <td class="col-price" data-val="54.99">54,99 €</td>
+        <td class="col-avg30" data-val="54.99">54,99 €</td>
+        <td class="col-atl"   data-val="54.99">54,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="118">118</td>
+        <td class="col-cat">🏠 Smart Home</td>
+        <td class="col-name" data-val="blink-kamera outdoor 4 | kabellose intelligente hd">
+          <a href="https://www.amazon.de/dp/B0DHLV4P1B" target="_blank" rel="noopener">Blink-Kamera Outdoor 4 | Kabellose intelligente HD-Sicherheitskamera, …</a>
+        </td>
+        <td class="col-price" data-val="79.99">79,99 €</td>
+        <td class="col-avg30" data-val="79.99">79,99 €</td>
+        <td class="col-atl"   data-val="79.99">79,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="119">119</td>
+        <td class="col-cat">🏠 Smart Home</td>
+        <td class="col-name" data-val="ring chime (neueste generation) | optimierte akust">
+          <a href="https://www.amazon.de/dp/B0FBCH91T7" target="_blank" rel="noopener">Ring Chime (neueste Generation) | Optimierte akustische Benachrichtigu…</a>
+        </td>
+        <td class="col-price" data-val="34.99">34,99 €</td>
+        <td class="col-avg30" data-val="34.99">34,99 €</td>
+        <td class="col-atl"   data-val="34.99">34,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="120">120</td>
+        <td class="col-cat">🏠 Smart Home</td>
+        <td class="col-name" data-val="ring akku-videotürklingel (battery video doorbell)">
+          <a href="https://www.amazon.de/dp/B0BZWQP9Z1" target="_blank" rel="noopener">Ring Akku-Videotürklingel (Battery Video Doorbell) (2024) | WLAN-Video…</a>
+        </td>
+        <td class="col-price" data-val="92.99">92,99 €</td>
+        <td class="col-avg30" data-val="92.99">92,99 €</td>
+        <td class="col-atl"   data-val="92.99">92,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="121">121</td>
+        <td class="col-cat">🏠 Smart Home</td>
+        <td class="col-name" data-val="blink mini – kompakte, smarte plug-in-überwachungs">
+          <a href="https://www.amazon.de/dp/B07X37DT9M" target="_blank" rel="noopener">Blink Mini – Kompakte, smarte Plug-in-Überwachungskamera für innen, 10…</a>
+        </td>
+        <td class="col-price" data-val="14.99">14,99 €</td>
+        <td class="col-avg30" data-val="14.99">14,99 €</td>
+        <td class="col-atl"   data-val="14.99">14,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="122">122</td>
+        <td class="col-cat">🏠 Smart Home</td>
+        <td class="col-name" data-val="blink videotürklingel (neueste generation) | einze">
+          <a href="https://www.amazon.de/dp/B0DJDTHMFP" target="_blank" rel="noopener">Blink Videotürklingel (neueste generation) | Einzelgerät | Kopf-bis-Fu…</a>
+        </td>
+        <td class="col-price" data-val="54.99">54,99 €</td>
+        <td class="col-avg30" data-val="54.99">54,99 €</td>
+        <td class="col-atl"   data-val="54.99">54,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="123">123</td>
+        <td class="col-cat">🏠 Smart Home</td>
+        <td class="col-name" data-val="ring außenkamera akku (stick up cam battery) | übe">
+          <a href="https://www.amazon.de/dp/B0C5QXCP7Z" target="_blank" rel="noopener">Ring Außenkamera Akku (Stick Up Cam Battery) | Überwachungskamera auss…</a>
+        </td>
+        <td class="col-price" data-val="74.99">74,99 €</td>
+        <td class="col-avg30" data-val="74.99">74,99 €</td>
+        <td class="col-atl"   data-val="74.99">74,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="124">124</td>
+        <td class="col-cat">🏠 Smart Home</td>
+        <td class="col-name" data-val="ring intercom audio | mach deine gegensprechanlage">
+          <a href="https://www.amazon.de/dp/B0CKGQ5913" target="_blank" rel="noopener">Ring Intercom Audio | Mach deine Gegensprechanlage intelligenter | Aud…</a>
+        </td>
+        <td class="col-price" data-val="79.99">79,99 €</td>
+        <td class="col-avg30" data-val="79.99">79,99 €</td>
+        <td class="col-atl"   data-val="79.99">79,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="125">125</td>
+        <td class="col-cat">📖 E-Reader</td>
+        <td class="col-name" data-val="amazon kindle (neueste generation) – der leichtest">
+          <a href="https://www.amazon.de/dp/B0CP31JRLK" target="_blank" rel="noopener">Amazon Kindle (neueste Generation) – Der leichteste und kompakteste Ki…</a>
+        </td>
+        <td class="col-price" data-val="119.99">119,99 €</td>
+        <td class="col-avg30" data-val="119.99">119,99 €</td>
+        <td class="col-atl"   data-val="119.99">119,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="126">126</td>
+        <td class="col-cat">📖 E-Reader</td>
+        <td class="col-name" data-val="amazon kindle scribe (64 gb) – neuartiges display ">
+          <a href="https://www.amazon.de/dp/B0CZ9T8H8N" target="_blank" rel="noopener">Amazon Kindle Scribe (64 GB) – Neuartiges Display mit gleichmäßigem Ra…</a>
+        </td>
+        <td class="col-price" data-val="469.99">469,99 €</td>
+        <td class="col-avg30" data-val="469.99">469,99 €</td>
+        <td class="col-atl"   data-val="469.99">469,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+      <tr class="row-grey">
+        <td class="col-rank" data-val="127">127</td>
+        <td class="col-cat">📖 E-Reader</td>
+        <td class="col-name" data-val="amazon kindle kids (neueste generation) – falls da">
+          <a href="https://www.amazon.de/dp/B0CP317938" target="_blank" rel="noopener">Amazon Kindle Kids (neueste Generation) – Falls das Gerät kaputtgeht, …</a>
+        </td>
+        <td class="col-price" data-val="129.99">129,99 €</td>
+        <td class="col-avg30" data-val="129.99">129,99 €</td>
+        <td class="col-atl"   data-val="129.99">129,99 €</td>
+        <td class="col-pct"   data-val="0.0">0.0 %</td>
+        <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
+      </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>    <div id="tab-alle" class="tab-content" style="display:none">
       <div class="section">
         <div class="section-header">
           <h2>📟 Tablets</h2>
@@ -1086,7 +2636,7 @@
       <div class="section">
         <div class="section-header">
           <h2>🔊 Lautsprecher</h2>
-          <p>10 Bestseller heute · 4 🍎 Apple</p>
+          <p>10 Bestseller heute · 1 🍎 Apple</p>
         </div>
         <div class="section-body">
           <table class="data-table" id="tbl-all-lautsprecher">
@@ -1102,11 +2652,11 @@
               </tr>
             </thead>
             <tbody>
-      <tr class="row-grey row-apple">
+      <tr class="row-grey">
         <td class="col-rank" data-val="1">1</td>
         
         <td class="col-name" data-val="usb c ladegerät, 40w 4 ports schnellladegerät, meh">
-          <a href="https://www.amazon.de/dp/B0DLNVJXM2" target="_blank" rel="noopener">🍎 USB C Ladegerät, 40W 4 Ports Schnellladegerät, Mehrfach Stecker Mit …</a>
+          <a href="https://www.amazon.de/dp/B0DLNVJXM2" target="_blank" rel="noopener">USB C Ladegerät, 40W 4 Ports Schnellladegerät, Mehrfach Stecker Mit Po…</a>
         </td>
         <td class="col-price" data-val="8.78">8,78 €</td>
         <td class="col-avg30" data-val="8.78">8,78 €</td>
@@ -1126,11 +2676,11 @@
         <td class="col-pct"   data-val="0.0">0.0 %</td>
         <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
       </tr>
-      <tr class="row-grey row-apple">
+      <tr class="row-grey">
         <td class="col-rank" data-val="3">3</td>
         
         <td class="col-name" data-val="iniu 45w power bank, ultra klein 20000mah powerban">
-          <a href="https://www.amazon.de/dp/B0DCYR5VNR" target="_blank" rel="noopener">🍎 INIU 45W Power Bank, Ultra Klein 20000mAh Powerbank iPhone mit Integ…</a>
+          <a href="https://www.amazon.de/dp/B0DCYR5VNR" target="_blank" rel="noopener">INIU 45W Power Bank, Ultra Klein 20000mAh Powerbank iPhone mit Integri…</a>
         </td>
         <td class="col-price" data-val="27.45">27,45 €</td>
         <td class="col-avg30" data-val="27.45">27,45 €</td>
@@ -1210,11 +2760,11 @@
         <td class="col-pct"   data-val="0.0">0.0 %</td>
         <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
       </tr>
-      <tr class="row-grey row-apple">
+      <tr class="row-grey">
         <td class="col-rank" data-val="10">10</td>
         
         <td class="col-name" data-val="anker 20w usb c ladegerät, ipad netzteil, usb-schn">
-          <a href="https://www.amazon.de/dp/B0CF8X4H77" target="_blank" rel="noopener">🍎 Anker 20W USB C Ladegerät, iPad Netzteil, USB-Schnellladenetzteil, i…</a>
+          <a href="https://www.amazon.de/dp/B0CF8X4H77" target="_blank" rel="noopener">Anker 20W USB C Ladegerät, iPad Netzteil, USB-Schnellladenetzteil, iPa…</a>
         </td>
         <td class="col-price" data-val="9.48">9,48 €</td>
         <td class="col-avg30" data-val="9.48">9,48 €</td>
@@ -1372,7 +2922,7 @@
       <div class="section">
         <div class="section-header">
           <h2>🕹 Nintendo Switch</h2>
-          <p>10 Bestseller heute · 1 🍎 Apple</p>
+          <p>10 Bestseller heute</p>
         </div>
         <div class="section-body">
           <table class="data-table" id="tbl-all-switch">
@@ -1448,11 +2998,11 @@
         <td class="col-pct"   data-val="38.6">+38.6 %</td>
         <td class="col-ampel" data-val="2" title="Normal">🟡</td>
       </tr>
-      <tr class="row-star row-apple">
+      <tr class="row-star">
         <td class="col-rank" data-val="6">6</td>
         
         <td class="col-name" data-val="anker nano ii 65w usb c ladegerät netzteil mit sch">
-          <a href="https://www.amazon.de/dp/B094QKV6S8" target="_blank" rel="noopener">🍎 Anker Nano II 65W USB C Ladegerät Netzteil mit Schnellladeleistung, …</a>
+          <a href="https://www.amazon.de/dp/B094QKV6S8" target="_blank" rel="noopener">Anker Nano II 65W USB C Ladegerät Netzteil mit Schnellladeleistung, Ga…</a>
         </td>
         <td class="col-price" data-val="19.99">19,99 €</td>
         <td class="col-avg30" data-val="19.99">19,99 €</td>
@@ -1801,7 +3351,7 @@
       <div class="section">
         <div class="section-header">
           <h2>⌨️ Computer-Zubehör</h2>
-          <p>10 Bestseller heute · 5 🍎 Apple</p>
+          <p>10 Bestseller heute · 1 🍎 Apple</p>
         </div>
         <div class="section-body">
           <table class="data-table" id="tbl-all-zubehoer">
@@ -1853,11 +3403,11 @@
         <td class="col-pct"   data-val="0.0">0.0 %</td>
         <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
       </tr>
-      <tr class="row-grey row-apple">
+      <tr class="row-grey">
         <td class="col-rank" data-val="4">4</td>
         
         <td class="col-name" data-val="anker 240w usb c kabel, [2 stück 1,8m] pd 3.1 schn">
-          <a href="https://www.amazon.de/dp/B0DXDTX47W" target="_blank" rel="noopener">🍎 Anker 240W USB C Kabel, [2 Stück 1,8m] PD 3.1 Schnellladekabel USB C…</a>
+          <a href="https://www.amazon.de/dp/B0DXDTX47W" target="_blank" rel="noopener">Anker 240W USB C Kabel, [2 Stück 1,8m] PD 3.1 Schnellladekabel USB C a…</a>
         </td>
         <td class="col-price" data-val="10.98">10,98 €</td>
         <td class="col-avg30" data-val="10.98">10,98 €</td>
@@ -1865,11 +3415,11 @@
         <td class="col-pct"   data-val="0.0">0.0 %</td>
         <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
       </tr>
-      <tr class="row-grey row-apple">
+      <tr class="row-grey">
         <td class="col-rank" data-val="5">5</td>
         
         <td class="col-name" data-val="iniu usb c kabel, 100w [2m] pd3.0 schnellladekabel">
-          <a href="https://www.amazon.de/dp/B09MQ4KZ27" target="_blank" rel="noopener">🍎 INIU USB C Kabel, 100W [2m] PD3.0 Schnellladekabel USB C auf USBC, N…</a>
+          <a href="https://www.amazon.de/dp/B09MQ4KZ27" target="_blank" rel="noopener">INIU USB C Kabel, 100W [2m] PD3.0 Schnellladekabel USB C auf USBC, Nyl…</a>
         </td>
         <td class="col-price" data-val="6.46">6,46 €</td>
         <td class="col-avg30" data-val="6.46">6,46 €</td>
@@ -1901,11 +3451,11 @@
         <td class="col-pct"   data-val="0.0">0.0 %</td>
         <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
       </tr>
-      <tr class="row-grey row-apple">
+      <tr class="row-grey">
         <td class="col-rank" data-val="8">8</td>
         
         <td class="col-name" data-val="ugreen usb c auf usb 3.2 adapter 10gbps otg 2 stüc">
-          <a href="https://www.amazon.de/dp/B0B9N3QSL3" target="_blank" rel="noopener">🍎 UGREEN USB C auf USB 3.2 Adapter 10Gbps OTG 2 Stück USB C Stecker au…</a>
+          <a href="https://www.amazon.de/dp/B0B9N3QSL3" target="_blank" rel="noopener">UGREEN USB C auf USB 3.2 Adapter 10Gbps OTG 2 Stück USB C Stecker auf …</a>
         </td>
         <td class="col-price" data-val="5.97">5,97 €</td>
         <td class="col-avg30" data-val="5.97">5,97 €</td>
@@ -1913,11 +3463,11 @@
         <td class="col-pct"   data-val="0.0">0.0 %</td>
         <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
       </tr>
-      <tr class="row-grey row-apple">
+      <tr class="row-grey">
         <td class="col-rank" data-val="9">9</td>
         
         <td class="col-name" data-val="anker usb c kabel 3m, 100w schnellladekabel usb c ">
-          <a href="https://www.amazon.de/dp/B08PVPTNZL" target="_blank" rel="noopener">🍎 Anker USB C Kabel 3m, 100W Schnellladekabel USB C auf USB C Kabel, P…</a>
+          <a href="https://www.amazon.de/dp/B08PVPTNZL" target="_blank" rel="noopener">Anker USB C Kabel 3m, 100W Schnellladekabel USB C auf USB C Kabel, PD …</a>
         </td>
         <td class="col-price" data-val="7.48">7,48 €</td>
         <td class="col-avg30" data-val="7.48">7,48 €</td>
@@ -1944,7 +3494,7 @@
       <div class="section">
         <div class="section-header">
           <h2>🖨 Drucker</h2>
-          <p>10 Bestseller heute · 1 🍎 Apple</p>
+          <p>10 Bestseller heute</p>
         </div>
         <div class="section-body">
           <table class="data-table" id="tbl-all-drucker">
@@ -1960,11 +3510,11 @@
               </tr>
             </thead>
             <tbody>
-      <tr class="row-red row-apple">
+      <tr class="row-red">
         <td class="col-rank" data-val="1">1</td>
         
         <td class="col-name" data-val="canon pixma tr4755i multifunktionsdrucker 4in1 (ti">
-          <a href="https://www.amazon.de/dp/B0DJBT238Z" target="_blank" rel="noopener">🍎 Canon PIXMA TR4755i Multifunktionsdrucker 4in1 (Tintenstrahl, Drucke…</a>
+          <a href="https://www.amazon.de/dp/B0DJBT238Z" target="_blank" rel="noopener">Canon PIXMA TR4755i Multifunktionsdrucker 4in1 (Tintenstrahl, Drucken,…</a>
         </td>
         <td class="col-price" data-val="68.40">68,40 €</td>
         <td class="col-avg30" data-val="63.86">63,86 €</td>
@@ -2087,7 +3637,7 @@
       <div class="section">
         <div class="section-header">
           <h2>🔋 Powerbanks</h2>
-          <p>10 Bestseller heute · 2 🍎 Apple</p>
+          <p>10 Bestseller heute</p>
         </div>
         <div class="section-body">
           <table class="data-table" id="tbl-all-powerbanks">
@@ -2103,11 +3653,11 @@
               </tr>
             </thead>
             <tbody>
-      <tr class="row-grey row-apple">
+      <tr class="row-grey">
         <td class="col-rank" data-val="1">1</td>
         
         <td class="col-name" data-val="iniu 45w power bank, ultra klein 20000mah powerban">
-          <a href="https://www.amazon.de/dp/B0DCYR5VNR" target="_blank" rel="noopener">🍎 INIU 45W Power Bank, Ultra Klein 20000mAh Powerbank iPhone mit Integ…</a>
+          <a href="https://www.amazon.de/dp/B0DCYR5VNR" target="_blank" rel="noopener">INIU 45W Power Bank, Ultra Klein 20000mAh Powerbank iPhone mit Integri…</a>
         </td>
         <td class="col-price" data-val="27.45">27,45 €</td>
         <td class="col-avg30" data-val="27.45">27,45 €</td>
@@ -2127,11 +3677,11 @@
         <td class="col-pct"   data-val="0.0">0.0 %</td>
         <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
       </tr>
-      <tr class="row-grey row-apple">
+      <tr class="row-grey">
         <td class="col-rank" data-val="3">3</td>
         
         <td class="col-name" data-val="powerbank für magsafe, trkoy slim magnetische powe">
-          <a href="https://www.amazon.de/dp/B0G16F7WRM" target="_blank" rel="noopener">🍎 Powerbank für Magsafe, TRKOY Slim Magnetische Power Bank iPhone 5000…</a>
+          <a href="https://www.amazon.de/dp/B0G16F7WRM" target="_blank" rel="noopener">Powerbank für Magsafe, TRKOY Slim Magnetische Power Bank iPhone 5000mA…</a>
         </td>
         <td class="col-price" data-val="18.04">18,04 €</td>
         <td class="col-avg30" data-val="18.04">18,04 €</td>
@@ -3694,7 +5244,7 @@
       <div class="section">
         <div class="section-header">
           <h2>🔊 Lautsprecher</h2>
-          <p>10 Bestseller heute · 4 🍎 Apple</p>
+          <p>10 Bestseller heute · 1 🍎 Apple</p>
         </div>
         <div class="section-body">
           <table class="data-table" id="tbl-lautsprecher">
@@ -3710,11 +5260,11 @@
               </tr>
             </thead>
             <tbody>
-      <tr class="row-grey row-apple">
+      <tr class="row-grey">
         <td class="col-rank" data-val="1">1</td>
         
         <td class="col-name" data-val="usb c ladegerät, 40w 4 ports schnellladegerät, meh">
-          <a href="https://www.amazon.de/dp/B0DLNVJXM2" target="_blank" rel="noopener">🍎 USB C Ladegerät, 40W 4 Ports Schnellladegerät, Mehrfach Stecker Mit …</a>
+          <a href="https://www.amazon.de/dp/B0DLNVJXM2" target="_blank" rel="noopener">USB C Ladegerät, 40W 4 Ports Schnellladegerät, Mehrfach Stecker Mit Po…</a>
         </td>
         <td class="col-price" data-val="8.78">8,78 €</td>
         <td class="col-avg30" data-val="8.78">8,78 €</td>
@@ -3734,11 +5284,11 @@
         <td class="col-pct"   data-val="0.0">0.0 %</td>
         <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
       </tr>
-      <tr class="row-grey row-apple">
+      <tr class="row-grey">
         <td class="col-rank" data-val="3">3</td>
         
         <td class="col-name" data-val="iniu 45w power bank, ultra klein 20000mah powerban">
-          <a href="https://www.amazon.de/dp/B0DCYR5VNR" target="_blank" rel="noopener">🍎 INIU 45W Power Bank, Ultra Klein 20000mAh Powerbank iPhone mit Integ…</a>
+          <a href="https://www.amazon.de/dp/B0DCYR5VNR" target="_blank" rel="noopener">INIU 45W Power Bank, Ultra Klein 20000mAh Powerbank iPhone mit Integri…</a>
         </td>
         <td class="col-price" data-val="27.45">27,45 €</td>
         <td class="col-avg30" data-val="27.45">27,45 €</td>
@@ -3818,11 +5368,11 @@
         <td class="col-pct"   data-val="0.0">0.0 %</td>
         <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
       </tr>
-      <tr class="row-grey row-apple">
+      <tr class="row-grey">
         <td class="col-rank" data-val="10">10</td>
         
         <td class="col-name" data-val="anker 20w usb c ladegerät, ipad netzteil, usb-schn">
-          <a href="https://www.amazon.de/dp/B0CF8X4H77" target="_blank" rel="noopener">🍎 Anker 20W USB C Ladegerät, iPad Netzteil, USB-Schnellladenetzteil, i…</a>
+          <a href="https://www.amazon.de/dp/B0CF8X4H77" target="_blank" rel="noopener">Anker 20W USB C Ladegerät, iPad Netzteil, USB-Schnellladenetzteil, iPa…</a>
         </td>
         <td class="col-price" data-val="9.48">9,48 €</td>
         <td class="col-avg30" data-val="9.48">9,48 €</td>
@@ -3982,7 +5532,7 @@
       <div class="section">
         <div class="section-header">
           <h2>🕹 Nintendo Switch</h2>
-          <p>10 Bestseller heute · 1 🍎 Apple</p>
+          <p>10 Bestseller heute</p>
         </div>
         <div class="section-body">
           <table class="data-table" id="tbl-switch">
@@ -4058,11 +5608,11 @@
         <td class="col-pct"   data-val="38.6">+38.6 %</td>
         <td class="col-ampel" data-val="2" title="Normal">🟡</td>
       </tr>
-      <tr class="row-star row-apple">
+      <tr class="row-star">
         <td class="col-rank" data-val="6">6</td>
         
         <td class="col-name" data-val="anker nano ii 65w usb c ladegerät netzteil mit sch">
-          <a href="https://www.amazon.de/dp/B094QKV6S8" target="_blank" rel="noopener">🍎 Anker Nano II 65W USB C Ladegerät Netzteil mit Schnellladeleistung, …</a>
+          <a href="https://www.amazon.de/dp/B094QKV6S8" target="_blank" rel="noopener">Anker Nano II 65W USB C Ladegerät Netzteil mit Schnellladeleistung, Ga…</a>
         </td>
         <td class="col-price" data-val="19.99">19,99 €</td>
         <td class="col-avg30" data-val="19.99">19,99 €</td>
@@ -4414,7 +5964,7 @@
       <div class="section">
         <div class="section-header">
           <h2>⌨️ Computer-Zubehör</h2>
-          <p>10 Bestseller heute · 5 🍎 Apple</p>
+          <p>10 Bestseller heute · 1 🍎 Apple</p>
         </div>
         <div class="section-body">
           <table class="data-table" id="tbl-zubehoer">
@@ -4466,11 +6016,11 @@
         <td class="col-pct"   data-val="0.0">0.0 %</td>
         <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
       </tr>
-      <tr class="row-grey row-apple">
+      <tr class="row-grey">
         <td class="col-rank" data-val="4">4</td>
         
         <td class="col-name" data-val="anker 240w usb c kabel, [2 stück 1,8m] pd 3.1 schn">
-          <a href="https://www.amazon.de/dp/B0DXDTX47W" target="_blank" rel="noopener">🍎 Anker 240W USB C Kabel, [2 Stück 1,8m] PD 3.1 Schnellladekabel USB C…</a>
+          <a href="https://www.amazon.de/dp/B0DXDTX47W" target="_blank" rel="noopener">Anker 240W USB C Kabel, [2 Stück 1,8m] PD 3.1 Schnellladekabel USB C a…</a>
         </td>
         <td class="col-price" data-val="10.98">10,98 €</td>
         <td class="col-avg30" data-val="10.98">10,98 €</td>
@@ -4478,11 +6028,11 @@
         <td class="col-pct"   data-val="0.0">0.0 %</td>
         <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
       </tr>
-      <tr class="row-grey row-apple">
+      <tr class="row-grey">
         <td class="col-rank" data-val="5">5</td>
         
         <td class="col-name" data-val="iniu usb c kabel, 100w [2m] pd3.0 schnellladekabel">
-          <a href="https://www.amazon.de/dp/B09MQ4KZ27" target="_blank" rel="noopener">🍎 INIU USB C Kabel, 100W [2m] PD3.0 Schnellladekabel USB C auf USBC, N…</a>
+          <a href="https://www.amazon.de/dp/B09MQ4KZ27" target="_blank" rel="noopener">INIU USB C Kabel, 100W [2m] PD3.0 Schnellladekabel USB C auf USBC, Nyl…</a>
         </td>
         <td class="col-price" data-val="6.46">6,46 €</td>
         <td class="col-avg30" data-val="6.46">6,46 €</td>
@@ -4514,11 +6064,11 @@
         <td class="col-pct"   data-val="0.0">0.0 %</td>
         <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
       </tr>
-      <tr class="row-grey row-apple">
+      <tr class="row-grey">
         <td class="col-rank" data-val="8">8</td>
         
         <td class="col-name" data-val="ugreen usb c auf usb 3.2 adapter 10gbps otg 2 stüc">
-          <a href="https://www.amazon.de/dp/B0B9N3QSL3" target="_blank" rel="noopener">🍎 UGREEN USB C auf USB 3.2 Adapter 10Gbps OTG 2 Stück USB C Stecker au…</a>
+          <a href="https://www.amazon.de/dp/B0B9N3QSL3" target="_blank" rel="noopener">UGREEN USB C auf USB 3.2 Adapter 10Gbps OTG 2 Stück USB C Stecker auf …</a>
         </td>
         <td class="col-price" data-val="5.97">5,97 €</td>
         <td class="col-avg30" data-val="5.97">5,97 €</td>
@@ -4526,11 +6076,11 @@
         <td class="col-pct"   data-val="0.0">0.0 %</td>
         <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
       </tr>
-      <tr class="row-grey row-apple">
+      <tr class="row-grey">
         <td class="col-rank" data-val="9">9</td>
         
         <td class="col-name" data-val="anker usb c kabel 3m, 100w schnellladekabel usb c ">
-          <a href="https://www.amazon.de/dp/B08PVPTNZL" target="_blank" rel="noopener">🍎 Anker USB C Kabel 3m, 100W Schnellladekabel USB C auf USB C Kabel, P…</a>
+          <a href="https://www.amazon.de/dp/B08PVPTNZL" target="_blank" rel="noopener">Anker USB C Kabel 3m, 100W Schnellladekabel USB C auf USB C Kabel, PD …</a>
         </td>
         <td class="col-price" data-val="7.48">7,48 €</td>
         <td class="col-avg30" data-val="7.48">7,48 €</td>
@@ -4558,7 +6108,7 @@
       <div class="section">
         <div class="section-header">
           <h2>🖨 Drucker</h2>
-          <p>10 Bestseller heute · 1 🍎 Apple</p>
+          <p>10 Bestseller heute</p>
         </div>
         <div class="section-body">
           <table class="data-table" id="tbl-drucker">
@@ -4574,11 +6124,11 @@
               </tr>
             </thead>
             <tbody>
-      <tr class="row-red row-apple">
+      <tr class="row-red">
         <td class="col-rank" data-val="1">1</td>
         
         <td class="col-name" data-val="canon pixma tr4755i multifunktionsdrucker 4in1 (ti">
-          <a href="https://www.amazon.de/dp/B0DJBT238Z" target="_blank" rel="noopener">🍎 Canon PIXMA TR4755i Multifunktionsdrucker 4in1 (Tintenstrahl, Drucke…</a>
+          <a href="https://www.amazon.de/dp/B0DJBT238Z" target="_blank" rel="noopener">Canon PIXMA TR4755i Multifunktionsdrucker 4in1 (Tintenstrahl, Drucken,…</a>
         </td>
         <td class="col-price" data-val="68.40">68,40 €</td>
         <td class="col-avg30" data-val="63.86">63,86 €</td>
@@ -4702,7 +6252,7 @@
       <div class="section">
         <div class="section-header">
           <h2>🔋 Powerbanks</h2>
-          <p>10 Bestseller heute · 2 🍎 Apple</p>
+          <p>10 Bestseller heute</p>
         </div>
         <div class="section-body">
           <table class="data-table" id="tbl-powerbanks">
@@ -4718,11 +6268,11 @@
               </tr>
             </thead>
             <tbody>
-      <tr class="row-grey row-apple">
+      <tr class="row-grey">
         <td class="col-rank" data-val="1">1</td>
         
         <td class="col-name" data-val="iniu 45w power bank, ultra klein 20000mah powerban">
-          <a href="https://www.amazon.de/dp/B0DCYR5VNR" target="_blank" rel="noopener">🍎 INIU 45W Power Bank, Ultra Klein 20000mAh Powerbank iPhone mit Integ…</a>
+          <a href="https://www.amazon.de/dp/B0DCYR5VNR" target="_blank" rel="noopener">INIU 45W Power Bank, Ultra Klein 20000mAh Powerbank iPhone mit Integri…</a>
         </td>
         <td class="col-price" data-val="27.45">27,45 €</td>
         <td class="col-avg30" data-val="27.45">27,45 €</td>
@@ -4742,11 +6292,11 @@
         <td class="col-pct"   data-val="0.0">0.0 %</td>
         <td class="col-ampel" data-val="4" title="Wenig Daten">⚪</td>
       </tr>
-      <tr class="row-grey row-apple">
+      <tr class="row-grey">
         <td class="col-rank" data-val="3">3</td>
         
         <td class="col-name" data-val="powerbank für magsafe, trkoy slim magnetische powe">
-          <a href="https://www.amazon.de/dp/B0G16F7WRM" target="_blank" rel="noopener">🍎 Powerbank für Magsafe, TRKOY Slim Magnetische Power Bank iPhone 5000…</a>
+          <a href="https://www.amazon.de/dp/B0G16F7WRM" target="_blank" rel="noopener">Powerbank für Magsafe, TRKOY Slim Magnetische Power Bank iPhone 5000mA…</a>
         </td>
         <td class="col-price" data-val="18.04">18,04 €</td>
         <td class="col-avg30" data-val="18.04">18,04 €</td>
@@ -5423,14 +6973,14 @@
 </div>
 
 <div class="footer">
-  Electronics Bestseller — generiert am 05.03.2026 13:55 Uhr &nbsp;|&nbsp;
+  Electronics Bestseller — generiert am 05.03.2026 19:50 Uhr &nbsp;|&nbsp;
   Quelle: Amazon.de + Keepa-Historien &nbsp;|&nbsp;
   Alle Preise inkl. MwSt.
 </div>
 
 <script>
 // ── Tab-Navigation ─────────────────────────────────────────────────
-const FIRST_CAT = "alle";
+const FIRST_CAT = "atl";
 
 function showTab(catId) {
   // Alle verstecken
@@ -5463,12 +7013,13 @@ window.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".data-table").forEach(table => {
     const headers = table.querySelectorAll("th[data-sort]");
-    headers.forEach((th, colIdx) => {
+    headers.forEach((th) => {
       th.style.cursor = "pointer";
       let asc = true;
       th.addEventListener("click", () => {
-        const tbody = table.querySelector("tbody");
-        const rows  = Array.from(tbody.querySelectorAll("tr"));
+        const colIdx  = th.cellIndex;   // Echter Spalten-Index (korrekt auch mit Kategorie-Spalte)
+        const tbody   = table.querySelector("tbody");
+        const rows    = Array.from(tbody.querySelectorAll("tr"));
         const sortType = th.dataset.sort;
 
         rows.sort((a, b) => {
