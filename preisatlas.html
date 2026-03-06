@@ -7,51 +7,51 @@
 <style>
   :root {
     --budget:  #059669; --budget-bg:  #d1fae5;
-    --mid:     #2563eb; --mid-bg:     #dbeafe;
+    --mid:     #2A7DA7; --mid-bg:     #e0f0f8;
     --premium: #7c3aed; --premium-bg: #ede9fe;
-    --grey:    #64748b; --grey-bg:    #f1f5f9;
+    --grey:    #4D4D4D; --grey-bg:    #f5f5f5;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-         font-size: 13px; background: #f8fafc; color: #1e293b; }
-  .header { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+  body { font-family: "proxima-nova", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+         font-size: 13px; background: #f5f5f5; color: #111; }
+  .header { background: #3399CC;
             color: white; padding: 20px 24px; }
   .header h1 { font-size: 20px; font-weight: 700; }
-  .header .sub { color: #94a3b8; font-size: 12px; margin-top: 4px; }
+  .header .sub { color: rgba(255,255,255,0.8); font-size: 12px; margin-top: 4px; }
 
   /* Tabs */
-  .tabs { background: white; border-bottom: 2px solid #e2e8f0;
+  .tabs { background: white; border-bottom: 2px solid #D8D8D8;
           padding: 0 16px; display: flex; gap: 0; overflow-x: auto; flex-shrink: 0; }
   .tab-btn { padding: 10px 14px; cursor: pointer; border: none; background: none;
-             font-size: 12px; color: #64748b; border-bottom: 3px solid transparent;
+             font-size: 12px; color: #4D4D4D; border-bottom: 3px solid transparent;
              margin-bottom: -2px; white-space: nowrap; font-weight: 500; }
-  .tab-btn:hover { color: #1e293b; }
-  .tab-btn.active { color: #2563eb; border-bottom-color: #2563eb; }
+  .tab-btn:hover { color: #111; }
+  .tab-btn.active { color: #2A7DA7; border-bottom-color: #2A7DA7; }
   .tab-content { display: none; padding: 16px; }
   .tab-content.active { display: block; }
 
   /* Übersicht-Tabelle */
-  .overview-table { background: white; border-radius: 8px; border: 1px solid #e2e8f0;
+  .overview-table { background: white; border-radius: 8px; border: 1px solid #D8D8D8;
                     overflow: hidden; margin-bottom: 16px; }
   table { width: 100%; border-collapse: collapse; }
-  th { background: #f8fafc; padding: 8px 12px; text-align: left; font-size: 11px;
-       font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em;
+  th { background: #f5f5f5; padding: 8px 12px; text-align: left; font-size: 11px;
+       font-weight: 600; color: #4D4D4D; text-transform: uppercase; letter-spacing: 0.04em;
        cursor: pointer; user-select: none; white-space: nowrap; }
-  th:hover { background: #f1f5f9; }
+  th:hover { background: #ebebeb; }
   th.sorted-asc::after  { content: " ↑"; }
   th.sorted-desc::after { content: " ↓"; }
-  td { padding: 7px 12px; border-top: 1px solid #f1f5f9; vertical-align: middle; }
-  tr:hover td { background: #f8fafc; }
+  td { padding: 7px 12px; border-top: 1px solid #f0f0f0; vertical-align: middle; }
+  tr:hover td { background: #f9f9f9; }
   .col-num { text-align: right; font-variant-numeric: tabular-nums; }
 
   /* Preis-Range-Bar (Boxplot-Ersatz) */
   .range-cell { padding: 4px 12px; }
-  .range-track { position: relative; height: 8px; background: #e2e8f0;
+  .range-track { position: relative; height: 8px; background: #e8e8e8;
                  border-radius: 4px; min-width: 120px; }
-  .range-iqr { position: absolute; height: 8px; background: #3b82f6;
+  .range-iqr { position: absolute; height: 8px; background: #2A7DA7;
                border-radius: 2px; opacity: 0.7; }
   .range-median { position: absolute; width: 2px; height: 14px; top: -3px;
-                  background: #1e293b; border-radius: 1px; }
+                  background: #111; border-radius: 1px; }
 
   /* Tier-Badges */
   .tier-badge { display: inline-flex; align-items: center; gap: 4px;
@@ -63,13 +63,13 @@
   /* Kategorie-Detail */
   .detail-grid { display: grid; grid-template-columns: repeat(4, 1fr);
                  gap: 12px; margin-bottom: 16px; }
-  .stat-card { background: white; border-radius: 8px; border: 1px solid #e2e8f0;
+  .stat-card { background: white; border-radius: 8px; border: 1px solid #D8D8D8;
                padding: 14px 16px; }
-  .stat-card .val { font-size: 22px; font-weight: 800; color: #1e293b; }
-  .stat-card .lbl { font-size: 11px; color: #64748b; margin-top: 2px; }
+  .stat-card .val { font-size: 22px; font-weight: 800; color: #111; }
+  .stat-card .lbl { font-size: 11px; color: #4D4D4D; margin-top: 2px; }
 
   /* Tier-Sektionen */
-  .tier-section { background: white; border-radius: 8px; border: 1px solid #e2e8f0;
+  .tier-section { background: white; border-radius: 8px; border: 1px solid #D8D8D8;
                   overflow: hidden; margin-bottom: 12px; }
   .tier-header { padding: 10px 16px; font-weight: 700; font-size: 13px;
                  display: flex; justify-content: space-between; align-items: center; }
@@ -78,43 +78,43 @@
   .tier-header.premium { background: var(--premium-bg); color: var(--premium); }
 
   /* Trend-Chart */
-  .trend-chart { background: white; border-radius: 8px; border: 1px solid #e2e8f0;
+  .trend-chart { background: white; border-radius: 8px; border: 1px solid #D8D8D8;
                  padding: 16px; margin-bottom: 12px; }
-  .trend-chart h3 { font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 12px; }
+  .trend-chart h3 { font-size: 12px; font-weight: 600; color: #4D4D4D; margin-bottom: 12px; }
   .chart-wrap { overflow-x: auto; }
   .chart-bars { display: flex; align-items: flex-end; gap: 3px; height: 80px; }
   .chart-bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px;
                     flex: 1; min-width: 28px; }
-  .chart-bar { width: 100%; background: #3b82f6; border-radius: 3px 3px 0 0;
+  .chart-bar { width: 100%; background: #2A7DA7; border-radius: 3px 3px 0 0;
                min-height: 2px; transition: background 0.2s; cursor: default; }
-  .chart-bar:hover { background: #1d4ed8; }
-  .chart-label { font-size: 9px; color: #94a3b8; white-space: nowrap;
+  .chart-bar:hover { background: #1f6b94; }
+  .chart-label { font-size: 9px; color: #999; white-space: nowrap;
                  transform: rotate(-45deg); transform-origin: top center; margin-top: 4px; }
 
   /* Produkt-Zeilen */
   .prod-row { display: flex; align-items: center; gap: 8px; padding: 7px 16px;
-              border-bottom: 1px solid #f8fafc; font-size: 12px; }
+              border-bottom: 1px solid #f5f5f5; font-size: 12px; }
   .prod-row:last-child { border-bottom: none; }
   .prod-name { flex: 1; }
-  .prod-name a { color: #1e293b; text-decoration: none; }
-  .prod-name a:hover { color: #2563eb; text-decoration: underline; }
+  .prod-name a { color: #111; text-decoration: none; }
+  .prod-name a:hover { color: #2A7DA7; text-decoration: underline; }
   .prod-price { font-weight: 700; font-variant-numeric: tabular-nums;
                 min-width: 70px; text-align: right; }
   .prod-atl { font-size: 11px; color: #059669; min-width: 60px; text-align: right; }
   .atl-near { background: #d1fae5; color: #059669; padding: 1px 5px;
               border-radius: 4px; font-size: 10px; font-weight: 600; }
 
-  .no-data { text-align: center; padding: 32px; color: #94a3b8; font-size: 14px; }
+  .no-data { text-align: center; padding: 32px; color: #999; font-size: 14px; }
   .section-title { font-size: 14px; font-weight: 700; margin: 16px 0 8px; }
 
   /* Info-Box */
-  .info-box { background: #f0f9ff; border: 1px solid #bae6fd; border-left: 4px solid #0ea5e9;
+  .info-box { background: #f0f7fb; border: 1px solid #cde3ef; border-left: 4px solid #2A7DA7;
               border-radius: 8px; padding: 16px 20px; margin: 16px; font-size: 13px; line-height: 1.5; }
-  .info-box h2 { font-size: 14px; font-weight: 700; color: #0369a1; margin-bottom: 12px; }
+  .info-box h2 { font-size: 14px; font-weight: 700; color: #2A7DA7; margin-bottom: 12px; }
   .info-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
   .info-col { background: white; border-radius: 6px; padding: 10px 12px;
-              border: 1px solid #e0f2fe; font-size: 12px; line-height: 1.6; }
-  .info-col b { display: block; margin-bottom: 4px; color: #1e293b; font-size: 13px; }
+              border: 1px solid #cde3ef; font-size: 12px; line-height: 1.6; }
+  .info-col b { display: block; margin-bottom: 4px; color: #111; font-size: 13px; }
 </style>
 </head>
 <body>
@@ -139,7 +139,7 @@
     <div class="info-col">
       <b>Preis-Tiers</b>
       <span style="color:#059669">■</span> <b>Budget</b> = günstigstes Drittel<br>
-      <span style="color:#2563eb">■</span> <b>Mittelklasse</b> = mittleres Drittel<br>
+      <span style="color:#2A7DA7">■</span> <b>Mittelklasse</b> = mittleres Drittel<br>
       <span style="color:#7c3aed">■</span> <b>Premium</b> = oberes Drittel<br>
       Tiers basieren auf echten Marktpreisen, nicht auf Herstellerkategorien.
     </div>
@@ -189,7 +189,7 @@
         <tbody>
         <tr>
           <td><a href="javascript:void(0)" onclick="switchTab('cat_zubehoer')"
-                style="text-decoration:none;color:#1e293b">
+                style="text-decoration:none;color:#111">
               ⌨️ Computer-Zubehör</a></td>
           <td class="col-num" data-val="1.79">1.79 €</td>
           <td class="range-cell"><div class="range-track"><div class="range-iqr" style="left:4.0%;width:8.2%"></div><div class="range-median" style="left:7.5%"></div></div></td>
@@ -200,7 +200,7 @@
         </tr>
         <tr>
           <td><a href="javascript:void(0)" onclick="switchTab('cat_powerbanks')"
-                style="text-decoration:none;color:#1e293b">
+                style="text-decoration:none;color:#111">
               🔋 Powerbanks</a></td>
           <td class="col-num" data-val="8.97">8.97 €</td>
           <td class="range-cell"><div class="range-track"><div class="range-iqr" style="left:11.5%;width:21.6%"></div><div class="range-median" style="left:19.1%"></div></div></td>
@@ -211,7 +211,7 @@
         </tr>
         <tr>
           <td><a href="javascript:void(0)" onclick="switchTab('cat_xbox')"
-                style="text-decoration:none;color:#1e293b">
+                style="text-decoration:none;color:#111">
               🎯 Xbox Series</a></td>
           <td class="col-num" data-val="8.64">8.64 €</td>
           <td class="range-cell"><div class="range-track"><div class="range-iqr" style="left:2.5%;width:6.7%"></div><div class="range-median" style="left:4.7%"></div></div></td>
@@ -222,7 +222,7 @@
         </tr>
         <tr>
           <td><a href="javascript:void(0)" onclick="switchTab('cat_switch')"
-                style="text-decoration:none;color:#1e293b">
+                style="text-decoration:none;color:#111">
               🕹 Nintendo Switch</a></td>
           <td class="col-num" data-val="5.99">5.99 €</td>
           <td class="range-cell"><div class="range-track"><div class="range-iqr" style="left:5.3%;width:8.1%"></div><div class="range-median" style="left:8.4%"></div></div></td>
@@ -233,7 +233,7 @@
         </tr>
         <tr>
           <td><a href="javascript:void(0)" onclick="switchTab('cat_playstation')"
-                style="text-decoration:none;color:#1e293b">
+                style="text-decoration:none;color:#111">
               🎮 PlayStation 5</a></td>
           <td class="col-num" data-val="9.99">9.99 €</td>
           <td class="range-cell"><div class="range-track"><div class="range-iqr" style="left:1.9%;width:3.7%"></div><div class="range-median" style="left:3.2%"></div></div></td>
@@ -244,7 +244,7 @@
         </tr>
         <tr>
           <td><a href="javascript:void(0)" onclick="switchTab('cat_videospiele')"
-                style="text-decoration:none;color:#1e293b">
+                style="text-decoration:none;color:#111">
               👾 Videospiele</a></td>
           <td class="col-num" data-val="1.99">1.99 €</td>
           <td class="range-cell"><div class="range-track"><div class="range-iqr" style="left:4.8%;width:10.3%"></div><div class="range-median" style="left:8.6%"></div></div></td>
@@ -255,7 +255,7 @@
         </tr>
         <tr>
           <td><a href="javascript:void(0)" onclick="switchTab('cat_kopfhoerer')"
-                style="text-decoration:none;color:#1e293b">
+                style="text-decoration:none;color:#111">
               🎧 Kopfhörer</a></td>
           <td class="col-num" data-val="5.45">5.45 €</td>
           <td class="range-cell"><div class="range-track"><div class="range-iqr" style="left:3.5%;width:13.4%"></div><div class="range-median" style="left:7.9%"></div></div></td>
@@ -266,7 +266,7 @@
         </tr>
         <tr>
           <td><a href="javascript:void(0)" onclick="switchTab('cat_lautsprecher')"
-                style="text-decoration:none;color:#1e293b">
+                style="text-decoration:none;color:#111">
               🔊 Lautsprecher</a></td>
           <td class="col-num" data-val="5.05">5.05 €</td>
           <td class="range-cell"><div class="range-track"><div class="range-iqr" style="left:2.2%;width:8.6%"></div><div class="range-median" style="left:5.0%"></div></div></td>
@@ -277,7 +277,7 @@
         </tr>
         <tr>
           <td><a href="javascript:void(0)" onclick="switchTab('cat_smarthome')"
-                style="text-decoration:none;color:#1e293b">
+                style="text-decoration:none;color:#111">
               🏠 Smart Home</a></td>
           <td class="col-num" data-val="10.99">10.99 €</td>
           <td class="range-cell"><div class="range-track"><div class="range-iqr" style="left:8.5%;width:28.3%"></div><div class="range-median" style="left:15.3%"></div></div></td>
@@ -288,7 +288,7 @@
         </tr>
         <tr>
           <td><a href="javascript:void(0)" onclick="switchTab('cat_ssds')"
-                style="text-decoration:none;color:#1e293b">
+                style="text-decoration:none;color:#111">
               💾 Externe SSDs</a></td>
           <td class="col-num" data-val="9.73">9.73 €</td>
           <td class="range-cell"><div class="range-track"><div class="range-iqr" style="left:2.1%;width:11.0%"></div><div class="range-median" style="left:5.6%"></div></div></td>
@@ -299,7 +299,7 @@
         </tr>
         <tr>
           <td><a href="javascript:void(0)" onclick="switchTab('cat_netzwerk')"
-                style="text-decoration:none;color:#1e293b">
+                style="text-decoration:none;color:#111">
               📡 Netzwerk</a></td>
           <td class="col-num" data-val="6.99">6.99 €</td>
           <td class="range-cell"><div class="range-track"><div class="range-iqr" style="left:4.8%;width:12.7%"></div><div class="range-median" style="left:9.5%"></div></div></td>
@@ -310,7 +310,7 @@
         </tr>
         <tr>
           <td><a href="javascript:void(0)" onclick="switchTab('cat_ereader')"
-                style="text-decoration:none;color:#1e293b">
+                style="text-decoration:none;color:#111">
               📖 E-Reader</a></td>
           <td class="col-num" data-val="70.99">70.99 €</td>
           <td class="range-cell"><div class="range-track"><div class="range-iqr" style="left:12.1%;width:28.8%"></div><div class="range-median" style="left:24.9%"></div></div></td>
@@ -321,7 +321,7 @@
         </tr>
         <tr>
           <td><a href="javascript:void(0)" onclick="switchTab('cat_drucker')"
-                style="text-decoration:none;color:#1e293b">
+                style="text-decoration:none;color:#111">
               🖨 Drucker</a></td>
           <td class="col-num" data-val="18.13">18.13 €</td>
           <td class="range-cell"><div class="range-track"><div class="range-iqr" style="left:3.6%;width:9.1%"></div><div class="range-median" style="left:6.5%"></div></div></td>
@@ -332,7 +332,7 @@
         </tr>
         <tr>
           <td><a href="javascript:void(0)" onclick="switchTab('cat_smartwatches')"
-                style="text-decoration:none;color:#1e293b">
+                style="text-decoration:none;color:#111">
               ⌚ Smartwatches</a></td>
           <td class="col-num" data-val="14.99">14.99 €</td>
           <td class="range-cell"><div class="range-track"><div class="range-iqr" style="left:7.8%;width:28.7%"></div><div class="range-median" style="left:20.8%"></div></div></td>
@@ -343,7 +343,7 @@
         </tr>
         <tr>
           <td><a href="javascript:void(0)" onclick="switchTab('cat_monitore')"
-                style="text-decoration:none;color:#1e293b">
+                style="text-decoration:none;color:#111">
               🖥 Monitore</a></td>
           <td class="col-num" data-val="8.51">8.51 €</td>
           <td class="range-cell"><div class="range-track"><div class="range-iqr" style="left:3.9%;width:6.3%"></div><div class="range-median" style="left:6.1%"></div></div></td>
@@ -354,7 +354,7 @@
         </tr>
         <tr>
           <td><a href="javascript:void(0)" onclick="switchTab('cat_tablets')"
-                style="text-decoration:none;color:#1e293b">
+                style="text-decoration:none;color:#111">
               📟 Tablets</a></td>
           <td class="col-num" data-val="23.62">23.62 €</td>
           <td class="range-cell"><div class="range-track"><div class="range-iqr" style="left:6.3%;width:13.8%"></div><div class="range-median" style="left:10.6%"></div></div></td>
@@ -365,7 +365,7 @@
         </tr>
         <tr>
           <td><a href="javascript:void(0)" onclick="switchTab('cat_smartphones')"
-                style="text-decoration:none;color:#1e293b">
+                style="text-decoration:none;color:#111">
               📱 Smartphones</a></td>
           <td class="col-num" data-val="7.99">7.99 €</td>
           <td class="range-cell"><div class="range-track"><div class="range-iqr" style="left:5.4%;width:18.8%"></div><div class="range-median" style="left:11.7%"></div></div></td>
@@ -376,7 +376,7 @@
         </tr>
         <tr>
           <td><a href="javascript:void(0)" onclick="switchTab('cat_fernseher')"
-                style="text-decoration:none;color:#1e293b">
+                style="text-decoration:none;color:#111">
               📺 Fernseher</a></td>
           <td class="col-num" data-val="10.45">10.45 €</td>
           <td class="range-cell"><div class="range-track"><div class="range-iqr" style="left:2.3%;width:6.0%"></div><div class="range-median" style="left:4.1%"></div></div></td>
@@ -387,7 +387,7 @@
         </tr>
         <tr>
           <td><a href="javascript:void(0)" onclick="switchTab('cat_kameras')"
-                style="text-decoration:none;color:#1e293b">
+                style="text-decoration:none;color:#111">
               📷 Kameras</a></td>
           <td class="col-num" data-val="14.81">14.81 €</td>
           <td class="range-cell"><div class="range-track"><div class="range-iqr" style="left:4.1%;width:22.0%"></div><div class="range-median" style="left:13.5%"></div></div></td>
@@ -398,7 +398,7 @@
         </tr>
         <tr>
           <td><a href="javascript:void(0)" onclick="switchTab('cat_desktop')"
-                style="text-decoration:none;color:#1e293b">
+                style="text-decoration:none;color:#111">
               🖥 Desktop-PCs</a></td>
           <td class="col-num" data-val="12.14">12.14 €</td>
           <td class="range-cell"><div class="range-track"><div class="range-iqr" style="left:7.5%;width:12.9%"></div><div class="range-median" style="left:15.4%"></div></div></td>
@@ -409,7 +409,7 @@
         </tr>
         <tr>
           <td><a href="javascript:void(0)" onclick="switchTab('cat_notebooks')"
-                style="text-decoration:none;color:#1e293b">
+                style="text-decoration:none;color:#111">
               💻 Notebooks</a></td>
           <td class="col-num" data-val="22.5">22.50 €</td>
           <td class="range-cell"><div class="range-track"><div class="range-iqr" style="left:14.4%;width:16.8%"></div><div class="range-median" style="left:20.2%"></div></div></td>
