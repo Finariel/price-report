@@ -116,6 +116,17 @@
                padding: 6px 12px; font-size: 12px; }
   .meta-chip strong { color: #1e293b; }
   .no-data { text-align: center; padding: 40px; color: #94a3b8; font-size: 14px; }
+
+  /* ── Info-Box ── */
+  .info-box { background: #f0f9ff; border: 1px solid #bae6fd; border-left: 4px solid #0ea5e9;
+              border-radius: 8px; padding: 16px 20px; margin-bottom: 20px; font-size: 13px;
+              line-height: 1.5; }
+  .info-box h2 { font-size: 14px; font-weight: 700; color: #0369a1; margin-bottom: 12px; }
+  .info-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+               gap: 12px; }
+  .info-col { background: white; border-radius: 6px; padding: 10px 12px;
+              border: 1px solid #e0f2fe; font-size: 12px; line-height: 1.6; }
+  .info-col b { display: block; margin-bottom: 4px; color: #1e293b; font-size: 13px; }
 </style>
 </head>
 <body>
@@ -130,6 +141,41 @@
 </div>
 
 <div class="tab-content active" id="overview">
+<div class="info-box">
+  <h2>📖 So liest du diesen Report</h2>
+  <div class="info-cols">
+    <div class="info-col">
+      <b>Wozu dient das?</b>
+      Historische Amazon-Preisdaten von 5.000+ Elektronikprodukten zeigen,
+      welche Kategorien und Produkte bei Sale-Events wirklich günstiger werden —
+      und um wie viel. Basis sind echte Kaufpreise, keine UVP-Tricksereien.
+    </div>
+    <div class="info-col">
+      <b>Navigation</b>
+      <b>📊 Übersicht</b> = alle Events im Vergleich<br>
+      <b>🖤 Event-Tabs</b> = Klick für Detailauswertung mit Produktliste<br>
+      <b>🔍 Auto-Detect</b> = algorithmisch erkannte Einbrüche ohne festen Termin<br>
+      Klick auf Spaltenköpfe sortiert die Tabelle.
+    </div>
+    <div class="info-col">
+      <b>Spalten-Erklärung</b>
+      <b>Ø Vorher</b> = Median-Preis 30 Tage vor dem Event<br>
+      <b>Event-Min</b> = günstigster Preis im Event-Zeitraum<br>
+      <b>Rabatt</b> = prozentuale Ersparnis gegenüber Vorher<br>
+      <b>Deal-Dauer</b> = wie viele Tage war das Angebot aktiv<br>
+      <b>Ø Nachher</b> = Preis 30 Tage nach dem Event
+    </div>
+    <div class="info-col">
+      <b>Farb-Bedeutung (Rabatt)</b>
+      🟢 <b>Grün</b> = ≥ 20% — sehr gutes Angebot<br>
+      🟡 <b>Gelb</b> = 10–20% — solides Angebot<br>
+      ⚫ <b>Grau</b> = &lt; 10% — marginal<br><br>
+      <b>Tipp:</b> „Ø Nachher" nahe am „Event-Min" bedeutet: der Preis
+      ist dauerhaft gefallen, kein echter Sale-Effekt.
+    </div>
+  </div>
+</div>
+
     <p class="section-title">Alle Events</p>
     <div class="event-cards">
         <div class="event-card">

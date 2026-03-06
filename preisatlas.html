@@ -106,10 +106,51 @@
 
   .no-data { text-align: center; padding: 32px; color: #94a3b8; font-size: 14px; }
   .section-title { font-size: 14px; font-weight: 700; margin: 16px 0 8px; }
+
+  /* Info-Box */
+  .info-box { background: #f0f9ff; border: 1px solid #bae6fd; border-left: 4px solid #0ea5e9;
+              border-radius: 8px; padding: 16px 20px; margin: 16px; font-size: 13px; line-height: 1.5; }
+  .info-box h2 { font-size: 14px; font-weight: 700; color: #0369a1; margin-bottom: 12px; }
+  .info-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .info-col { background: white; border-radius: 6px; padding: 10px 12px;
+              border: 1px solid #e0f2fe; font-size: 12px; line-height: 1.6; }
+  .info-col b { display: block; margin-bottom: 4px; color: #1e293b; font-size: 13px; }
 </style>
 </head>
 <body>
 <div class="header"><h1>🗺 Kategorie-Preisatlas</h1><p class="sub">21 Kategorien · 5456 Produkte · Stand: 2026-03-06</p></div>
+
+<div class="info-box">
+  <h2>📖 So liest du diesen Report</h2>
+  <div class="info-cols">
+    <div class="info-col">
+      <b>Wozu dient das?</b>
+      Zeigt die typische Preisspanne jeder Elektronik-Kategorie — abgeleitet aus
+      echten Amazon-Preisen. Wenn ein Notebook für 400&nbsp;€ inseriert ist und
+      der Median bei 747&nbsp;€ liegt, ist das objektiv ein gutes Angebot.
+    </div>
+    <div class="info-col">
+      <b>IQR-Balken (Übersicht-Tab)</b>
+      Der <b>blaue Balken</b> = mittlere 50% aller Produkte (Q1–Q3).
+      Der <b>senkrechte Strich</b> = Median-Preis.<br>
+      Je breiter der Balken, desto mehr Preisvariation in der Kategorie.
+      Klick auf den Kategorie-Namen öffnet die Detailansicht.
+    </div>
+    <div class="info-col">
+      <b>Preis-Tiers</b>
+      <span style="color:#059669">■</span> <b>Budget</b> = günstigstes Drittel<br>
+      <span style="color:#2563eb">■</span> <b>Mittelklasse</b> = mittleres Drittel<br>
+      <span style="color:#7c3aed">■</span> <b>Premium</b> = oberes Drittel<br>
+      Tiers basieren auf echten Marktpreisen, nicht auf Herstellerkategorien.
+    </div>
+    <div class="info-col">
+      <b>Volatilität &amp; ATL</b>
+      <b>Volatilität</b> = Ø Preisschwankung. Hoch = oft im Sale.<br>
+      <b>⭐ ATL</b> in Produktlisten = Preis liegt nahe am
+      All-Time-Low — historisch günstiger war das Produkt kaum.
+    </div>
+  </div>
+</div>
 <div class="tabs" id="main-tabs"><button class="tab-btn active" data-tab="overview">📊 Übersicht</button>
 <button class="tab-btn" data-tab="cat_smartphones">📱 Smartphones</button>
 <button class="tab-btn" data-tab="cat_notebooks">💻 Notebooks</button>
