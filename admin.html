@@ -62,12 +62,55 @@
   .token-info { font-size: 12px; color: var(--dim); margin-top: 8px; }
 
   .json-preview { background: #1d1d1f; color: #e5e5ea; border-radius: 8px; padding: 16px; font-family: 'SF Mono', Menlo, monospace; font-size: 12px; overflow-x: auto; white-space: pre; max-height: 200px; overflow-y: auto; margin-top: 12px; display: none; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 0; margin-bottom: 32px; border-bottom: 1px solid var(--border); }
+  .tab { padding: 10px 24px; font-size: 15px; font-weight: 600; color: var(--dim); cursor: pointer; border-bottom: 2px solid transparent; transition: all .15s; }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Dashboard */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .stat-box { background: var(--bg); border-radius: 10px; padding: 16px; text-align: center; }
+  .stat-value { font-size: 28px; font-weight: 700; }
+  .stat-label { font-size: 12px; color: var(--dim); margin-top: 4px; }
+  .stat-value.green { color: var(--green); }
+  .stat-value.red { color: var(--red); }
+  .stat-value.orange { color: #ff9500; }
+
+  .failed-item { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid #f0f0f0; }
+  .failed-item:last-child { border-bottom: none; }
+  .failed-info { flex: 1; min-width: 0; }
+  .failed-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .failed-meta { font-size: 12px; color: var(--dim); margin-top: 2px; }
+  .failed-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+  .btn-danger { background: var(--red); color: #fff; }
+  .btn-danger:hover { background: #e8352b; }
+  .btn-warning { background: #ff9500; color: #fff; }
+  .btn-warning:hover { background: #e68600; }
+
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+  .badge-red { background: #fde8e8; color: var(--red); }
+  .badge-orange { background: #fff3e0; color: #e68600; }
+  .badge-gray { background: #f0f0f0; color: var(--dim); }
 </style>
 </head>
 <body>
 <div class="container">
   <h1>Price Engine Admin</h1>
-  <p class="subtitle">Produkte zur zentralen Preisdatenbank hinzufügen</p>
+  <p class="subtitle">Zentrale Preisverwaltung</p>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('add')">Produkt hinzufügen</div>
+    <div class="tab" onclick="switchTab('dashboard')">Datenbank-Status</div>
+  </div>
+
+  <!-- TAB: Add Product -->
+  <div class="tab-content active" id="tab-add">
 
   <!-- Settings -->
   <div class="card">
@@ -157,6 +200,56 @@
     <div class="json-preview" id="json-preview"></div>
     <div id="submit-status"></div>
   </div>
+
+  </div><!-- /tab-add -->
+
+  <!-- TAB: Dashboard -->
+  <div class="tab-content" id="tab-dashboard">
+
+    <!-- Stats -->
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h2>Datenbank-Übersicht</h2>
+        <button class="btn btn-outline btn-sm" onclick="loadDashboard()">🔄 Aktualisieren</button>
+      </div>
+      <div id="db-loading" class="status status-loading" style="display:none;">Lade Datenbank von GitHub ...</div>
+      <div class="stats-grid" id="stats-grid" style="display:none;">
+        <div class="stat-box"><div class="stat-value" id="stat-total">—</div><div class="stat-label">Produkte gesamt</div></div>
+        <div class="stat-box"><div class="stat-value green" id="stat-ok">—</div><div class="stat-label">Mit Preis</div></div>
+        <div class="stat-box"><div class="stat-value red" id="stat-failed">—</div><div class="stat-label">Fehlgeschlagen</div></div>
+        <div class="stat-box"><div class="stat-value orange" id="stat-stale">—</div><div class="stat-label">Veraltet (>3 Tage)</div></div>
+      </div>
+      <div id="stats-sources" style="display:none;margin-top:12px;font-size:13px;color:var(--dim);"></div>
+    </div>
+
+    <!-- Problem Products -->
+    <div class="card" id="problems-card" style="display:none;">
+      <h2>Probleme</h2>
+      <p style="font-size:13px;color:var(--dim);margin-bottom:16px;">Produkte ohne Preis oder mit veralteten Daten. Prüfe auf Amazon ob das Produkt noch existiert.</p>
+
+      <!-- Filter -->
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+        <button class="btn btn-sm btn-outline filter-btn active" onclick="filterProblems('all')">Alle</button>
+        <button class="btn btn-sm btn-outline filter-btn" onclick="filterProblems('no-price')">Kein Preis</button>
+        <button class="btn btn-sm btn-outline filter-btn" onclick="filterProblems('stale')">Veraltet</button>
+      </div>
+
+      <div id="problems-list"></div>
+      <div id="problems-status"></div>
+    </div>
+
+    <!-- Bulk Actions -->
+    <div class="card" id="bulk-card" style="display:none;">
+      <h2>Aktionen</h2>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <button class="btn btn-warning btn-sm" onclick="retryAllFailed()">↻ Alle fehlgeschlagenen erneut abrufen</button>
+        <button class="btn btn-danger btn-sm" onclick="confirmDeleteAllFailed()">🗑 Alle ohne Preis entfernen</button>
+      </div>
+      <div id="bulk-status" style="margin-top:12px;"></div>
+    </div>
+
+  </div><!-- /tab-dashboard -->
+
 </div>
 
 <script>
@@ -457,6 +550,314 @@ async function submitProducts() {
   document.getElementById('submit-btn').disabled = false;
 }
 
+// ── Tabs ──────────────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelector(`#tab-${name}`).classList.add('active');
+  document.querySelectorAll('.tab')[name === 'add' ? 0 : 1].classList.add('active');
+  if (name === 'dashboard' && !dashboardLoaded) loadDashboard();
+}
+
+// ── Dashboard ─────────────────────────────────────────────────────────
+let dashboardLoaded = false;
+let dbData = {};
+let problemProducts = [];
+
+async function loadDashboard() {
+  const token = document.getElementById('gh-token').value.trim() || localStorage.getItem('gh_token');
+  if (!token) {
+    document.getElementById('db-loading').innerHTML = '<div class="status status-error">GitHub Token fehlt. Bitte in Einstellungen (Tab "Produkt hinzufügen") eingeben.</div>';
+    document.getElementById('db-loading').style.display = 'block';
+    return;
+  }
+
+  document.getElementById('db-loading').style.display = 'block';
+  document.getElementById('db-loading').innerHTML = '<div class="status status-loading">Lade Datenbank von GitHub ...</div>';
+  document.getElementById('stats-grid').style.display = 'none';
+  document.getElementById('problems-card').style.display = 'none';
+  document.getElementById('bulk-card').style.display = 'none';
+
+  try {
+    const resp = await fetch(
+      'https://api.github.com/repos/Finariel/claude-skills/contents/.claude/skills/price-engine/prices_db.json',
+      { headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' } }
+    );
+    if (!resp.ok) throw new Error(`GitHub API Fehler ${resp.status}`);
+    const meta = await resp.json();
+    const content = atob(meta.content.replace(/\n/g, ''));
+    dbData = JSON.parse(content);
+    window._dbSha = meta.sha;
+
+    analyzeDb();
+    dashboardLoaded = true;
+  } catch (e) {
+    document.getElementById('db-loading').innerHTML = `<div class="status status-error">${e.message}</div>`;
+  }
+}
+
+function analyzeDb() {
+  const entries = Object.entries(dbData);
+  const now = Date.now();
+  const threeDays = 3 * 24 * 60 * 60 * 1000;
+
+  let total = 0, ok = 0, failed = 0, stale = 0;
+  const sourceCounts = {};
+  problemProducts = [];
+
+  for (const [asin, entry] of entries) {
+    total++;
+    const hasPrice = entry.current_price != null && entry.current_price > 0;
+    const prices = entry.prices || [];
+    const lastDate = prices.length ? new Date(prices[prices.length - 1].date) : null;
+    const isStale = hasPrice && lastDate && (now - lastDate.getTime() > threeDays);
+
+    if (!hasPrice) {
+      failed++;
+      problemProducts.push({ asin, entry, reason: 'no-price', label: 'Kein Preis' });
+    } else if (isStale) {
+      stale++;
+      problemProducts.push({ asin, entry, reason: 'stale', label: 'Veraltet' });
+    } else {
+      ok++;
+    }
+
+    for (const src of (entry.sources || [])) {
+      sourceCounts[src] = (sourceCounts[src] || 0) + 1;
+    }
+  }
+
+  document.getElementById('db-loading').style.display = 'none';
+  document.getElementById('stats-grid').style.display = 'grid';
+
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-ok').textContent = ok;
+  document.getElementById('stat-failed').textContent = failed;
+  document.getElementById('stat-stale').textContent = stale;
+
+  const srcText = Object.entries(sourceCounts).map(([k, v]) => `${k}: ${v}`).join(' · ');
+  const srcEl = document.getElementById('stats-sources');
+  srcEl.innerHTML = `<strong>Sources:</strong> ${srcText}`;
+  srcEl.style.display = 'block';
+
+  if (problemProducts.length > 0) {
+    document.getElementById('problems-card').style.display = 'block';
+    document.getElementById('bulk-card').style.display = 'block';
+    renderProblems('all');
+  }
+}
+
+function renderProblems(filter) {
+  const list = document.getElementById('problems-list');
+  const filtered = filter === 'all' ? problemProducts : problemProducts.filter(p => p.reason === filter);
+
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.filter-btn[onclick*="${filter}"]`).classList.add('active');
+
+  if (!filtered.length) {
+    list.innerHTML = '<p style="color:var(--dim);font-size:14px;padding:12px 0;">Keine Probleme in dieser Kategorie.</p>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(p => {
+    const e = p.entry;
+    const name = (e.name || p.asin).substring(0, 60);
+    const sources = (e.sources || []).join(', ');
+    const added = e.added || '?';
+    const prices = (e.prices || []).length;
+    const badgeClass = p.reason === 'no-price' ? 'badge-red' : 'badge-orange';
+    const amazonUrl = e.amazon_url || `https://www.amazon.de/dp/${p.asin}`;
+
+    return `
+      <div class="failed-item" data-reason="${p.reason}">
+        <div class="failed-info">
+          <div class="failed-name">${name}</div>
+          <div class="failed-meta">
+            ${p.asin} · Sources: ${sources} · Hinzugefügt: ${added} · ${prices} Preisdatenpunkte
+            <span class="badge ${badgeClass}">${p.label}</span>
+          </div>
+        </div>
+        <div class="failed-actions">
+          <a href="${amazonUrl}" target="_blank" class="btn btn-outline btn-sm" title="Auf Amazon prüfen">🔗</a>
+          <button class="btn btn-warning btn-sm" onclick="retrySingle('${p.asin}')" title="Erneut abrufen">↻</button>
+          <button class="btn btn-danger btn-sm" onclick="confirmDelete('${p.asin}', '${name.replace(/'/g, "\\'")}')">🗑</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function filterProblems(filter) { renderProblems(filter); }
+
+// ── Single Retry (Keepa direkt im Browser) ────────────────────────────
+async function retrySingle(asin) {
+  const key = document.getElementById('keepa-key').value.trim() || localStorage.getItem('keepa_key');
+  if (!key) {
+    showStatus('problems-status', 'Keepa API Key fehlt. Bitte in Einstellungen eingeben.', 'error');
+    return;
+  }
+
+  showStatus('problems-status', `Rufe ${asin} bei Keepa ab ...`, 'loading');
+
+  try {
+    const resp = await fetch(`https://api.keepa.com/product?key=${encodeURIComponent(key)}&domain=3&asin=${asin}`);
+    if (!resp.ok) throw new Error(`Keepa Fehler ${resp.status}`);
+    const data = await resp.json();
+    const product = (data.products || [])[0];
+
+    if (!product) {
+      showStatus('problems-status', `${asin}: Nicht bei Keepa gefunden. Wahrscheinlich nicht mehr verfügbar — ggf. löschen.`, 'error');
+      return;
+    }
+
+    const price = getCurrentPrice(product);
+    if (!price) {
+      showStatus('problems-status', `${asin}: Bei Keepa gefunden, aber kein aktueller Preis. Produkt vermutlich ausverkauft.`, 'error');
+      return;
+    }
+
+    const priceStr = (price / 100).toFixed(2).replace('.', ',') + ' €';
+    showStatus('problems-status',
+      `${asin}: Preis gefunden: ${priceStr}. Wird beim nächsten Nightly-Run aktualisiert.`,
+      'success');
+
+  } catch (e) {
+    showStatus('problems-status', e.message, 'error');
+  }
+}
+
+// ── Delete (via GitHub API) ───────────────────────────────────────────
+function confirmDelete(asin, name) {
+  if (!confirm(`"${name}" (${asin}) wirklich aus der Datenbank entfernen?\n\nDiese Aktion kann nicht rückgängig gemacht werden.`)) return;
+  deleteSingle(asin);
+}
+
+async function deleteSingle(asin) {
+  const token = document.getElementById('gh-token').value.trim() || localStorage.getItem('gh_token');
+  if (!token) { showStatus('problems-status', 'GitHub Token fehlt.', 'error'); return; }
+
+  showStatus('problems-status', `Lösche ${asin} ...`, 'loading');
+
+  try {
+    delete dbData[asin];
+    const newContent = btoa(unescape(encodeURIComponent(JSON.stringify(dbData, null, 2))));
+
+    const resp = await fetch(
+      'https://api.github.com/repos/Finariel/claude-skills/contents/.claude/skills/price-engine/prices_db.json',
+      {
+        method: 'PUT',
+        headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: `Admin: ${asin} aus Datenbank entfernt`,
+          content: newContent,
+          sha: window._dbSha,
+        }),
+      }
+    );
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(`GitHub API Fehler ${resp.status}: ${err.message || 'Unbekannt'}`);
+    }
+
+    const result = await resp.json();
+    window._dbSha = result.content.sha;
+
+    showStatus('problems-status', `${asin} erfolgreich gelöscht.`, 'success');
+    analyzeDb();
+
+  } catch (e) {
+    showStatus('problems-status', e.message, 'error');
+  }
+}
+
+function confirmDeleteAllFailed() {
+  const noPrice = problemProducts.filter(p => p.reason === 'no-price');
+  if (!noPrice.length) {
+    showStatus('bulk-status', 'Keine Produkte ohne Preis vorhanden.', 'info');
+    return;
+  }
+  if (!confirm(`${noPrice.length} Produkt(e) ohne Preis wirklich entfernen?\n\n${noPrice.map(p => p.asin).join(', ')}\n\nKann nicht rückgängig gemacht werden.`)) return;
+  deleteMultiple(noPrice.map(p => p.asin));
+}
+
+async function deleteMultiple(asins) {
+  const token = document.getElementById('gh-token').value.trim() || localStorage.getItem('gh_token');
+  if (!token) { showStatus('bulk-status', 'GitHub Token fehlt.', 'error'); return; }
+
+  showStatus('bulk-status', `Lösche ${asins.length} Produkt(e) ...`, 'loading');
+
+  try {
+    for (const asin of asins) delete dbData[asin];
+    const newContent = btoa(unescape(encodeURIComponent(JSON.stringify(dbData, null, 2))));
+
+    const resp = await fetch(
+      'https://api.github.com/repos/Finariel/claude-skills/contents/.claude/skills/price-engine/prices_db.json',
+      {
+        method: 'PUT',
+        headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: `Admin: ${asins.length} Produkt(e) entfernt [${asins.join(', ')}]`,
+          content: newContent,
+          sha: window._dbSha,
+        }),
+      }
+    );
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(`GitHub API Fehler ${resp.status}: ${err.message || 'Unbekannt'}`);
+    }
+
+    const result = await resp.json();
+    window._dbSha = result.content.sha;
+
+    showStatus('bulk-status', `${asins.length} Produkt(e) erfolgreich gelöscht.`, 'success');
+    analyzeDb();
+
+  } catch (e) {
+    showStatus('bulk-status', e.message, 'error');
+  }
+}
+
+async function retryAllFailed() {
+  const noPrice = problemProducts.filter(p => p.reason === 'no-price');
+  if (!noPrice.length) {
+    showStatus('bulk-status', 'Keine fehlgeschlagenen Produkte vorhanden.', 'info');
+    return;
+  }
+
+  const key = document.getElementById('keepa-key').value.trim() || localStorage.getItem('keepa_key');
+  if (!key) { showStatus('bulk-status', 'Keepa API Key fehlt.', 'error'); return; }
+
+  showStatus('bulk-status', `Prüfe ${noPrice.length} Produkt(e) bei Keepa ...`, 'loading');
+
+  let found = 0, notFound = 0;
+  const asins = noPrice.map(p => p.asin);
+  try {
+    const resp = await fetch(`https://api.keepa.com/product?key=${encodeURIComponent(key)}&domain=3&asin=${asins.join(',')}`);
+    if (!resp.ok) throw new Error(`Keepa Fehler ${resp.status}`);
+    const data = await resp.json();
+
+    for (const product of (data.products || [])) {
+      const price = getCurrentPrice(product);
+      if (price) found++;
+      else notFound++;
+    }
+
+    const missing = asins.length - (data.products || []).length;
+    notFound += missing;
+
+    showStatus('bulk-status',
+      `Ergebnis: ${found} mit Preis, ${notFound} weiterhin ohne Preis. ` +
+      (found > 0 ? 'Preise werden beim nächsten Nightly-Run aktualisiert.' : 'Alle nicht verfügbar — ggf. löschen.'),
+      found > 0 ? 'success' : 'error');
+
+  } catch (e) {
+    showStatus('bulk-status', e.message, 'error');
+  }
+}
+
 // ── Init ───────────────────────────────────────────────────────────────────
 loadSettings();
 
@@ -464,6 +865,9 @@ loadSettings();
 document.getElementById('product-input').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') searchProduct();
 });
+
+// URL-Hash für direkten Tab-Zugriff
+if (window.location.hash === '#dashboard') switchTab('dashboard');
 </script>
 </body>
 </html>
