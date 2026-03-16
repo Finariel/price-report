@@ -55,7 +55,6 @@
 
   .select-actions { display: flex; gap: 8px; margin-bottom: 12px; }
 
-  #settings-panel { display: none; }
   .settings-row { display: flex; gap: 12px; align-items: flex-end; margin-bottom: 12px; }
   .settings-row > div { flex: 1; }
 
@@ -107,35 +106,11 @@
   <div class="tabs">
     <div class="tab active" onclick="switchTab('add')">Produkt hinzufügen</div>
     <div class="tab" onclick="switchTab('dashboard')">Datenbank-Status</div>
+    <div class="tab" onclick="switchTab('settings')">Einstellungen</div>
   </div>
 
   <!-- TAB: Add Product -->
   <div class="tab-content active" id="tab-add">
-
-  <!-- Settings -->
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <h2>Einstellungen</h2>
-      <button class="btn btn-outline btn-sm" onclick="toggleSettings()">Anzeigen</button>
-    </div>
-    <div id="settings-panel">
-      <div class="settings-row">
-        <div>
-          <label>Keepa API Key</label>
-          <input type="text" id="keepa-key" placeholder="Keepa API Key eingeben ..." value="">
-        </div>
-        <div>
-          <label>GitHub Token (PAT)</label>
-          <input type="text" id="gh-token" placeholder="ghp_... (für workflow_dispatch)">
-        </div>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:8px;">
-        <button class="btn btn-outline btn-sm" onclick="saveSettings()">Speichern (localStorage)</button>
-        <button class="btn btn-outline btn-sm" onclick="clearSettings()">Löschen</button>
-      </div>
-      <p class="token-info">Keys werden nur lokal im Browser gespeichert (localStorage). Nie an Dritte übermittelt.</p>
-    </div>
-  </div>
 
   <!-- Product Input -->
   <div class="card">
@@ -250,6 +225,29 @@
 
   </div><!-- /tab-dashboard -->
 
+  <!-- TAB: Settings -->
+  <div class="tab-content" id="tab-settings">
+    <div class="card">
+      <h2>API-Schlüssel</h2>
+      <p style="font-size:13px;color:var(--dim);margin-bottom:16px;">Keys werden nur lokal im Browser gespeichert (localStorage). Nie an Dritte übermittelt.</p>
+      <div class="settings-row">
+        <div>
+          <label>Keepa API Key</label>
+          <input type="text" id="keepa-key" placeholder="Keepa API Key eingeben ..." value="">
+        </div>
+        <div>
+          <label>GitHub Token (PAT)</label>
+          <input type="text" id="gh-token" placeholder="ghp_... (für workflow_dispatch + DB-Zugriff)">
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px;">
+        <button class="btn btn-primary btn-sm" onclick="saveSettings()">Speichern</button>
+        <button class="btn btn-outline btn-sm" onclick="clearSettings()">Löschen</button>
+      </div>
+      <div id="settings-status"></div>
+    </div>
+  </div><!-- /tab-settings -->
+
 </div>
 
 <script>
@@ -259,21 +257,17 @@ let parentAsin = '';
 let parentProduct = null;
 
 // ── Settings ───────────────────────────────────────────────────────────────
-function toggleSettings() {
-  const el = document.getElementById('settings-panel');
-  el.style.display = el.style.display === 'none' ? 'block' : 'none';
-}
 function saveSettings() {
   localStorage.setItem('keepa_key', document.getElementById('keepa-key').value.trim());
   localStorage.setItem('gh_token', document.getElementById('gh-token').value.trim());
-  showStatus('search-status', 'Einstellungen gespeichert.', 'success');
+  showStatus('settings-status', 'Einstellungen gespeichert.', 'success');
 }
 function clearSettings() {
   localStorage.removeItem('keepa_key');
   localStorage.removeItem('gh_token');
   document.getElementById('keepa-key').value = '';
   document.getElementById('gh-token').value = '';
-  showStatus('search-status', 'Einstellungen gelöscht.', 'info');
+  showStatus('settings-status', 'Einstellungen gelöscht.', 'info');
 }
 function loadSettings() {
   document.getElementById('keepa-key').value = localStorage.getItem('keepa_key') || '';
@@ -555,7 +549,8 @@ function switchTab(name) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelector(`#tab-${name}`).classList.add('active');
-  document.querySelectorAll('.tab')[name === 'add' ? 0 : 1].classList.add('active');
+  const tabIndex = { add: 0, dashboard: 1, settings: 2 }[name] || 0;
+  document.querySelectorAll('.tab')[tabIndex].classList.add('active');
   if (name === 'dashboard' && !dashboardLoaded) loadDashboard();
 }
 
@@ -567,7 +562,7 @@ let problemProducts = [];
 async function loadDashboard() {
   const token = document.getElementById('gh-token').value.trim() || localStorage.getItem('gh_token');
   if (!token) {
-    document.getElementById('db-loading').innerHTML = '<div class="status status-error">GitHub Token fehlt. Bitte in Einstellungen (Tab "Produkt hinzufügen") eingeben.</div>';
+    document.getElementById('db-loading').innerHTML = '<div class="status status-error">GitHub Token fehlt. Bitte im Tab "Einstellungen" eingeben.</div>';
     document.getElementById('db-loading').style.display = 'block';
     return;
   }
@@ -579,15 +574,55 @@ async function loadDashboard() {
   document.getElementById('bulk-card').style.display = 'none';
 
   try {
-    const resp = await fetch(
-      'https://api.github.com/repos/Finariel/claude-skills/contents/.claude/skills/price-engine/prices_db.json',
-      { headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' } }
+    // Schritt 1: SHA der Datei holen (Contents API liefert Metadaten auch bei >1MB)
+    const dbPath = '.claude/skills/price-engine/prices_db.json';
+    const headers = { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' };
+    let fileSha;
+
+    const metaResp = await fetch(
+      `https://api.github.com/repos/Finariel/claude-skills/contents/${dbPath}`,
+      { headers }
     );
-    if (!resp.ok) throw new Error(`GitHub API Fehler ${resp.status}`);
-    const meta = await resp.json();
-    const content = atob(meta.content.replace(/\n/g, ''));
+    if (metaResp.ok) {
+      const meta = metaResp.headers.get('content-type')?.includes('json')
+        ? await metaResp.json() : null;
+      if (meta && meta.sha) {
+        fileSha = meta.sha;
+        // Falls Content mitgeliefert wurde (<1MB), direkt nutzen
+        if (meta.content) {
+          const content = decodeURIComponent(escape(atob(meta.content.replace(/\n/g, ''))));
+          dbData = JSON.parse(content);
+          window._dbSha = fileSha;
+          analyzeDb();
+          dashboardLoaded = true;
+          return;
+        }
+      }
+    }
+
+    // Fallback: SHA über Git Trees holen
+    if (!fileSha) {
+      const treeResp = await fetch(
+        'https://api.github.com/repos/Finariel/claude-skills/git/trees/main?recursive=1',
+        { headers }
+      );
+      if (!treeResp.ok) throw new Error(`GitHub API Fehler ${treeResp.status}`);
+      const tree = await treeResp.json();
+      const entry = (tree.tree || []).find(e => e.path === dbPath);
+      if (!entry) throw new Error('prices_db.json nicht im Repository gefunden');
+      fileSha = entry.sha;
+    }
+
+    // Schritt 2: Content über Git Blobs API laden (unterstützt bis 100MB)
+    const blobResp = await fetch(
+      `https://api.github.com/repos/Finariel/claude-skills/git/blobs/${fileSha}`,
+      { headers }
+    );
+    if (!blobResp.ok) throw new Error(`GitHub Blob API Fehler ${blobResp.status}`);
+    const blob = await blobResp.json();
+    const content = decodeURIComponent(escape(atob(blob.content.replace(/\n/g, ''))));
     dbData = JSON.parse(content);
-    window._dbSha = meta.sha;
+    window._dbSha = fileSha;
 
     analyzeDb();
     dashboardLoaded = true;
@@ -867,7 +902,8 @@ document.getElementById('product-input').addEventListener('keydown', function(e)
 });
 
 // URL-Hash für direkten Tab-Zugriff
-if (window.location.hash === '#dashboard') switchTab('dashboard');
+const hash = window.location.hash.replace('#', '');
+if (['dashboard', 'settings'].includes(hash)) switchTab(hash);
 </script>
 </body>
 </html>
