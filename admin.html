@@ -579,7 +579,7 @@ async function loadDashboard() {
 
     // Schritt 1: SHA über Git Trees holen (funktioniert unabhängig von Dateigröße)
     const refResp = await fetch(
-      'https://api.github.com/repos/Finariel/claude-skills/git/ref/heads/main',
+      'https://api.github.com/repos/Finariel/claude-skills/git/refs/heads/main',
       { headers }
     );
     if (!refResp.ok) throw new Error(`GitHub Ref API Fehler ${refResp.status}`);
