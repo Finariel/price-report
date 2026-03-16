@@ -574,44 +574,27 @@ async function loadDashboard() {
   document.getElementById('bulk-card').style.display = 'none';
 
   try {
-    // Schritt 1: SHA der Datei holen (Contents API liefert Metadaten auch bei >1MB)
     const dbPath = '.claude/skills/price-engine/prices_db.json';
     const headers = { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' };
-    let fileSha;
 
-    const metaResp = await fetch(
-      `https://api.github.com/repos/Finariel/claude-skills/contents/${dbPath}`,
+    // Schritt 1: SHA über Git Trees holen (funktioniert unabhängig von Dateigröße)
+    const refResp = await fetch(
+      'https://api.github.com/repos/Finariel/claude-skills/git/ref/heads/main',
       { headers }
     );
-    if (metaResp.ok) {
-      const meta = metaResp.headers.get('content-type')?.includes('json')
-        ? await metaResp.json() : null;
-      if (meta && meta.sha) {
-        fileSha = meta.sha;
-        // Falls Content mitgeliefert wurde (<1MB), direkt nutzen
-        if (meta.content) {
-          const content = decodeURIComponent(escape(atob(meta.content.replace(/\n/g, ''))));
-          dbData = JSON.parse(content);
-          window._dbSha = fileSha;
-          analyzeDb();
-          dashboardLoaded = true;
-          return;
-        }
-      }
-    }
+    if (!refResp.ok) throw new Error(`GitHub Ref API Fehler ${refResp.status}`);
+    const ref = await refResp.json();
+    const commitSha = ref.object.sha;
 
-    // Fallback: SHA über Git Trees holen
-    if (!fileSha) {
-      const treeResp = await fetch(
-        'https://api.github.com/repos/Finariel/claude-skills/git/trees/main?recursive=1',
-        { headers }
-      );
-      if (!treeResp.ok) throw new Error(`GitHub API Fehler ${treeResp.status}`);
-      const tree = await treeResp.json();
-      const entry = (tree.tree || []).find(e => e.path === dbPath);
-      if (!entry) throw new Error('prices_db.json nicht im Repository gefunden');
-      fileSha = entry.sha;
-    }
+    const treeResp = await fetch(
+      `https://api.github.com/repos/Finariel/claude-skills/git/trees/${commitSha}?recursive=1`,
+      { headers }
+    );
+    if (!treeResp.ok) throw new Error(`GitHub Tree API Fehler ${treeResp.status}`);
+    const tree = await treeResp.json();
+    const entry = (tree.tree || []).find(e => e.path === dbPath);
+    if (!entry) throw new Error('prices_db.json nicht im Repository gefunden');
+    const fileSha = entry.sha;
 
     // Schritt 2: Content über Git Blobs API laden (unterstützt bis 100MB)
     const blobResp = await fetch(
@@ -620,7 +603,10 @@ async function loadDashboard() {
     );
     if (!blobResp.ok) throw new Error(`GitHub Blob API Fehler ${blobResp.status}`);
     const blob = await blobResp.json();
-    const content = decodeURIComponent(escape(atob(blob.content.replace(/\n/g, ''))));
+    const raw = atob(blob.content.replace(/\n/g, ''));
+    const bytes = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
+    const content = new TextDecoder().decode(bytes);
     dbData = JSON.parse(content);
     window._dbSha = fileSha;
 
