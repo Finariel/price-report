@@ -95,6 +95,10 @@
   .badge-red { background: #fde8e8; color: var(--red); }
   .badge-orange { background: #fff3e0; color: #e68600; }
   .badge-gray { background: #f0f0f0; color: var(--dim); }
+  .badge-source { font-size: 10px; padding: 1px 6px; margin-right: 2px; }
+  .badge-macwelt { background: #e8f0fe; color: #1a73e8; }
+  .badge-apfeltalk { background: #e6f4ea; color: #137333; }
+  .badge-price-tracker { background: #fce8e6; color: #c5221f; }
 </style>
 </head>
 <body>
@@ -630,8 +634,9 @@ function analyzeDb() {
     total++;
     const hasPrice = entry.current_price != null && entry.current_price > 0;
     const prices = entry.prices || [];
-    const lastDate = prices.length ? new Date(prices[prices.length - 1].date) : null;
-    const isStale = hasPrice && lastDate && (now - lastDate.getTime() > threeDays);
+    const lastChecked = entry.last_checked ? new Date(entry.last_checked)
+      : (prices.length ? new Date(prices[prices.length - 1].date) : null);
+    const isStale = hasPrice && lastChecked && (now - lastChecked.getTime() > threeDays);
 
     if (!hasPrice) {
       failed++;
@@ -694,7 +699,7 @@ function renderProblems(filter) {
         <div class="failed-info">
           <div class="failed-name">${name}</div>
           <div class="failed-meta">
-            ${p.asin} · Sources: ${sources} · Hinzugefügt: ${added} · ${prices} Preisdatenpunkte
+            ${p.asin} · ${(e.sources || []).map(s => `<span class="badge badge-source badge-${s}">${s}</span>`).join(' ')} · Hinzugefügt: ${added} · ${prices} Preisdatenpunkte
             <span class="badge ${badgeClass}">${p.label}</span>
           </div>
         </div>
