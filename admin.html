@@ -211,6 +211,9 @@
         <button class="btn btn-sm btn-outline filter-btn active" onclick="filterProblems('all')">Alle</button>
         <button class="btn btn-sm btn-outline filter-btn" onclick="filterProblems('no-price')">Kein Preis</button>
         <button class="btn btn-sm btn-outline filter-btn" onclick="filterProblems('stale')">Veraltet</button>
+        <button class="btn btn-sm btn-outline filter-btn badge-macwelt" style="border-color:#1a73e8" onclick="filterProblems('macwelt')">macwelt</button>
+        <button class="btn btn-sm btn-outline filter-btn badge-apfeltalk" style="border-color:#137333" onclick="filterProblems('apfeltalk')">apfeltalk</button>
+        <button class="btn btn-sm btn-outline filter-btn badge-price-tracker" style="border-color:#c5221f" onclick="filterProblems('price-tracker')">price-tracker</button>
       </div>
 
       <div id="problems-list"></div>
@@ -675,7 +678,11 @@ function analyzeDb() {
 
 function renderProblems(filter) {
   const list = document.getElementById('problems-list');
-  const filtered = filter === 'all' ? problemProducts : problemProducts.filter(p => p.reason === filter);
+  const sourceFilters = ['macwelt', 'apfeltalk', 'price-tracker'];
+  const filtered = filter === 'all' ? problemProducts
+    : sourceFilters.includes(filter)
+      ? problemProducts.filter(p => (p.entry.sources || []).includes(filter))
+      : problemProducts.filter(p => p.reason === filter);
 
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`.filter-btn[onclick*="${filter}"]`).classList.add('active');
