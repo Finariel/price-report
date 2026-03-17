@@ -253,6 +253,32 @@
       </div>
       <div id="settings-status"></div>
     </div>
+    <div class="card" id="vacation-card">
+      <h2>🌴 Urlaubs-Vertretung (Apfeltalk Pricewatch)</h2>
+      <p style="font-size:13px;color:var(--dim);margin-bottom:16px;">Wenn aktiv, wird der Apfeltalk Pricewatch <strong>zusätzlich</strong> an die Vertretungs-E-Mail gesendet.</p>
+      <div id="vacation-status-banner" style="display:none;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;margin-bottom:16px;"></div>
+      <div class="settings-row" style="margin-bottom:12px;">
+        <div>
+          <label>Vertretungs-E-Mail</label>
+          <input type="text" id="vacation-email" placeholder="kollege@redaktion.de">
+        </div>
+      </div>
+      <div class="settings-row" style="margin-bottom:12px;">
+        <div>
+          <label>Von</label>
+          <input type="text" id="vacation-from" placeholder="2026-04-01">
+        </div>
+        <div>
+          <label>Bis (inkl.)</label>
+          <input type="text" id="vacation-to" placeholder="2026-04-14">
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px;">
+        <button class="btn btn-primary btn-sm" onclick="saveVacation()">Speichern &amp; ins Repo pushen</button>
+        <button class="btn btn-outline btn-sm" onclick="clearVacation()">Deaktivieren</button>
+      </div>
+      <div id="vacation-save-status" style="margin-top:10px;"></div>
+    </div>
   </div><!-- /tab-settings -->
 
 </div>
@@ -279,6 +305,77 @@ function clearSettings() {
 function loadSettings() {
   document.getElementById('keepa-key').value = localStorage.getItem('keepa_key') || '';
   document.getElementById('gh-token').value = localStorage.getItem('gh_token') || '';
+  loadVacationConfig();
+}
+
+// ── Vacation / Urlaubs-Vertretung ──────────────────────────────────────────
+const VACATION_PATH = '.claude/skills/apfeltalk-pricewatch/vacation_config.json';
+
+async function loadVacationConfig() {
+  const token = document.getElementById('gh-token').value.trim() || localStorage.getItem('gh_token');
+  if (!token) return;
+  try {
+    const resp = await fetch(`https://api.github.com/repos/Finariel/claude-skills/contents/${encodeURIComponent(VACATION_PATH)}`, {
+      headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    if (!resp.ok) return;
+    const meta = await resp.json();
+    const cfg = JSON.parse(atob(meta.content.replace(/\n/g, '')));
+    document.getElementById('vacation-email').value = cfg.colleague_email || '';
+    document.getElementById('vacation-from').value = cfg.from_date || '';
+    document.getElementById('vacation-to').value = cfg.to_date || '';
+    updateVacationBanner(cfg);
+  } catch(e) { /* silent */ }
+}
+
+function updateVacationBanner(cfg) {
+  const banner = document.getElementById('vacation-status-banner');
+  if (!cfg.colleague_email || !cfg.from_date || !cfg.to_date) { banner.style.display='none'; return; }
+  const today = new Date().toISOString().slice(0,10);
+  const active = cfg.from_date <= today && today <= cfg.to_date;
+  banner.style.display = 'block';
+  if (active) {
+    banner.style.background = '#e6f4ea'; banner.style.color = '#137333';
+    banner.textContent = `✅ Urlaubsmodus aktiv (${cfg.from_date} – ${cfg.to_date}): Apfeltalk wird auch an ${cfg.colleague_email} gesendet`;
+  } else {
+    banner.style.background = '#f0f0f0'; banner.style.color = '#86868b';
+    banner.textContent = `⏸ Konfiguriert (${cfg.from_date} – ${cfg.to_date}) → ${cfg.colleague_email} — aktuell nicht aktiv`;
+  }
+}
+
+async function saveVacation() {
+  const token = document.getElementById('gh-token').value.trim() || localStorage.getItem('gh_token');
+  if (!token) { showStatus('vacation-save-status', 'GitHub Token fehlt.', 'error'); return; }
+  const cfg = {
+    colleague_email: document.getElementById('vacation-email').value.trim(),
+    from_date: document.getElementById('vacation-from').value.trim(),
+    to_date: document.getElementById('vacation-to').value.trim()
+  };
+  showStatus('vacation-save-status', 'Speichere ...', 'loading');
+  try {
+    // SHA holen
+    const metaResp = await fetch(`https://api.github.com/repos/Finariel/claude-skills/contents/${encodeURIComponent(VACATION_PATH)}`, {
+      headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    const sha = metaResp.ok ? (await metaResp.json()).sha : undefined;
+    const content = btoa(JSON.stringify(cfg, null, 2) + '\n');
+    const body = { message: 'chore: update vacation_config', content, ...(sha ? {sha} : {}) };
+    const putResp = await fetch(`https://api.github.com/repos/Finariel/claude-skills/contents/${encodeURIComponent(VACATION_PATH)}`, {
+      method: 'PUT', headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!putResp.ok) throw new Error(`GitHub ${putResp.status}`);
+    showStatus('vacation-save-status', 'Gespeichert ✓', 'success');
+    updateVacationBanner(cfg);
+  } catch(e) { showStatus('vacation-save-status', e.message, 'error'); }
+}
+
+async function clearVacation() {
+  document.getElementById('vacation-email').value = '';
+  document.getElementById('vacation-from').value = '';
+  document.getElementById('vacation-to').value = '';
+  await saveVacation();
+  document.getElementById('vacation-status-banner').style.display = 'none';
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────
