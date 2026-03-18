@@ -863,13 +863,25 @@ async function retrySingle(asin) {
       return;
     }
 
+    // Debug: zeige welche csv-Indizes Daten haben und was getCurrentPrice zurückgibt
+    const csvDebug = [0, 18, 10, 1].map(idx => {
+      const arr = product.csv?.[idx];
+      if (!arr) return `[${idx}]:null`;
+      const last4 = arr.slice(-4);
+      return `[${idx}]:len=${arr.length},last=[${last4}]`;
+    }).join(' ');
+
     const price = getCurrentPrice(product);
     if (!price) {
-      showRetryStatus(asin, '❌ Bei Keepa gefunden, aber kein aktueller Preis — vermutlich ausverkauft.', 'error');
+      showRetryStatus(asin, `❌ Kein Preis. Debug: ${csvDebug}`, 'error');
       return;
     }
 
     const priceStr = (price / 100).toFixed(2).replace('.', ',') + ' €';
+    if (price > 500000) { // > 5000€ → verdächtig, wahrscheinlich Timestamp
+      showRetryStatus(asin, `⚠ Verdächtiger Wert: raw=${price} (${priceStr}). Debug: ${csvDebug}`, 'error');
+      return;
+    }
     showRetryStatus(asin, `✅ Preis gefunden: ${priceStr} — wird beim nächsten Nightly-Run übernommen.`, 'success');
 
   } catch (e) {
