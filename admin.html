@@ -803,18 +803,22 @@ function renderProblems(filter) {
     const prices = (e.prices || []).length;
     const badgeClass = p.reason === 'no-price' ? 'badge-red' : 'badge-orange';
     const amazonUrl = e.amazon_url || `https://www.amazon.de/dp/${p.asin}`;
+    const articles = (e.macwelt && e.macwelt.articles) || [];
+    const articleLinks = articles.map(a =>
+      `<a href="${a.article_url}" target="_blank" style="color:#1a73e8;text-decoration:none;font-size:12px;" title="${(a.article_title || '').replace(/"/g, '&quot;')}">📰 ${(a.article_title || 'Artikel').substring(0, 50)}${(a.article_title || '').length > 50 ? '…' : ''}</a>`
+    ).join('<br>');
 
     return `
       <div class="failed-item" data-reason="${p.reason}">
         <div class="failed-info">
-          <div class="failed-name">${name}</div>
+          <div class="failed-name"><a href="${amazonUrl}" target="_blank" style="color:inherit;text-decoration:none;" title="Auf Amazon ansehen">${name} ↗</a></div>
           <div class="failed-meta">
             ${p.asin} · ${(e.sources || []).map(s => `<span class="badge badge-source badge-${s}">${s}</span>`).join(' ')} · Hinzugefügt: ${added} · ${prices} Preisdatenpunkte
             <span class="badge ${badgeClass}">${p.label}</span>
           </div>
+          ${articleLinks ? `<div style="margin-top:4px;">${articleLinks}</div>` : ''}
         </div>
         <div class="failed-actions">
-          <a href="${amazonUrl}" target="_blank" class="btn btn-outline btn-sm" title="Auf Amazon prüfen">🔗</a>
           <button class="btn btn-warning btn-sm" onclick="retrySingle('${p.asin}')" title="Erneut abrufen">↻</button>
           <button class="btn btn-danger btn-sm" onclick="confirmDelete('${p.asin}', '${name.replace(/'/g, "\\'")}')">🗑</button>
         </div>
