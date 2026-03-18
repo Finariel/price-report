@@ -266,11 +266,11 @@
       <div class="settings-row" style="margin-bottom:12px;">
         <div>
           <label>Von</label>
-          <input type="text" id="vacation-from" placeholder="2026-04-01">
+          <input type="date" id="vacation-from">
         </div>
         <div>
           <label>Bis (inkl.)</label>
-          <input type="text" id="vacation-to" placeholder="2026-04-14">
+          <input type="date" id="vacation-to">
         </div>
       </div>
       <div style="display:flex;gap:8px;margin-top:4px;">
@@ -348,9 +348,15 @@ async function saveVacation() {
   if (!token) { showStatus('vacation-save-status', 'GitHub Token fehlt.', 'error'); return; }
   const cfg = {
     colleague_email: document.getElementById('vacation-email').value.trim(),
-    from_date: document.getElementById('vacation-from').value.trim(),
-    to_date: document.getElementById('vacation-to').value.trim()
+    from_date: document.getElementById('vacation-from').value,
+    to_date: document.getElementById('vacation-to').value
   };
+  if (cfg.colleague_email && (!/^\d{4}-\d{2}-\d{2}$/.test(cfg.from_date) || !/^\d{4}-\d{2}-\d{2}$/.test(cfg.to_date))) {
+    showStatus('vacation-save-status', 'Datumsformat ungültig. Bitte Kalender-Picker verwenden (YYYY-MM-DD).', 'error'); return;
+  }
+  if (cfg.from_date && cfg.to_date && cfg.from_date > cfg.to_date) {
+    showStatus('vacation-save-status', 'Von-Datum muss vor Bis-Datum liegen.', 'error'); return;
+  }
   showStatus('vacation-save-status', 'Speichere ...', 'loading');
   try {
     // SHA holen
