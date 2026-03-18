@@ -436,8 +436,8 @@ async function keepaQuery(asins) {
 function getCurrentPrice(product) {
   const csv = product.csv;
   if (!csv) return null;
-  // csv[0] = Amazon direkt, csv[7] = Buy Box/Prime (erfordert buybox=1 im Request)
-  for (const idx of [0, 7]) {
+  // csv[0] = Amazon direkt, csv[7] = Buy Box/Prime, csv[1] = Marketplace New (Fallback)
+  for (const idx of [0, 7, 1]) {
     if (csv[idx] && csv[idx].length >= 2) {
       for (let i = csv[idx].length - 1; i > 0; i -= 2) {
         if (csv[idx][i] > 0) return csv[idx][i];
