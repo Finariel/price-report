@@ -315,7 +315,7 @@ async function loadVacationConfig() {
   const token = document.getElementById('gh-token').value.trim() || localStorage.getItem('gh_token');
   if (!token) return;
   try {
-    const resp = await fetch(`https://api.github.com/repos/Finariel/claude-skills/contents/${encodeURIComponent(VACATION_PATH)}`, {
+    const resp = await fetch(`https://api.github.com/repos/Finariel/claude-skills/contents/${VACATION_PATH}`, {
       headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
     });
     if (!resp.ok) return;
@@ -360,13 +360,13 @@ async function saveVacation() {
   showStatus('vacation-save-status', 'Speichere ...', 'loading');
   try {
     // SHA holen
-    const metaResp = await fetch(`https://api.github.com/repos/Finariel/claude-skills/contents/${encodeURIComponent(VACATION_PATH)}`, {
+    const metaResp = await fetch(`https://api.github.com/repos/Finariel/claude-skills/contents/${VACATION_PATH}`, {
       headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
     });
     const sha = metaResp.ok ? (await metaResp.json()).sha : undefined;
     const content = btoa(JSON.stringify(cfg, null, 2) + '\n');
     const body = { message: 'chore: update vacation_config', content, ...(sha ? {sha} : {}) };
-    const putResp = await fetch(`https://api.github.com/repos/Finariel/claude-skills/contents/${encodeURIComponent(VACATION_PATH)}`, {
+    const putResp = await fetch(`https://api.github.com/repos/Finariel/claude-skills/contents/${VACATION_PATH}`, {
       method: 'PUT', headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
