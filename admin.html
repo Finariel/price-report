@@ -822,6 +822,7 @@ function renderProblems(filter) {
           <button class="btn btn-warning btn-sm" onclick="retrySingle('${p.asin}')" title="Erneut abrufen">↻</button>
           <button class="btn btn-danger btn-sm" onclick="confirmDelete('${p.asin}', '${name.replace(/'/g, "\\'")}')">🗑</button>
         </div>
+        <div class="retry-status" id="retry-${p.asin}" style="width:100%;font-size:12px;margin-top:4px;display:none;"></div>
       </div>
     `;
   }).join('');
@@ -830,14 +831,23 @@ function renderProblems(filter) {
 function filterProblems(filter) { renderProblems(filter); }
 
 // ── Single Retry (Keepa direkt im Browser) ────────────────────────────
+function showRetryStatus(asin, msg, type) {
+  const el = document.getElementById(`retry-${asin}`);
+  if (!el) { showStatus('problems-status', msg, type); return; }
+  const colors = { loading: '#86868b', success: '#137333', error: '#a51a1a' };
+  el.style.display = 'block';
+  el.style.color = colors[type] || '#86868b';
+  el.textContent = msg;
+}
+
 async function retrySingle(asin) {
   const key = document.getElementById('keepa-key').value.trim() || localStorage.getItem('keepa_key');
   if (!key) {
-    showStatus('problems-status', 'Keepa API Key fehlt. Bitte in Einstellungen eingeben.', 'error');
+    showRetryStatus(asin, '⚠ Keepa API Key fehlt — bitte in Einstellungen eingeben.', 'error');
     return;
   }
 
-  showStatus('problems-status', `Rufe ${asin} bei Keepa ab ...`, 'loading');
+  showRetryStatus(asin, '⏳ Rufe Keepa ab ...', 'loading');
 
   try {
     const resp = await fetch(`https://api.keepa.com/product?key=${encodeURIComponent(key)}&domain=3&asin=${asin}`);
@@ -846,23 +856,21 @@ async function retrySingle(asin) {
     const product = (data.products || [])[0];
 
     if (!product) {
-      showStatus('problems-status', `${asin}: Nicht bei Keepa gefunden. Wahrscheinlich nicht mehr verfügbar — ggf. löschen.`, 'error');
+      showRetryStatus(asin, '❌ Nicht bei Keepa gefunden — wahrscheinlich nicht mehr verfügbar.', 'error');
       return;
     }
 
     const price = getCurrentPrice(product);
     if (!price) {
-      showStatus('problems-status', `${asin}: Bei Keepa gefunden, aber kein aktueller Preis. Produkt vermutlich ausverkauft.`, 'error');
+      showRetryStatus(asin, '❌ Bei Keepa gefunden, aber kein aktueller Preis — vermutlich ausverkauft.', 'error');
       return;
     }
 
     const priceStr = (price / 100).toFixed(2).replace('.', ',') + ' €';
-    showStatus('problems-status',
-      `${asin}: Preis gefunden: ${priceStr}. Wird beim nächsten Nightly-Run aktualisiert.`,
-      'success');
+    showRetryStatus(asin, `✅ Preis gefunden: ${priceStr} — wird beim nächsten Nightly-Run übernommen.`, 'success');
 
   } catch (e) {
-    showStatus('problems-status', e.message, 'error');
+    showRetryStatus(asin, `❌ ${e.message}`, 'error');
   }
 }
 
