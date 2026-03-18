@@ -79,7 +79,7 @@
   .stat-value.red { color: var(--red); }
   .stat-value.orange { color: #ff9500; }
 
-  .failed-item { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid #f0f0f0; flex-wrap: wrap; }
+  .failed-item { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid #f0f0f0; }
   .failed-item:last-child { border-bottom: none; }
   .failed-info { flex: 1; min-width: 0; }
   .failed-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -818,12 +818,12 @@ function renderProblems(filter) {
             <span class="badge ${badgeClass}">${p.label}</span>
           </div>
           ${articleLinks ? `<div style="margin-top:4px;">${articleLinks}</div>` : ''}
+          <div id="retry-${p.asin}" style="font-size:12px;margin-top:4px;display:none;"></div>
         </div>
         <div class="failed-actions">
           <button class="btn btn-warning btn-sm" onclick="retrySingle('${p.asin}')" title="Erneut abrufen">↻</button>
           <button class="btn btn-danger btn-sm" onclick="confirmDelete('${p.asin}', '${name.replace(/'/g, "\\'")}')">🗑</button>
         </div>
-        <div class="retry-status" id="retry-${p.asin}" style="width:100%;font-size:12px;margin-top:4px;display:none;"></div>
       </div>
     `;
   }).join('');
