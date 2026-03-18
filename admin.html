@@ -79,7 +79,7 @@
   .stat-value.red { color: var(--red); }
   .stat-value.orange { color: #ff9500; }
 
-  .failed-item { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid #f0f0f0; }
+  .failed-item { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid #f0f0f0; flex-wrap: wrap; }
   .failed-item:last-child { border-bottom: none; }
   .failed-info { flex: 1; min-width: 0; }
   .failed-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -425,7 +425,7 @@ function cleanName(title) {
 async function keepaQuery(asins) {
   const key = document.getElementById('keepa-key').value.trim() || localStorage.getItem('keepa_key');
   if (!key) throw new Error('Keepa API Key fehlt. Bitte in Einstellungen eingeben.');
-  const url = `https://api.keepa.com/product?key=${encodeURIComponent(key)}&domain=3&asin=${asins.join(',')}`;
+  const url = `https://api.keepa.com/product?key=${encodeURIComponent(key)}&domain=3&buybox=1&asin=${asins.join(',')}`;
   const resp = await fetch(url);
   if (resp.status === 429) throw new Error('Keepa Rate-Limit erreicht. Bitte 60 Sekunden warten.');
   if (!resp.ok) throw new Error(`Keepa API Fehler: ${resp.status}`);
@@ -436,7 +436,8 @@ async function keepaQuery(asins) {
 function getCurrentPrice(product) {
   const csv = product.csv;
   if (!csv) return null;
-  for (const idx of [0, 1]) {
+  // csv[0] = Amazon direkt, csv[7] = Buy Box/Prime (erfordert buybox=1 im Request)
+  for (const idx of [0, 7]) {
     if (csv[idx] && csv[idx].length >= 2) {
       for (let i = csv[idx].length - 1; i > 0; i -= 2) {
         if (csv[idx][i] > 0) return csv[idx][i];
@@ -850,7 +851,7 @@ async function retrySingle(asin) {
   showRetryStatus(asin, '⏳ Rufe Keepa ab ...', 'loading');
 
   try {
-    const resp = await fetch(`https://api.keepa.com/product?key=${encodeURIComponent(key)}&domain=3&asin=${asin}`);
+    const resp = await fetch(`https://api.keepa.com/product?key=${encodeURIComponent(key)}&domain=3&buybox=1&asin=${asin}`);
     if (!resp.ok) throw new Error(`Keepa Fehler ${resp.status}`);
     const data = await resp.json();
     const product = (data.products || [])[0];
@@ -983,7 +984,7 @@ async function retryAllFailed() {
   let found = 0, notFound = 0;
   const asins = noPrice.map(p => p.asin);
   try {
-    const resp = await fetch(`https://api.keepa.com/product?key=${encodeURIComponent(key)}&domain=3&asin=${asins.join(',')}`);
+    const resp = await fetch(`https://api.keepa.com/product?key=${encodeURIComponent(key)}&domain=3&buybox=1&asin=${asins.join(',')}`);
     if (!resp.ok) throw new Error(`Keepa Fehler ${resp.status}`);
     const data = await resp.json();
 
