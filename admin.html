@@ -852,6 +852,7 @@ async function retrySingle(asin) {
     showRetryStatus(asin, '⚠ Keepa API Key fehlt — bitte in Einstellungen eingeben.', 'error');
     return;
   }
+  const token = document.getElementById('gh-token').value.trim() || localStorage.getItem('gh_token');
 
   showRetryStatus(asin, '⏳ Rufe Keepa ab ...', 'loading');
 
@@ -866,26 +867,58 @@ async function retrySingle(asin) {
       return;
     }
 
-    // Debug: zeige welche csv-Indizes Daten haben und was getCurrentPrice zurückgibt
-    const csvDebug = [0, 18, 10, 1].map(idx => {
-      const arr = product.csv?.[idx];
-      if (!arr) return `[${idx}]:null`;
-      const last4 = arr.slice(-4);
-      return `[${idx}]:len=${arr.length},last=[${last4}]`;
-    }).join(' ');
-
     const price = getCurrentPrice(product);
-    if (!price) {
-      showRetryStatus(asin, `❌ Kein Preis. Debug: ${csvDebug}`, 'error');
+    if (!price || price > 500000) {
+      showRetryStatus(asin, '❌ Bei Keepa gefunden, aber kein aktueller Preis — vermutlich ausverkauft.', 'error');
       return;
     }
 
-    const priceStr = (price / 100).toFixed(2).replace('.', ',') + ' €';
-    if (price > 500000) { // > 5000€ → verdächtig, wahrscheinlich Timestamp
-      showRetryStatus(asin, `⚠ Verdächtiger Wert: raw=${price} (${priceStr}). Debug: ${csvDebug}`, 'error');
-      return;
+    const priceEur = price / 100;
+    const priceStr = priceEur.toFixed(2).replace('.', ',') + ' €';
+    const today = new Date().toISOString().slice(0, 10);
+
+    // In lokale DB eintragen
+    if (dbData[asin]) {
+      const entry = dbData[asin];
+      entry.prices = entry.prices || [];
+      const alreadyToday = entry.prices.some(p => p.date === today);
+      if (!alreadyToday) entry.prices.push({ date: today, price: priceEur });
+      entry.current_price = priceEur;
+      entry.last_checked = today;
+      if (!entry.best_price || priceEur < entry.best_price) entry.best_price = priceEur;
+      // Einfache Durchschnitte
+      const last7 = entry.prices.slice(-7).map(p => p.price);
+      if (last7.length >= 2) entry.avg_7d = Math.round(last7.reduce((a,b) => a+b, 0) / last7.length * 100) / 100;
     }
-    showRetryStatus(asin, `✅ Preis gefunden: ${priceStr} — wird beim nächsten Nightly-Run übernommen.`, 'success');
+
+    // In GitHub DB schreiben
+    if (token && dbData[asin]) {
+      showRetryStatus(asin, `⏳ ${priceStr} gefunden, speichere in DB ...`, 'loading');
+      const newContent = btoa(unescape(encodeURIComponent(JSON.stringify(dbData, null, 2))));
+      const putResp = await fetch(
+        'https://api.github.com/repos/Finariel/claude-skills/contents/.claude/skills/price-engine/prices_db.json',
+        {
+          method: 'PUT',
+          headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: `Admin: ${asin} Preis aktualisiert (${priceStr} via Keepa Retry)`,
+            content: newContent,
+            sha: window._dbSha,
+          }),
+        }
+      );
+      if (putResp.ok) {
+        const result = await putResp.json();
+        window._dbSha = result.content.sha;
+        showRetryStatus(asin, `✅ ${priceStr} in DB gespeichert.`, 'success');
+        // Dashboard neu berechnen → Produkt verschwindet aus Problemliste
+        analyzeDb();
+      } else {
+        showRetryStatus(asin, `✅ ${priceStr} gefunden, aber DB-Speichern fehlgeschlagen (${putResp.status}). Wird beim Nightly-Run übernommen.`, 'success');
+      }
+    } else {
+      showRetryStatus(asin, `✅ ${priceStr} gefunden — wird beim nächsten Nightly-Run übernommen.`, 'success');
+    }
 
   } catch (e) {
     showRetryStatus(asin, `❌ ${e.message}`, 'error');
