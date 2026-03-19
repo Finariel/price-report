@@ -227,7 +227,7 @@
     <div class="card" id="bulk-card" style="display:none;">
       <h2>Aktionen</h2>
       <div style="display:flex;gap:12px;flex-wrap:wrap;">
-        <button class="btn btn-warning btn-sm" onclick="retryAllFailed()">↻ Alle fehlgeschlagenen erneut abrufen</button>
+        <button class="btn btn-warning btn-sm" onclick="retryAllFailed()">↻ Alle Probleme erneut abrufen</button>
         <button class="btn btn-danger btn-sm" onclick="confirmDeleteAllFailed()">🗑 Alle ohne Preis entfernen</button>
       </div>
       <div id="bulk-status" style="margin-top:12px;"></div>
@@ -1033,7 +1033,7 @@ async function deleteMultiple(asins) {
 }
 
 async function retryAllFailed() {
-  const noPrice = problemProducts.filter(p => p.reason === 'no-price');
+  const noPrice = problemProducts.filter(p => p.reason === 'no-price' || p.reason === 'no-today');
   if (!noPrice.length) {
     showStatus('bulk-status', 'Keine fehlgeschlagenen Produkte vorhanden.', 'info');
     return;
