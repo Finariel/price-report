@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-03-19T09:10:53.889993Z",
+  "timestamp": "2026-03-19T09:15:38.770961Z",
   "report": "all",
   "reports": {
     "apfeltalk": [
@@ -16,7 +16,7 @@
     "macwelt": [
       "271 von 751 Produkten (source: macwelt)",
       "## Macwelt Monitor",
-      "_Stand: 19.03.2026 09:10 Uhr_",
+      "_Stand: 19.03.2026 09:15 Uhr_",
       "| | Produkt | Artikel | Artikel-Preis | Aktuell | Differenz | Datum |",
       "|--|---------|---------|---------------|---------|-----------|-------|",
       "| 🌟 | Apple 2024 MacBook Pro Laptop mit M | [Macbook Pro 16 Zoll mit M4 Pro auf neuem](https://www.macwelt.de/article/3040720/apple-macbook-pro-16-zoll-mit-m4-pro-auf-tiefpreis-amazon.html) | 2.319,00 € | 2.249,00 € | -70,00 € | 2026-02-06 |",
@@ -266,7 +266,7 @@
     "preisrundruf": [
       "352 von 751 Produkten (source: price-tracker)",
       "## Preisrundruf",
-      "_Stand: 19.03.2026 09:10 Uhr_",
+      "_Stand: 19.03.2026 09:15 Uhr_",
       "| Ampel | Produkt | Aktuell | UVP | Rabatt | Bestpreis | vs. Bestpreis | vs. Ø 7T | vs. Ø 30T | ⭐ |",
       "|-------|---------|---------|-----|--------|-----------|---------------|----------|-----------|---|",
       "| 🟢 | [Apple 13\" iPad Pro M5, 256 GB: Ultra R](https://www.amazon.de/dp/B0FWD7LX46) | 1.275,00 € | 1.449,00 € | -12% | 1.275,00 € | ±0,00 € | ±0,00 € | -22,80 € | — |",
