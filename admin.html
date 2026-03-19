@@ -1033,37 +1033,109 @@ async function deleteMultiple(asins) {
 }
 
 async function retryAllFailed() {
-  const noPrice = problemProducts.filter(p => p.reason === 'no-price' || p.reason === 'no-today');
-  if (!noPrice.length) {
-    showStatus('bulk-status', 'Keine fehlgeschlagenen Produkte vorhanden.', 'info');
+  const problems = problemProducts.filter(p => p.reason === 'no-price' || p.reason === 'no-today');
+  if (!problems.length) {
+    showStatus('bulk-status', 'Keine Probleme vorhanden.', 'info');
     return;
   }
 
   const key = document.getElementById('keepa-key').value.trim() || localStorage.getItem('keepa_key');
   if (!key) { showStatus('bulk-status', 'Keepa API Key fehlt.', 'error'); return; }
+  const token = document.getElementById('gh-token').value.trim() || localStorage.getItem('gh_token');
 
-  showStatus('bulk-status', `Prüfe ${noPrice.length} Produkt(e) bei Keepa ...`, 'loading');
+  const asins = problems.map(p => p.asin);
+  const today = new Date().toISOString().slice(0, 10);
+
+  // Keepa in Batches à 20 (API-Limit)
+  const batchSize = 20;
+  const batches = [];
+  for (let i = 0; i < asins.length; i += batchSize) batches.push(asins.slice(i, i + batchSize));
 
   let found = 0, notFound = 0;
-  const asins = noPrice.map(p => p.asin);
-  try {
-    const resp = await fetch(`https://api.keepa.com/product?key=${encodeURIComponent(key)}&domain=3&buybox=1&asin=${asins.join(',')}`);
-    if (!resp.ok) throw new Error(`Keepa Fehler ${resp.status}`);
-    const data = await resp.json();
+  showStatus('bulk-status', `Rufe ${asins.length} Produkt(e) bei Keepa ab (${batches.length} Batches) ...`, 'loading');
 
-    for (const product of (data.products || [])) {
-      const price = getCurrentPrice(product);
-      if (price) found++;
-      else notFound++;
+  try {
+    for (let bi = 0; bi < batches.length; bi++) {
+      const batch = batches[bi];
+      showStatus('bulk-status', `Keepa Batch ${bi + 1}/${batches.length} (${batch.length} ASINs) ...`, 'loading');
+
+      const resp = await fetch(`https://api.keepa.com/product?key=${encodeURIComponent(key)}&domain=3&buybox=1&asin=${batch.join(',')}`);
+      if (!resp.ok) throw new Error(`Keepa Fehler ${resp.status}`);
+      const data = await resp.json();
+
+      for (const product of (data.products || [])) {
+        const asin = (product.asin || '').toUpperCase();
+        const price = getCurrentPrice(product);
+        if (!price || price > 500000) { notFound++; continue; }
+
+        found++;
+        const priceEur = price / 100;
+
+        // Lokale DB updaten
+        if (dbData[asin]) {
+          const entry = dbData[asin];
+          entry.prices = entry.prices || [];
+          if (!entry.prices.some(p => p.date === today)) {
+            entry.prices.push({ date: today, price: priceEur });
+          }
+          entry.current_price = priceEur;
+          entry.last_checked = today;
+          if (!entry.best_price || priceEur < entry.best_price) entry.best_price = priceEur;
+          const last7 = entry.prices.slice(-7).map(p => p.price);
+          if (last7.length >= 2) entry.avg_7d = Math.round(last7.reduce((a,b) => a+b, 0) / last7.length * 100) / 100;
+        }
+      }
+
+      const batchMissing = batch.length - (data.products || []).length;
+      notFound += batchMissing;
     }
 
-    const missing = asins.length - (data.products || []).length;
-    notFound += missing;
+    // In GitHub DB speichern
+    if (token && found > 0) {
+      showStatus('bulk-status', `${found} Preise gefunden, speichere in DB ...`, 'loading');
+      const newContent = btoa(unescape(encodeURIComponent(JSON.stringify(dbData, null, 2))));
+      const putResp = await fetch(
+        'https://api.github.com/repos/Finariel/claude-skills/contents/.claude/skills/price-engine/prices_db.json',
+        {
+          method: 'PUT',
+          headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: `Admin: Bulk-Retry ${found} Preise aktualisiert (Keepa)`,
+            content: newContent,
+            sha: window._dbSha,
+          }),
+        }
+      );
 
-    showStatus('bulk-status',
-      `Ergebnis: ${found} mit Preis, ${notFound} weiterhin ohne Preis. ` +
-      (found > 0 ? 'Preise werden beim nächsten Nightly-Run aktualisiert.' : 'Alle nicht verfügbar — ggf. löschen.'),
-      found > 0 ? 'success' : 'error');
+      if (putResp.ok) {
+        const result = await putResp.json();
+        window._dbSha = result.content.sha;
+
+        // Apfeltalk-Report neu generieren (leichtgewichtiger Workflow, ~30s)
+        const hasApfeltalk = problems.some(p => (p.entry.sources || []).includes('apfeltalk'));
+        if (hasApfeltalk) {
+          try {
+            await fetch('https://api.github.com/repos/Finariel/claude-skills/actions/workflows/regenerate-report.yml/dispatches', {
+              method: 'POST',
+              headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ref: 'main', inputs: { report: 'apfeltalk' } }),
+            });
+          } catch (e) { /* Report-Regen ist optional, Fehler ignorieren */ }
+        }
+
+        showStatus('bulk-status', `✅ ${found} Preise in DB gespeichert, ${notFound} weiterhin ohne.` +
+          (hasApfeltalk ? ' Apfeltalk-Report wird neu generiert.' : ''), 'success');
+      } else {
+        showStatus('bulk-status', `${found} Preise gefunden, DB-Speichern fehlgeschlagen (${putResp.status}).`, 'error');
+      }
+    } else if (found > 0) {
+      showStatus('bulk-status', `${found} Preise gefunden, aber kein GitHub-Token — wird beim Nightly-Run übernommen.`, 'success');
+    } else {
+      showStatus('bulk-status', `Keine Preise bei Keepa gefunden für ${notFound} Produkte.`, 'error');
+    }
+
+    // Dashboard neu berechnen
+    analyzeDb();
 
   } catch (e) {
     showStatus('bulk-status', e.message, 'error');
