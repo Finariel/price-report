@@ -94,6 +94,7 @@
   .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
   .badge-red { background: #fde8e8; color: var(--red); }
   .badge-orange { background: #fff3e0; color: #e68600; }
+  .badge-dim { background: #f0f0f0; color: #8e8e93; }
   .badge-gray { background: #f0f0f0; color: var(--dim); }
   .badge-source { font-size: 10px; padding: 1px 6px; margin-right: 2px; }
   .badge-macwelt { background: #e8f0fe; color: #1a73e8; }
@@ -197,6 +198,7 @@
         <div class="stat-box"><div class="stat-value green" id="stat-ok">—</div><div class="stat-label">Mit Preis</div></div>
         <div class="stat-box"><div class="stat-value red" id="stat-failed">—</div><div class="stat-label">Fehlgeschlagen</div></div>
         <div class="stat-box"><div class="stat-value orange" id="stat-stale">—</div><div class="stat-label">Veraltet (>3 Tage)</div></div>
+        <div class="stat-box"><div class="stat-value" id="stat-no-today" style="color:#8e8e93;">—</div><div class="stat-label">Ohne heutigen Preis</div></div>
       </div>
       <div id="stats-sources" style="display:none;margin-top:12px;font-size:13px;color:var(--dim);"></div>
     </div>
@@ -211,6 +213,7 @@
         <button class="btn btn-sm btn-outline filter-btn active" onclick="filterProblems('all')">Alle</button>
         <button class="btn btn-sm btn-outline filter-btn" onclick="filterProblems('no-price')">Kein Preis</button>
         <button class="btn btn-sm btn-outline filter-btn" onclick="filterProblems('stale')">Veraltet</button>
+        <button class="btn btn-sm btn-outline filter-btn" onclick="filterProblems('no-today')">Ohne heute</button>
         <button class="btn btn-sm btn-outline filter-btn badge-macwelt" style="border-color:#1a73e8" onclick="filterProblems('macwelt')">macwelt</button>
         <button class="btn btn-sm btn-outline filter-btn badge-apfeltalk" style="border-color:#137333" onclick="filterProblems('apfeltalk')">apfeltalk</button>
         <button class="btn btn-sm btn-outline filter-btn badge-price-tracker" style="border-color:#c5221f" onclick="filterProblems('price-tracker')">price-tracker</button>
@@ -738,8 +741,9 @@ function analyzeDb() {
   const now = Date.now();
   const threeDays = 3 * 24 * 60 * 60 * 1000;
 
-  let total = 0, ok = 0, failed = 0, stale = 0;
+  let total = 0, ok = 0, failed = 0, stale = 0, noToday = 0;
   const sourceCounts = {};
+  const today = new Date().toISOString().slice(0, 10);
   problemProducts = [];
 
   for (const [asin, entry] of entries) {
@@ -749,6 +753,7 @@ function analyzeDb() {
     const lastChecked = entry.last_checked ? new Date(entry.last_checked)
       : (prices.length ? new Date(prices[prices.length - 1].date) : null);
     const isStale = hasPrice && lastChecked && (now - lastChecked.getTime() > threeDays);
+    const hasTodayPrice = prices.some(p => p.date === today);
 
     if (!hasPrice) {
       failed++;
@@ -758,6 +763,11 @@ function analyzeDb() {
       problemProducts.push({ asin, entry, reason: 'stale', label: 'Veraltet' });
     } else {
       ok++;
+    }
+
+    if (hasPrice && !isStale && !hasTodayPrice) {
+      noToday++;
+      problemProducts.push({ asin, entry, reason: 'no-today', label: 'Ohne heute' });
     }
 
     for (const src of (entry.sources || [])) {
@@ -772,6 +782,9 @@ function analyzeDb() {
   document.getElementById('stat-ok').textContent = ok;
   document.getElementById('stat-failed').textContent = failed;
   document.getElementById('stat-stale').textContent = stale;
+  const noTodayEl = document.getElementById('stat-no-today');
+  noTodayEl.textContent = noToday;
+  noTodayEl.style.color = noToday > 0 ? '#ff9500' : '#8e8e93';
 
   const srcText = Object.entries(sourceCounts).map(([k, v]) => `${k}: ${v}`).join(' · ');
   const srcEl = document.getElementById('stats-sources');
@@ -807,7 +820,7 @@ function renderProblems(filter) {
     const sources = (e.sources || []).join(', ');
     const added = e.added || '?';
     const prices = (e.prices || []).length;
-    const badgeClass = p.reason === 'no-price' ? 'badge-red' : 'badge-orange';
+    const badgeClass = p.reason === 'no-price' ? 'badge-red' : (p.reason === 'no-today' ? 'badge-dim' : 'badge-orange');
     const amazonUrl = e.amazon_url || `https://www.amazon.de/dp/${p.asin}`;
     const articles = (e.macwelt && e.macwelt.articles) || [];
     const articleLinks = articles.map(a =>
