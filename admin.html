@@ -808,6 +808,9 @@ function analyzeDb() {
     document.getElementById('problems-card').style.display = 'block';
     document.getElementById('bulk-card').style.display = 'block';
     renderProblems('all');
+  } else {
+    document.getElementById('problems-card').style.display = 'none';
+    document.getElementById('bulk-card').style.display = 'none';
   }
 }
 
@@ -1149,6 +1152,7 @@ const REPORT_URLS = {
   preisrundruf: 'https://finariel.github.io/price-report/',
 };
 const REPORT_LABELS = { apfeltalk: '🍎 Apfeltalk', macwelt: '🌟 Macwelt', preisrundruf: '🛍️ Preisrundruf', all: 'Alle Berichte' };
+const SUMMARY_URL = 'https://finariel.github.io/price-report/regen-summary.json';
 
 async function triggerReport(report) {
   const token = document.getElementById('gh-token').value.trim() || localStorage.getItem('gh_token');
@@ -1159,7 +1163,6 @@ async function triggerReport(report) {
   statusEl.innerHTML = `<div class="status status-loading">${label} — Workflow wird gestartet ...</div>`;
 
   try {
-    // Zeitstempel merken um den richtigen Run zu finden
     const beforeTime = new Date().toISOString();
 
     const resp = await fetch('https://api.github.com/repos/Finariel/claude-skills/actions/workflows/regenerate-report.yml/dispatches', {
@@ -1169,68 +1172,75 @@ async function triggerReport(report) {
     });
     if (resp.status !== 204 && !resp.ok) throw new Error(`GitHub API ${resp.status}`);
 
-    statusEl.innerHTML = `<div class="status status-loading">${label} — Workflow gestartet, warte auf Ergebnis ...</div>`;
-
-    // Poll für den gestarteten Run (max 120s)
+    // Poll bis fertig (max 5 Minuten)
     let runId = null;
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 60; i++) {
       await new Promise(r => setTimeout(r, 5000));
+      const elapsed = Math.round((Date.now() - new Date(beforeTime).getTime()) / 1000);
+
       const runsResp = await fetch(
         'https://api.github.com/repos/Finariel/claude-skills/actions/workflows/regenerate-report.yml/runs?per_page=3',
         { headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' } }
       );
-      if (!runsResp.ok) continue;
+      if (!runsResp.ok) { statusEl.innerHTML = `<div class="status status-loading">${label} — läuft (${elapsed}s) ...</div>`; continue; }
       const runsData = await runsResp.json();
       const run = (runsData.workflow_runs || []).find(r => r.created_at >= beforeTime);
-      if (!run) continue;
 
+      if (!run) { statusEl.innerHTML = `<div class="status status-loading">${label} — wartet auf Start (${elapsed}s) ...</div>`; continue; }
       runId = run.id;
-      if (run.status === 'completed') {
-        if (run.conclusion === 'success') {
-          // Log holen
-          let logSummary = '';
-          try {
-            const jobsResp = await fetch(run.jobs_url, {
-              headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-            });
-            if (jobsResp.ok) {
-              const jobsData = await jobsResp.json();
-              const steps = (jobsData.jobs || [])[0]?.steps || [];
-              logSummary = steps
-                .filter(s => s.conclusion)
-                .map(s => `${s.conclusion === 'success' ? '✓' : '✗'} ${s.name}`)
-                .join('<br>');
-            }
-          } catch (_) {}
 
-          // Report-Links bauen
-          let links = '';
-          if (report === 'all') {
-            links = Object.entries(REPORT_URLS).map(([k, url]) =>
-              `<a href="${url}" target="_blank" class="btn btn-sm btn-outline" style="margin-right:8px;margin-top:8px;">${REPORT_LABELS[k]} öffnen →</a>`
-            ).join('');
-          } else if (REPORT_URLS[report]) {
-            links = `<a href="${REPORT_URLS[report]}" target="_blank" class="btn btn-sm btn-outline" style="margin-top:8px;">${label} öffnen →</a>`;
-          }
+      if (run.status !== 'completed') {
+        statusEl.innerHTML = `<div class="status status-loading">${label} — läuft (${elapsed}s) ...</div>`;
+        continue;
+      }
 
-          const duration = Math.round((new Date(run.updated_at) - new Date(run.created_at)) / 1000);
-          statusEl.innerHTML =
-            `<div class="status status-success">✅ ${label} — fertig in ${duration}s</div>` +
-            (logSummary ? `<div style="font-size:12px;color:var(--dim);margin:8px 0;line-height:1.8;">${logSummary}</div>` : '') +
-            (links ? `<div>${links}</div>` : '');
-        } else {
-          statusEl.innerHTML = `<div class="status status-error">❌ ${label} — Workflow fehlgeschlagen (${run.conclusion})</div>` +
-            `<a href="${run.html_url}" target="_blank" style="font-size:12px;">Logs auf GitHub ansehen →</a>`;
-        }
+      // Fertig!
+      const duration = Math.round((new Date(run.updated_at) - new Date(run.created_at)) / 1000);
+
+      if (run.conclusion !== 'success') {
+        statusEl.innerHTML = `<div class="status status-error">❌ ${label} — fehlgeschlagen (${run.conclusion})</div>` +
+          `<a href="${run.html_url}" target="_blank" style="font-size:12px;">Logs auf GitHub →</a>`;
         return;
       }
 
-      // Noch nicht fertig — Status updaten
-      const elapsed = Math.round((Date.now() - new Date(beforeTime).getTime()) / 1000);
-      statusEl.innerHTML = `<div class="status status-loading">${label} — läuft (${elapsed}s) ...</div>`;
+      // Summary-JSON laden (mit Cache-Buster)
+      let summaryHtml = '';
+      try {
+        await new Promise(r => setTimeout(r, 3000)); // kurz warten bis GitHub Pages deployed
+        const sumResp = await fetch(SUMMARY_URL + '?t=' + Date.now());
+        if (sumResp.ok) {
+          const summary = await sumResp.json();
+          // Pro Report einen Block
+          for (const [name, lines] of Object.entries(summary.reports || {})) {
+            const rLabel = REPORT_LABELS[name] || name;
+            const rUrl = REPORT_URLS[name] || '#';
+            summaryHtml += `<div style="margin:12px 0 4px;font-weight:600;font-size:13px;">${rLabel}</div>`;
+            summaryHtml += `<div style="font-size:12px;color:var(--dim);line-height:1.7;margin-bottom:4px;">`;
+            summaryHtml += lines.map(l => `&nbsp;&nbsp;${l}`).join('<br>');
+            summaryHtml += `</div>`;
+            summaryHtml += `<a href="${rUrl}" target="_blank" class="btn btn-sm btn-outline" style="font-size:12px;">${rLabel} öffnen →</a>`;
+          }
+          if (summary.diff && summary.diff !== 'Keine Änderungen') {
+            summaryHtml += `<div style="margin-top:12px;font-size:12px;color:var(--dim);"><strong>Diff:</strong><br><pre style="margin:4px 0;font-size:11px;white-space:pre-wrap;">${summary.diff}</pre></div>`;
+          }
+        }
+      } catch (_) {}
+
+      // Fallback: nur Report-Links wenn Summary nicht geladen
+      if (!summaryHtml) {
+        const targets = report === 'all' ? Object.keys(REPORT_URLS) : [report];
+        summaryHtml = targets.map(k =>
+          REPORT_URLS[k] ? `<a href="${REPORT_URLS[k]}" target="_blank" class="btn btn-sm btn-outline" style="margin-right:8px;margin-top:8px;">${REPORT_LABELS[k]} öffnen →</a>` : ''
+        ).join('');
+      }
+
+      statusEl.innerHTML =
+        `<div class="status status-success">✅ ${label} — fertig in ${duration}s</div>` +
+        summaryHtml;
+      return;
     }
 
-    // Timeout nach 60s — Link zum Run anzeigen
+    // Timeout nach 5 Min
     statusEl.innerHTML = `<div class="status status-loading">${label} — läuft noch. ` +
       (runId ? `<a href="https://github.com/Finariel/claude-skills/actions/runs/${runId}" target="_blank">Auf GitHub verfolgen →</a>` : '') +
       `</div>`;
