@@ -233,6 +233,19 @@
       <div id="bulk-status" style="margin-top:12px;"></div>
     </div>
 
+    <!-- Report Generation -->
+    <div class="card">
+      <h2>Berichte neu generieren</h2>
+      <p style="font-size:13px;color:var(--dim);margin-bottom:16px;">Generiert den HTML-Report aus der aktuellen DB und pusht auf GitHub Pages. Dauert ~30 Sekunden.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <button class="btn btn-sm" style="background:#137333;color:#fff;" onclick="triggerReport('apfeltalk')">🍎 Apfeltalk</button>
+        <button class="btn btn-sm" style="background:#1a73e8;color:#fff;" onclick="triggerReport('macwelt')">🌟 Macwelt</button>
+        <button class="btn btn-sm" style="background:#c5221f;color:#fff;" onclick="triggerReport('preisrundruf')">🛍️ Preisrundruf</button>
+        <button class="btn btn-sm btn-outline" onclick="triggerReport('all')">Alle Berichte</button>
+      </div>
+      <div id="report-status" style="margin-top:12px;"></div>
+    </div>
+
   </div><!-- /tab-dashboard -->
 
   <!-- TAB: Settings -->
@@ -1111,20 +1124,7 @@ async function retryAllFailed() {
         const result = await putResp.json();
         window._dbSha = result.content.sha;
 
-        // Apfeltalk-Report neu generieren (leichtgewichtiger Workflow, ~30s)
-        const hasApfeltalk = problems.some(p => (p.entry.sources || []).includes('apfeltalk'));
-        if (hasApfeltalk) {
-          try {
-            await fetch('https://api.github.com/repos/Finariel/claude-skills/actions/workflows/regenerate-report.yml/dispatches', {
-              method: 'POST',
-              headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-              body: JSON.stringify({ ref: 'main', inputs: { report: 'apfeltalk' } }),
-            });
-          } catch (e) { /* Report-Regen ist optional, Fehler ignorieren */ }
-        }
-
-        showStatus('bulk-status', `✅ ${found} Preise in DB gespeichert, ${notFound} weiterhin ohne.` +
-          (hasApfeltalk ? ' Apfeltalk-Report wird neu generiert.' : ''), 'success');
+        showStatus('bulk-status', `✅ ${found} Preise in DB gespeichert, ${notFound} weiterhin ohne.`, 'success');
       } else {
         showStatus('bulk-status', `${found} Preise gefunden, DB-Speichern fehlgeschlagen (${putResp.status}).`, 'error');
       }
@@ -1139,6 +1139,30 @@ async function retryAllFailed() {
 
   } catch (e) {
     showStatus('bulk-status', e.message, 'error');
+  }
+}
+
+// ── Report Generation ────────────────────────────────────────────────────
+async function triggerReport(report) {
+  const token = document.getElementById('gh-token').value.trim() || localStorage.getItem('gh_token');
+  if (!token) { showStatus('report-status', 'GitHub Token fehlt — bitte in Einstellungen eingeben.', 'error'); return; }
+
+  const labels = { apfeltalk: '🍎 Apfeltalk', macwelt: '🌟 Macwelt', preisrundruf: '🛍️ Preisrundruf', all: 'Alle Berichte' };
+  showStatus('report-status', `${labels[report] || report} wird generiert ...`, 'loading');
+
+  try {
+    const resp = await fetch('https://api.github.com/repos/Finariel/claude-skills/actions/workflows/regenerate-report.yml/dispatches', {
+      method: 'POST',
+      headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ref: 'main', inputs: { report } }),
+    });
+    if (resp.status === 204 || resp.ok) {
+      showStatus('report-status', `✅ ${labels[report] || report} — Workflow gestartet. Bericht ist in ~30s auf GitHub Pages aktuell.`, 'success');
+    } else {
+      throw new Error(`GitHub API ${resp.status}`);
+    }
+  } catch (e) {
+    showStatus('report-status', `❌ ${e.message}`, 'error');
   }
 }
 
