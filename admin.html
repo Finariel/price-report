@@ -1143,26 +1143,100 @@ async function retryAllFailed() {
 }
 
 // ── Report Generation ────────────────────────────────────────────────────
+const REPORT_URLS = {
+  apfeltalk: 'https://finariel.github.io/price-report/apfeltalk.html',
+  macwelt: 'https://finariel.github.io/price-report/macwelt.html',
+  preisrundruf: 'https://finariel.github.io/price-report/',
+};
+const REPORT_LABELS = { apfeltalk: '🍎 Apfeltalk', macwelt: '🌟 Macwelt', preisrundruf: '🛍️ Preisrundruf', all: 'Alle Berichte' };
+
 async function triggerReport(report) {
   const token = document.getElementById('gh-token').value.trim() || localStorage.getItem('gh_token');
   if (!token) { showStatus('report-status', 'GitHub Token fehlt — bitte in Einstellungen eingeben.', 'error'); return; }
 
-  const labels = { apfeltalk: '🍎 Apfeltalk', macwelt: '🌟 Macwelt', preisrundruf: '🛍️ Preisrundruf', all: 'Alle Berichte' };
-  showStatus('report-status', `${labels[report] || report} wird generiert ...`, 'loading');
+  const label = REPORT_LABELS[report] || report;
+  const statusEl = document.getElementById('report-status');
+  statusEl.innerHTML = `<div class="status status-loading">${label} — Workflow wird gestartet ...</div>`;
 
   try {
+    // Zeitstempel merken um den richtigen Run zu finden
+    const beforeTime = new Date().toISOString();
+
     const resp = await fetch('https://api.github.com/repos/Finariel/claude-skills/actions/workflows/regenerate-report.yml/dispatches', {
       method: 'POST',
       headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
       body: JSON.stringify({ ref: 'main', inputs: { report } }),
     });
-    if (resp.status === 204 || resp.ok) {
-      showStatus('report-status', `✅ ${labels[report] || report} — Workflow gestartet. Bericht ist in ~30s auf GitHub Pages aktuell.`, 'success');
-    } else {
-      throw new Error(`GitHub API ${resp.status}`);
+    if (resp.status !== 204 && !resp.ok) throw new Error(`GitHub API ${resp.status}`);
+
+    statusEl.innerHTML = `<div class="status status-loading">${label} — Workflow gestartet, warte auf Ergebnis ...</div>`;
+
+    // Poll für den gestarteten Run (max 120s)
+    let runId = null;
+    for (let i = 0; i < 12; i++) {
+      await new Promise(r => setTimeout(r, 5000));
+      const runsResp = await fetch(
+        'https://api.github.com/repos/Finariel/claude-skills/actions/workflows/regenerate-report.yml/runs?per_page=3',
+        { headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' } }
+      );
+      if (!runsResp.ok) continue;
+      const runsData = await runsResp.json();
+      const run = (runsData.workflow_runs || []).find(r => r.created_at >= beforeTime);
+      if (!run) continue;
+
+      runId = run.id;
+      if (run.status === 'completed') {
+        if (run.conclusion === 'success') {
+          // Log holen
+          let logSummary = '';
+          try {
+            const jobsResp = await fetch(run.jobs_url, {
+              headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+            });
+            if (jobsResp.ok) {
+              const jobsData = await jobsResp.json();
+              const steps = (jobsData.jobs || [])[0]?.steps || [];
+              logSummary = steps
+                .filter(s => s.conclusion)
+                .map(s => `${s.conclusion === 'success' ? '✓' : '✗'} ${s.name}`)
+                .join('<br>');
+            }
+          } catch (_) {}
+
+          // Report-Links bauen
+          let links = '';
+          if (report === 'all') {
+            links = Object.entries(REPORT_URLS).map(([k, url]) =>
+              `<a href="${url}" target="_blank" class="btn btn-sm btn-outline" style="margin-right:8px;margin-top:8px;">${REPORT_LABELS[k]} öffnen →</a>`
+            ).join('');
+          } else if (REPORT_URLS[report]) {
+            links = `<a href="${REPORT_URLS[report]}" target="_blank" class="btn btn-sm btn-outline" style="margin-top:8px;">${label} öffnen →</a>`;
+          }
+
+          const duration = Math.round((new Date(run.updated_at) - new Date(run.created_at)) / 1000);
+          statusEl.innerHTML =
+            `<div class="status status-success">✅ ${label} — fertig in ${duration}s</div>` +
+            (logSummary ? `<div style="font-size:12px;color:var(--dim);margin:8px 0;line-height:1.8;">${logSummary}</div>` : '') +
+            (links ? `<div>${links}</div>` : '');
+        } else {
+          statusEl.innerHTML = `<div class="status status-error">❌ ${label} — Workflow fehlgeschlagen (${run.conclusion})</div>` +
+            `<a href="${run.html_url}" target="_blank" style="font-size:12px;">Logs auf GitHub ansehen →</a>`;
+        }
+        return;
+      }
+
+      // Noch nicht fertig — Status updaten
+      const elapsed = Math.round((Date.now() - new Date(beforeTime).getTime()) / 1000);
+      statusEl.innerHTML = `<div class="status status-loading">${label} — läuft (${elapsed}s) ...</div>`;
     }
+
+    // Timeout nach 60s — Link zum Run anzeigen
+    statusEl.innerHTML = `<div class="status status-loading">${label} — läuft noch. ` +
+      (runId ? `<a href="https://github.com/Finariel/claude-skills/actions/runs/${runId}" target="_blank">Auf GitHub verfolgen →</a>` : '') +
+      `</div>`;
+
   } catch (e) {
-    showStatus('report-status', `❌ ${e.message}`, 'error');
+    statusEl.innerHTML = `<div class="status status-error">❌ ${e.message}</div>`;
   }
 }
 
