@@ -1228,7 +1228,10 @@ async function triggerReport(report) {
             const sumAge = Date.now() - new Date(summary.timestamp).getTime();
             if (sumAge > 120000) continue;
 
-            for (const [name, lines] of Object.entries(summary.reports || {})) {
+            const showReports = report === 'all' ? Object.keys(summary.reports || {}) : [report];
+            for (const name of showReports) {
+              const lines = (summary.reports || {})[name];
+              if (!lines) continue;
               const rLabel = REPORT_LABELS[name] || name;
               const rUrl = REPORT_URLS[name] || '#';
               summaryHtml += `<div style="margin:12px 0 4px;font-weight:600;font-size:13px;">${rLabel}</div>`;
