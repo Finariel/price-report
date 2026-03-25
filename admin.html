@@ -100,7 +100,25 @@
   .badge-macwelt { background: #e8f0fe; color: #1a73e8; }
   .badge-apfeltalk { background: #e6f4ea; color: #137333; }
   .badge-price-tracker { background: #fce8e6; color: #c5221f; }
+
+  /* Pipeline Health */
+  .run-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+  .run-item:last-child { border-bottom: none; }
+  .run-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .run-dot.success { background: var(--green); }
+  .run-dot.failure { background: var(--red); }
+  .run-dot.cancelled { background: #ff9500; }
+  .run-dot.in_progress { background: var(--accent); animation: pulse 1.5s infinite; }
+  .run-dot.queued { background: var(--dim); }
+  .run-info { flex: 1; min-width: 0; }
+  .run-title { font-size: 14px; font-weight: 500; }
+  .run-meta { font-size: 12px; color: var(--dim); margin-top: 2px; }
+  .run-link { font-size: 12px; color: var(--accent); text-decoration: none; flex-shrink: 0; }
+  .run-link:hover { text-decoration: underline; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
+  .health-chart-container { position: relative; height: 220px; margin-top: 16px; }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 </head>
 <body>
 <div class="container">
@@ -111,6 +129,7 @@
   <div class="tabs">
     <div class="tab active" onclick="switchTab('add')">Produkt hinzufügen</div>
     <div class="tab" onclick="switchTab('dashboard')">Datenbank-Status</div>
+    <div class="tab" onclick="switchTab('health')">Pipeline-Health</div>
     <div class="tab" onclick="switchTab('settings')">Einstellungen</div>
   </div>
 
@@ -247,6 +266,41 @@
     </div>
 
   </div><!-- /tab-dashboard -->
+
+  <!-- TAB: Pipeline Health -->
+  <div class="tab-content" id="tab-health">
+
+    <!-- Pipeline Stats Grid -->
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h2>Pipeline-Status</h2>
+        <button class="btn btn-outline btn-sm" onclick="loadPipelineHealth()">Aktualisieren</button>
+      </div>
+      <div id="health-loading" class="status status-loading" style="display:none;">Lade Pipeline-Daten ...</div>
+      <div class="stats-grid" id="health-stats" style="display:none;">
+        <div class="stat-box"><div class="stat-value" id="health-last-run">—</div><div class="stat-label">Letzter Run</div></div>
+        <div class="stat-box"><div class="stat-value" id="health-duration">—</div><div class="stat-label">Laufzeit</div></div>
+        <div class="stat-box"><div class="stat-value red" id="health-no-price">—</div><div class="stat-label">Fehlpreise</div></div>
+        <div class="stat-box"><div class="stat-value" id="health-db-size">—</div><div class="stat-label">DB-Größe</div></div>
+        <div class="stat-box"><div class="stat-value green" id="health-updated">—</div><div class="stat-label">Heute aktualisiert</div></div>
+      </div>
+    </div>
+
+    <!-- Workflow Runs -->
+    <div class="card" id="health-runs-card" style="display:none;">
+      <h2>Letzte Workflow-Runs</h2>
+      <div id="health-runs-list"></div>
+    </div>
+
+    <!-- 30-Tage Chart -->
+    <div class="card" id="health-chart-card" style="display:none;">
+      <h2>30-Tage-Verlauf</h2>
+      <div class="health-chart-container">
+        <canvas id="health-chart"></canvas>
+      </div>
+    </div>
+
+  </div><!-- /tab-health -->
 
   <!-- TAB: Settings -->
   <div class="tab-content" id="tab-settings">
@@ -681,9 +735,10 @@ function switchTab(name) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelector(`#tab-${name}`).classList.add('active');
-  const tabIndex = { add: 0, dashboard: 1, settings: 2 }[name] || 0;
+  const tabIndex = { add: 0, dashboard: 1, health: 2, settings: 3 }[name] || 0;
   document.querySelectorAll('.tab')[tabIndex].classList.add('active');
   if (name === 'dashboard' && !dashboardLoaded) loadDashboard();
+  if (name === 'health' && !healthLoaded) loadPipelineHealth();
 }
 
 // ── Dashboard ─────────────────────────────────────────────────────────
@@ -1272,6 +1327,225 @@ async function triggerReport(report) {
   }
 }
 
+// ── Pipeline Health ─────────────────────────────────────────────────────
+let healthLoaded = false;
+let healthChart = null;
+
+const PIPELINE_SUMMARY_URL = 'https://finariel.github.io/price-report/pipeline_summary.json';
+const NIGHTLY_RUNS_API = 'https://api.github.com/repos/Finariel/claude-skills/actions/workflows/nightly-price-run.yml/runs?per_page=10';
+
+async function loadPipelineHealth() {
+  healthLoaded = true; // Sofort setzen um Race Condition bei schnellem Tab-Wechsel zu vermeiden
+  const token = document.getElementById('gh-token').value.trim() || localStorage.getItem('gh_token');
+  const loadingEl = document.getElementById('health-loading');
+  loadingEl.style.display = 'block';
+  loadingEl.innerHTML = '<div class="status status-loading">Lade Pipeline-Daten ...</div>';
+  document.getElementById('health-stats').style.display = 'none';
+  document.getElementById('health-runs-card').style.display = 'none';
+  document.getElementById('health-chart-card').style.display = 'none';
+
+  try {
+    // Parallel: Summary + Workflow Runs laden
+    const summaryPromise = fetch(PIPELINE_SUMMARY_URL + '?t=' + Date.now())
+      .then(r => r.ok ? r.json() : null).catch(() => null);
+
+    let runsPromise = Promise.resolve(null);
+    if (token) {
+      runsPromise = fetch(NIGHTLY_RUNS_API, {
+        headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+      }).then(r => r.ok ? r.json() : null).catch(() => null);
+    }
+
+    const [summary, runsData] = await Promise.all([summaryPromise, runsPromise]);
+
+    // Stats anzeigen
+    if (summary && summary.db_stats) {
+      const s = summary.db_stats;
+      document.getElementById('health-no-price').textContent = s.without_price;
+      document.getElementById('health-db-size').textContent = s.db_size_kb >= 1024
+        ? (s.db_size_kb / 1024).toFixed(1) + ' MB' : Math.round(s.db_size_kb) + ' KB';
+      document.getElementById('health-updated').textContent = s.updated_today;
+
+      // Zeitpunkt des Summary als "Letzter Run"
+      if (summary.timestamp) {
+        const d = new Date(summary.timestamp);
+        const dateStr = d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
+        const timeStr = d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+        document.getElementById('health-last-run').textContent = dateStr;
+        document.getElementById('health-last-run').title = `${dateStr}, ${timeStr}`;
+      }
+    }
+
+    // Workflow Runs anzeigen
+    const runs = (runsData && runsData.workflow_runs) || [];
+    if (runs.length > 0) {
+      // Laufzeit aus neuestem Run
+      const latest = runs[0];
+      if (latest.conclusion === 'success' || latest.conclusion === 'failure') {
+        const created = new Date(latest.created_at);
+        const updated = new Date(latest.updated_at);
+        const durSec = Math.round((updated - created) / 1000);
+        const durStr = durSec >= 60 ? Math.floor(durSec / 60) + ':' + String(durSec % 60).padStart(2, '0') + ' min' : durSec + 's';
+        document.getElementById('health-duration').textContent = durStr;
+
+        // Letzter Run Datum aus Workflow (praeziser als Summary)
+        const dStr = created.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
+        const tStr = created.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+        document.getElementById('health-last-run').textContent = dStr;
+        document.getElementById('health-last-run').title = `${dStr}, ${tStr}`;
+      }
+
+      renderWorkflowRuns(runs);
+      document.getElementById('health-runs-card').style.display = 'block';
+    } else if (!token) {
+      document.getElementById('health-runs-card').style.display = 'block';
+      document.getElementById('health-runs-list').innerHTML =
+        '<p style="color:var(--dim);font-size:13px;">GitHub Token fehlt — Workflow-Runs können nicht geladen werden. Bitte in Einstellungen eingeben.</p>';
+    }
+
+    // Chart rendern
+    if (summary && summary.history && summary.history.length > 1) {
+      renderHealthChart(summary.history);
+      document.getElementById('health-chart-card').style.display = 'block';
+    }
+
+    loadingEl.style.display = 'none';
+    if (!summary && runs.length === 0) {
+      loadingEl.style.display = 'block';
+      loadingEl.innerHTML = '<div class="status" style="color:var(--dim);">Pipeline Summary noch nicht vorhanden. Wird beim nächsten Nightly-Run generiert.' +
+        (!token ? ' GitHub Token fehlt — Workflow-Runs können nicht geladen werden.' : '') + '</div>';
+    } else {
+      document.getElementById('health-stats').style.display = 'grid';
+    }
+
+  } catch (e) {
+    loadingEl.innerHTML = `<div class="status status-error">${e.message}</div>`;
+  }
+}
+
+function renderWorkflowRuns(runs) {
+  const list = document.getElementById('health-runs-list');
+  list.innerHTML = runs.map(run => {
+    const created = new Date(run.created_at);
+    const dateStr = created.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const timeStr = created.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+
+    let durStr = '—';
+    if (run.status === 'completed') {
+      const updated = new Date(run.updated_at);
+      const durSec = Math.round((updated - created) / 1000);
+      durStr = durSec >= 60 ? Math.floor(durSec / 60) + ':' + String(durSec % 60).padStart(2, '0') + ' min' : durSec + 's';
+    }
+
+    const conclusion = run.conclusion || run.status || 'queued';
+    const dotClass = conclusion === 'success' ? 'success'
+      : conclusion === 'failure' ? 'failure'
+      : conclusion === 'cancelled' ? 'cancelled'
+      : conclusion === 'in_progress' ? 'in_progress' : 'queued';
+
+    const statusLabel = {
+      success: 'Erfolgreich', failure: 'Fehlgeschlagen', cancelled: 'Abgebrochen',
+      in_progress: 'Läuft ...', queued: 'Warteschlange'
+    }[conclusion] || conclusion;
+
+    // Fehler-Details bei failure
+    let errorHtml = '';
+    if (conclusion === 'failure' && run.name) {
+      errorHtml = `<div style="font-size:11px;color:var(--red);margin-top:2px;">Fehlgeschlagen</div>`;
+    }
+
+    return `
+      <div class="run-item">
+        <div class="run-dot ${dotClass}" title="${statusLabel}"></div>
+        <div class="run-info">
+          <div class="run-title">${dateStr}, ${timeStr}</div>
+          <div class="run-meta">${statusLabel} · ${durStr}${run.event === 'workflow_dispatch' ? ' · Manuell' : ' · Scheduled'}</div>
+          ${errorHtml}
+        </div>
+        <a href="${run.html_url}" target="_blank" class="run-link">Logs</a>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderHealthChart(history) {
+  // Chart.js dynamisch laden falls noch nicht vorhanden
+  if (typeof Chart === 'undefined') {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js';
+    script.onload = () => _drawHealthChart(history);
+    document.head.appendChild(script);
+  } else {
+    _drawHealthChart(history);
+  }
+}
+
+function _drawHealthChart(history) {
+  const ctx = document.getElementById('health-chart').getContext('2d');
+
+  if (healthChart) healthChart.destroy();
+
+  const labels = history.map(h => {
+    const d = new Date(h.date + 'T00:00:00');
+    return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
+  });
+
+  const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#0071e3';
+  const green = getComputedStyle(document.documentElement).getPropertyValue('--green').trim() || '#34c759';
+  const dim = getComputedStyle(document.documentElement).getPropertyValue('--dim').trim() || '#86868b';
+
+  healthChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'DB-Größe (KB)',
+          data: history.map(h => h.db_size_kb),
+          borderColor: accent,
+          backgroundColor: accent + '20',
+          fill: true,
+          tension: 0.3,
+          yAxisID: 'y',
+          pointRadius: 2,
+        },
+        {
+          label: 'Mit Preis',
+          data: history.map(h => h.with_price),
+          borderColor: green,
+          backgroundColor: 'transparent',
+          tension: 0.3,
+          yAxisID: 'y1',
+          pointRadius: 2,
+        },
+        {
+          label: 'Gesamt',
+          data: history.map(h => h.total_products),
+          borderColor: dim,
+          backgroundColor: 'transparent',
+          borderDash: [4, 4],
+          tension: 0.3,
+          yAxisID: 'y1',
+          pointRadius: 2,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 12, padding: 16, font: { size: 12 } } },
+      },
+      scales: {
+        y: { type: 'linear', position: 'left', title: { display: true, text: 'KB', font: { size: 11 } }, grid: { color: '#f0f0f0' } },
+        y1: { type: 'linear', position: 'right', title: { display: true, text: 'Produkte', font: { size: 11 } }, grid: { drawOnChartArea: false } },
+        x: { grid: { display: false }, ticks: { font: { size: 11 }, maxRotation: 45 } },
+      },
+    },
+  });
+}
+
 // ── Init ───────────────────────────────────────────────────────────────────
 loadSettings();
 
@@ -1282,7 +1556,7 @@ document.getElementById('product-input').addEventListener('keydown', function(e)
 
 // URL-Hash für direkten Tab-Zugriff
 const hash = window.location.hash.replace('#', '');
-if (['dashboard', 'settings'].includes(hash)) switchTab(hash);
+if (['dashboard', 'health', 'settings'].includes(hash)) switchTab(hash);
 </script>
 </body>
 </html>
