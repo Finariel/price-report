@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-03-26T12:22:32.952307+00:00",
+  "date": "2026-03-26",
+  "run_id": "23594024052",
+  "run_number": "26",
+  "db_stats": {
+    "total_products": 751,
+    "with_price": 751,
+    "without_price": 0,
+    "stale": 0,
+    "updated_today": 0,
+    "db_size_kb": 3149.5
+  },
+  "coupon_stats": {
+    "with_coupon": 0
+  },
+  "history": [
+    {
+      "date": "2026-03-26",
+      "total_products": 751,
+      "with_price": 751,
+      "without_price": 0,
+      "stale": 0,
+      "updated_today": 0,
+      "db_size_kb": 3149.5,
+      "with_coupon": 0
+    }
+  ]
+}
