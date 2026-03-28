@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kaufzeitpunkt-Orakel</title>
+<meta name="description" content="Wann ist der beste Zeitpunkt zum Kaufen? Datenbasierte Empfehlungen für Electronics & Apple-Produkte.">
+<style>
+:root {
+  --bg: #f5f5f7;
+  --bg2: #e8e8ed;
+  --card: #fff;
+  --text: #1d1d1f;
+  --dim: #86868b;
+  --accent: #0071e3;
+  --green: #34c759;
+  --red: #ff3b30;
+  --orange: #ff9500;
+  --yellow: #ffcc02;
+  --border: #d2d2d7;
+  --shadow: 0 1px 3px rgba(0,0,0,.06);
+  --radius: 14px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000;
+    --bg2: #1c1c1e;
+    --card: #1c1c1e;
+    --text: #f5f5f7;
+    --dim: #98989d;
+    --border: #38383a;
+    --shadow: 0 1px 3px rgba(0,0,0,.3);
+  }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container { max-width: 960px; margin: 0 auto; padding: 32px 20px 60px; }
+
+/* Header */
+.hero {
+  text-align: center;
+  padding: 48px 20px 32px;
+}
+.hero h1 {
+  font-size: clamp(28px, 5vw, 42px);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+.hero .subtitle {
+  font-size: 17px;
+  color: var(--dim);
+  max-width: 500px;
+  margin: 0 auto;
+}
+.hero .meta {
+  font-size: 12px;
+  color: var(--dim);
+  margin-top: 16px;
+}
+
+/* Cards */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+.card h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+.card h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+/* Empfehlungs-Badge */
+.reco-badge {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  border-radius: 16px;
+  margin-bottom: 16px;
+  font-size: 17px;
+  font-weight: 600;
+}
+.reco-badge .icon {
+  font-size: 36px;
+  flex-shrink: 0;
+}
+.reco-badge .label { font-size: 20px; font-weight: 700; }
+.reco-badge .reason { font-size: 14px; font-weight: 400; color: var(--dim); margin-top: 4px; }
+
+.reco-buy { background: #e8f8ed; border: 1px solid var(--green); }
+.reco-buy .label { color: #1a7a3a; }
+@media (prefers-color-scheme: dark) {
+  .reco-buy { background: rgba(52,199,89,.12); border-color: rgba(52,199,89,.3); }
+  .reco-buy .label { color: var(--green); }
+}
+
+.reco-wait { background: #fff3e0; border: 1px solid var(--orange); }
+.reco-wait .label { color: #b86e00; }
+@media (prefers-color-scheme: dark) {
+  .reco-wait { background: rgba(255,149,0,.12); border-color: rgba(255,149,0,.3); }
+  .reco-wait .label { color: var(--orange); }
+}
+
+.reco-neutral { background: var(--bg2); border: 1px solid var(--border); }
+.reco-neutral .label { color: var(--dim); }
+
+/* Status-Zeile */
+.status-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg2);
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.status-pill .val { font-weight: 700; }
+.status-pill .val.green { color: var(--green); }
+.status-pill .val.red { color: var(--red); }
+.status-pill .val.orange { color: var(--orange); }
+
+/* Kategorie-Tabs */
+.cat-tabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  padding: 4px;
+  background: var(--bg2);
+  border-radius: 12px;
+}
+.cat-tab {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  background: transparent;
+  color: var(--dim);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.cat-tab:hover { color: var(--text); }
+.cat-tab.active {
+  background: var(--card);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(0,0,0,.08);
+  font-weight: 600;
+}
+
+/* Heatmap */
+.heatmap {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.hm-cell {
+  aspect-ratio: 1;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  min-height: 64px;
+  transition: transform .15s;
+  cursor: default;
+  position: relative;
+}
+.hm-cell:hover { transform: scale(1.08); z-index: 2; }
+.hm-cell .month-label {
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.7;
+  margin-bottom: 2px;
+}
+.hm-cell .index-val { font-size: 18px; font-weight: 700; }
+.hm-cell.current { box-shadow: 0 0 0 3px var(--accent); }
+
+@media (max-width: 640px) {
+  .heatmap {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  .hm-cell { min-height: 56px; }
+  .hm-cell .index-val { font-size: 15px; }
+}
+@media (max-width: 400px) {
+  .heatmap {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Heatmap Legende */
+.hm-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--dim);
+  margin-bottom: 20px;
+}
+.hm-legend-bar {
+  width: 120px;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(to right, var(--green), var(--yellow), var(--red));
+}
+
+/* Sale-Events */
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+.event-card {
+  background: var(--bg2);
+  border-radius: 12px;
+  padding: 16px;
+}
+.event-card .event-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.event-card .event-emoji { font-size: 24px; }
+.event-card .event-name { font-size: 15px; font-weight: 600; }
+.event-card .event-discount {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--green);
+}
+.event-card .event-date {
+  font-size: 13px;
+  color: var(--dim);
+  margin-top: 4px;
+}
+.event-card .countdown {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-top: 6px;
+}
+
+/* Alle-Kategorien-Tabelle */
+.overview-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.overview-table th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.overview-table td {
+  padding: 12px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--bg2);
+  vertical-align: middle;
+}
+.overview-table tr { cursor: pointer; transition: background .1s; }
+.overview-table tr:hover { background: var(--bg2); }
+.overview-table .cat-emoji { font-size: 18px; margin-right: 8px; }
+.overview-table .action-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.badge-buy { background: #e8f8ed; color: #1a7a3a; }
+.badge-wait { background: #fff3e0; color: #b86e00; }
+.badge-neutral { background: var(--bg2); color: var(--dim); }
+@media (prefers-color-scheme: dark) {
+  .badge-buy { background: rgba(52,199,89,.15); color: var(--green); }
+  .badge-wait { background: rgba(255,149,0,.15); color: var(--orange); }
+  .badge-neutral { background: rgba(150,150,150,.15); }
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 32px 20px;
+  font-size: 12px;
+  color: var(--dim);
+}
+.footer a { color: var(--accent); text-decoration: none; }
+
+/* Info-Bereich */
+.info-box {
+  background: var(--bg2);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--dim);
+}
+.info-box strong { color: var(--text); }
+
+/* Toggle-Button */
+.view-toggle {
+  display: flex;
+  gap: 0;
+  background: var(--bg2);
+  border-radius: 10px;
+  padding: 3px;
+  margin-bottom: 20px;
+}
+.view-toggle button {
+  flex: 1;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  background: transparent;
+  color: var(--dim);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all .15s;
+}
+.view-toggle button.active {
+  background: var(--card);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(0,0,0,.08);
+  font-weight: 600;
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Kaufzeitpunkt-Orakel</h1>
+  <p class="subtitle">Datenbasierte Empfehlungen: Wann kaufen, wann warten?</p>
+  <p class="meta">
+    Basierend auf 733,634 Preispunkten von 5,633 Produkten
+    &bull; Aktualisiert: 2026-03-28 16:39
+  </p>
+</div>
+
+<div class="container">
+
+  <!-- View Toggle -->
+  <div class="view-toggle">
+    <button class="active" onclick="showView('overview')">Alle Kategorien</button>
+    <button onclick="showView('detail')">Detailansicht</button>
+  </div>
+
+  <!-- ═══ OVERVIEW ═══ -->
+  <div id="view-overview">
+    <div class="card">
+      <h2>Kaufempfehlungen auf einen Blick</h2>
+      <table class="overview-table" id="overview-table">
+        <thead>
+          <tr>
+            <th>Kategorie</th>
+            <th>Preisniveau</th>
+            <th>Empfehlung</th>
+            <th>Bester Monat</th>
+          </tr>
+        </thead>
+        <tbody id="overview-body"></tbody>
+      </table>
+    </div>
+
+    <!-- Sale-Events -->
+    <div class="card">
+      <h2>Kommende Sale-Events</h2>
+      <div class="events-grid" id="events-grid"></div>
+    </div>
+  </div>
+
+  <!-- ═══ DETAIL ═══ -->
+  <div id="view-detail" style="display:none;">
+    <!-- Kategorie-Tabs -->
+    <div class="cat-tabs" id="cat-tabs"></div>
+
+    <!-- Empfehlung -->
+    <div id="reco-container"></div>
+
+    <!-- Status-Zeile -->
+    <div class="status-row" id="status-row"></div>
+
+    <!-- Heatmap -->
+    <div class="card">
+      <h2>Monats-Heatmap</h2>
+      <p style="font-size:13px;color:var(--dim);margin-bottom:12px;">
+        Index 100 = Jahresdurchschnitt. Niedriger = günstiger.
+      </p>
+      <div class="heatmap" id="heatmap"></div>
+      <div class="hm-legend">
+        <span>Günstig</span>
+        <div class="hm-legend-bar"></div>
+        <span>Teuer</span>
+      </div>
+    </div>
+
+    <!-- Event-Rabatte für Kategorie -->
+    <div class="card">
+      <h2>Sale-Rabatte für diese Kategorie</h2>
+      <div id="cat-events"></div>
+    </div>
+  </div>
+
+  <!-- Info -->
+  <div class="info-box">
+    <strong>So funktioniert das Orakel:</strong> Für jedes Produkt wird der Median-Preis
+    berechnet. Jeder Preispunkt wird als Abweichung von diesem Median erfasst. Der Monatsindex
+    zeigt den Median dieser Abweichungen pro Monat — über alle Produkte einer Kategorie.
+    Index 100 = Jahresschnitt, 95 = 5% günstiger, 105 = 5% teurer.
+    Datenquellen: Amazon-Preishistorie via Keepa (teilweise bis 2011).
+  </div>
+
+</div>
+
+<div class="footer">
+  Kaufzeitpunkt-Orakel &bull; Generiert: 2026-03-28 16:39
+  &bull; Keine Kaufberatung, nur historische Datenanalyse.
+</div>
+
+<script>
+const DATA = {"generated_at": "2026-03-28 16:39", "stats": {"n_products": 5633, "n_datapoints": 733634, "n_categories": 27, "date_from": "2011-03-24", "date_to": "2026-03-28", "products_per_cat": {"iphone": 124, "mac": 139, "ipad": 229, "airpods": 12, "zubehoer": 187, "watch": 76, "tv_home": 2, "smartphones": 333, "notebooks": 228, "desktop": 119, "tablets": 199, "smartwatches": 148, "monitore": 347, "fernseher": 357, "lautsprecher": 176, "drucker": 334, "powerbanks": 112, "ssds": 317, "kopfhoerer": 241, "kameras": 255, "netzwerk": 259, "smarthome": 36, "ereader": 47, "playstation": 325, "switch": 315, "xbox": 379, "videospiele": 337}}, "monthly_indices": {"iphone": {"1": 100.0, "2": 99.7, "3": 100.0, "4": 103.1, "5": 99.6, "6": 99.9, "7": 99.8, "8": 100.5, "9": 101.9, "10": 112.3, "11": 102.1, "12": 101.1}, "mac": {"1": 100.8, "2": 100.2, "3": 100.0, "4": 106.1, "5": 106.9, "6": 102.2, "7": 104.3, "8": 100.6, "9": 99.9, "10": 101.9, "11": 101.6, "12": 99.2}, "ipad": {"1": 100.0, "2": 100.0, "3": 100.0, "4": 107.8, "5": 106.1, "6": 103.7, "7": 102.4, "8": 102.4, "9": 102.5, "10": 104.2, "11": 101.5, "12": 98.4}, "airpods": {"1": 102.3, "2": 103.0, "3": 97.9, "4": 108.9, "5": 101.5, "6": 98.3, "7": 97.4, "8": 91.0, "9": 97.8, "10": 100.1, "11": 100.0, "12": 101.3}, "zubehoer": {"1": 100.0, "2": 100.0, "3": 100.0, "4": 101.0, "5": 100.6, "6": 100.0, "7": 100.0, "8": 100.0, "9": 99.7, "10": 100.0, "11": 100.0, "12": 100.0}, "watch": {"1": 100.5, "2": 99.7, "3": 100.0, "4": null, "5": null, "6": null, "7": null, "8": null, "9": 105.6, "10": 104.4, "11": 100.4, "12": 101.4}, "smartphones": {"1": 100.0, "2": 100.0, "3": 100.3, "4": 100.5, "5": 100.5, "6": 99.7, "7": 99.8, "8": 100.0, "9": 100.0, "10": 100.0, "11": 100.0, "12": 100.0}, "notebooks": {"1": 100.0, "2": 100.0, "3": 100.0, "4": 101.9, "5": 100.1, "6": 100.8, "7": 101.7, "8": 99.9, "9": 99.7, "10": 100.0, "11": 99.2, "12": 99.4}, "desktop": {"1": 100.0, "2": 100.0, "3": 100.0, "4": 100.0, "5": 100.0, "6": 100.9, "7": 100.0, "8": 99.2, "9": 100.0, "10": 100.0, "11": 99.9, "12": 99.9}, "tablets": {"1": 100.0, "2": 100.4, "3": 100.4, "4": 100.8, "5": 100.2, "6": 100.0, "7": 99.2, "8": 99.0, "9": 99.4, "10": 99.5, "11": 99.6, "12": 100.2}, "smartwatches": {"1": 99.0, "2": 97.7, "3": 100.0, "4": 100.5, "5": 100.7, "6": 101.0, "7": 100.1, "8": 100.0, "9": 100.5, "10": 100.0, "11": 100.0, "12": 97.8}, "monitore": {"1": 99.4, "2": 100.0, "3": 101.7, "4": 101.8, "5": 100.9, "6": 100.4, "7": 100.0, "8": 100.0, "9": 99.9, "10": 99.6, "11": 98.8, "12": 99.9}, "fernseher": {"1": 100.0, "2": 99.9, "3": 99.8, "4": 99.5, "5": 100.0, "6": 100.0, "7": 100.9, "8": 100.5, "9": 100.9, "10": 100.8, "11": 99.5, "12": 100.0}, "lautsprecher": {"1": 100.0, "2": 100.0, "3": 100.0, "4": 100.2, "5": 100.0, "6": 100.0, "7": 100.0, "8": 100.0, "9": 100.0, "10": 100.0, "11": 99.8, "12": 100.0}, "drucker": {"1": 100.0, "2": 100.2, "3": 100.2, "4": 100.0, "5": 100.0, "6": 100.0, "7": 99.9, "8": 99.9, "9": 100.0, "10": 99.9, "11": 99.7, "12": 100.0}, "powerbanks": {"1": 100.0, "2": 100.0, "3": 100.0, "4": 100.3, "5": 100.0, "6": 100.0, "7": 100.0, "8": 100.0, "9": 100.0, "10": 100.0, "11": 99.6, "12": 100.0}, "ssds": {"1": 100.6, "2": 102.8, "3": 100.7, "4": 101.1, "5": 100.4, "6": 100.1, "7": 98.4, "8": 97.4, "9": 97.4, "10": 99.8, "11": 102.1, "12": 100.2}, "kopfhoerer": {"1": 100.0, "2": 99.8, "3": 100.0, "4": 100.8, "5": 100.8, "6": 100.3, "7": 100.0, "8": 99.9, "9": 100.0, "10": 100.0, "11": 99.9, "12": 99.9}, "kameras": {"1": 99.6, "2": 99.7, "3": 100.1, "4": 100.5, "5": 100.9, "6": 100.4, "7": 100.1, "8": 100.1, "9": 100.0, "10": 100.0, "11": 98.9, "12": 99.6}, "netzwerk": {"1": 100.0, "2": 100.4, "3": 100.0, "4": 100.0, "5": 100.0, "6": 100.0, "7": 99.9, "8": 100.0, "9": 99.9, "10": 99.8, "11": 100.0, "12": 100.0}, "smarthome": {"1": 100.0, "2": 100.0, "3": 98.2, "4": 102.6, "5": 100.0, "6": 110.0, "7": 102.3, "8": 100.0, "9": 100.0, "10": 99.1, "11": 92.9, "12": 97.8}, "ereader": {"1": 100.0, "2": 100.0, "3": 100.0, "4": 100.0, "5": 100.0, "6": 100.0, "7": 100.0, "8": 100.0, "9": 100.0, "10": 100.0, "11": 100.0, "12": 100.0}, "playstation": {"1": 100.0, "2": 100.0, "3": 100.9, "4": 102.5, "5": 100.2, "6": 100.0, "7": 100.0, "8": 98.9, "9": 100.0, "10": 100.0, "11": 98.8, "12": 98.8}, "switch": {"1": 100.8, "2": 100.0, "3": 100.3, "4": 100.3, "5": 100.0, "6": 100.0, "7": 99.8, "8": 99.1, "9": 99.9, "10": 99.4, "11": 99.9, "12": 100.0}, "xbox": {"1": 100.0, "2": 100.0, "3": 100.2, "4": 100.0, "5": 100.0, "6": 100.0, "7": 100.0, "8": 100.0, "9": 100.0, "10": 100.0, "11": 100.0, "12": 100.0}, "videospiele": {"1": 100.2, "2": 100.0, "3": 100.0, "4": 100.3, "5": 100.0, "6": 100.1, "7": 99.9, "8": 99.3, "9": 100.0, "10": 100.0, "11": 100.0, "12": 99.9}}, "sale_events": [{"id": "blackfriday", "name": "Black Friday", "emoji": "🖤", "description": "Letzter Freitag im November, oft ganze Woche davor/danach", "category_discounts": {"iphone": {"median_pct": 2.0, "index": 102.0, "n_datapoints": 134}, "airpods": {"median_pct": -5.2, "index": 94.8, "n_datapoints": 69}, "smartphones": {"median_pct": -0.3, "index": 99.7, "n_datapoints": 933}, "monitore": {"median_pct": -2.0, "index": 98.0, "n_datapoints": 1094}, "fernseher": {"median_pct": -2.0, "index": 98.0, "n_datapoints": 752}, "lautsprecher": {"median_pct": -0.9, "index": 99.1, "n_datapoints": 763}, "drucker": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 1247}, "ssds": {"median_pct": -1.5, "index": 98.5, "n_datapoints": 947}, "kopfhoerer": {"median_pct": -2.9, "index": 97.1, "n_datapoints": 822}, "kameras": {"median_pct": -1.1, "index": 98.9, "n_datapoints": 807}, "zubehoer": {"median_pct": -0.9, "index": 99.1, "n_datapoints": 434}, "netzwerk": {"median_pct": -0.6, "index": 99.4, "n_datapoints": 899}, "ereader": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 61}, "playstation": {"median_pct": -11.1, "index": 88.9, "n_datapoints": 1158}, "switch": {"median_pct": -0.0, "index": 100.0, "n_datapoints": 1339}, "xbox": {"median_pct": -2.6, "index": 97.4, "n_datapoints": 995}, "videospiele": {"median_pct": -2.9, "index": 97.1, "n_datapoints": 1143}, "smarthome": {"median_pct": -23.1, "index": 76.9, "n_datapoints": 21}, "notebooks": {"median_pct": -2.1, "index": 97.9, "n_datapoints": 396}, "desktop": {"median_pct": -0.3, "index": 99.7, "n_datapoints": 124}, "tablets": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 583}, "smartwatches": {"median_pct": -1.2, "index": 98.8, "n_datapoints": 323}, "powerbanks": {"median_pct": -1.0, "index": 99.0, "n_datapoints": 170}, "mac": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 216}, "ipad": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 269}, "watch": {"median_pct": -0.2, "index": 99.8, "n_datapoints": 87}}, "avg_discount": -1.3, "n_products": 26, "n_datapoints": 15786, "next_window": {"start": "2026-11-24", "end": "2026-12-01", "estimated": true}}, {"id": "cybermonday", "name": "Cyber Monday", "emoji": "💻", "description": "Montag nach Black Friday", "category_discounts": {"iphone": {"median_pct": 1.1, "index": 101.1, "n_datapoints": 66}, "airpods": {"median_pct": -4.3, "index": 95.7, "n_datapoints": 21}, "smartphones": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 262}, "monitore": {"median_pct": -1.1, "index": 98.9, "n_datapoints": 361}, "fernseher": {"median_pct": -0.4, "index": 99.6, "n_datapoints": 242}, "drucker": {"median_pct": -0.6, "index": 99.4, "n_datapoints": 372}, "ssds": {"median_pct": -3.5, "index": 96.5, "n_datapoints": 269}, "kopfhoerer": {"median_pct": -2.8, "index": 97.2, "n_datapoints": 356}, "kameras": {"median_pct": -2.1, "index": 97.9, "n_datapoints": 231}, "netzwerk": {"median_pct": -1.2, "index": 98.8, "n_datapoints": 268}, "ereader": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 49}, "playstation": {"median_pct": -9.4, "index": 90.6, "n_datapoints": 391}, "switch": {"median_pct": -1.5, "index": 98.5, "n_datapoints": 379}, "xbox": {"median_pct": -2.1, "index": 97.9, "n_datapoints": 326}, "videospiele": {"median_pct": -3.5, "index": 96.5, "n_datapoints": 508}, "smarthome": {"median_pct": 10.6, "index": 110.6, "n_datapoints": 40}, "notebooks": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 167}, "desktop": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 33}, "tablets": {"median_pct": 1.5, "index": 101.5, "n_datapoints": 152}, "lautsprecher": {"median_pct": -1.6, "index": 98.4, "n_datapoints": 246}, "zubehoer": {"median_pct": 0.7, "index": 100.7, "n_datapoints": 194}, "smartwatches": {"median_pct": -0.1, "index": 99.9, "n_datapoints": 159}, "powerbanks": {"median_pct": -0.8, "index": 99.2, "n_datapoints": 66}, "mac": {"median_pct": -6.5, "index": 93.5, "n_datapoints": 63}, "ipad": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 94}, "watch": {"median_pct": 0.6, "index": 100.6, "n_datapoints": 24}}, "avg_discount": -1.1, "n_products": 26, "n_datapoints": 5339, "next_window": {"start": "2026-12-01", "end": "2026-12-02", "estimated": true}}, {"id": "primeday", "name": "Prime Day", "emoji": "🌟", "description": "Meist 2 Tage im Juli (selten Oktober für Prime Day 2)", "category_discounts": {"iphone": {"median_pct": -4.6, "index": 95.4, "n_datapoints": 14}, "airpods": {"median_pct": -1.2, "index": 98.8, "n_datapoints": 12}, "zubehoer": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 114}, "fernseher": {"median_pct": 0.1, "index": 100.1, "n_datapoints": 185}, "lautsprecher": {"median_pct": -1.6, "index": 98.4, "n_datapoints": 168}, "drucker": {"median_pct": 1.3, "index": 101.3, "n_datapoints": 251}, "ssds": {"median_pct": -4.5, "index": 95.5, "n_datapoints": 293}, "kameras": {"median_pct": 0.1, "index": 100.1, "n_datapoints": 207}, "netzwerk": {"median_pct": -0.7, "index": 99.3, "n_datapoints": 232}, "switch": {"median_pct": -0.1, "index": 99.9, "n_datapoints": 257}, "xbox": {"median_pct": -0.1, "index": 99.9, "n_datapoints": 213}, "videospiele": {"median_pct": -2.8, "index": 97.2, "n_datapoints": 331}, "smartphones": {"median_pct": -0.8, "index": 99.2, "n_datapoints": 195}, "notebooks": {"median_pct": 1.6, "index": 101.6, "n_datapoints": 58}, "kopfhoerer": {"median_pct": -0.6, "index": 99.4, "n_datapoints": 195}, "monitore": {"median_pct": -0.2, "index": 99.8, "n_datapoints": 245}, "playstation": {"median_pct": -1.2, "index": 98.8, "n_datapoints": 224}, "powerbanks": {"median_pct": -2.6, "index": 97.4, "n_datapoints": 39}, "desktop": {"median_pct": 0.1, "index": 100.1, "n_datapoints": 32}, "tablets": {"median_pct": -0.7, "index": 99.3, "n_datapoints": 117}, "smartwatches": {"median_pct": 0.2, "index": 100.2, "n_datapoints": 67}, "ipad": {"median_pct": 1.9, "index": 101.9, "n_datapoints": 40}, "mac": {"median_pct": 6.0, "index": 106.0, "n_datapoints": 36}}, "avg_discount": -0.3, "n_products": 23, "n_datapoints": 3525, "next_window": {"start": "2026-07-08", "end": "2026-07-09", "estimated": true}}, {"id": "primeday2", "name": "Prime Day 2 (Herbst)", "emoji": "🍂", "description": "Zweiter Prime Day im Oktober (seit 2022)", "category_discounts": {"airpods": {"median_pct": 6.4, "index": 106.4, "n_datapoints": 12}, "smartphones": {"median_pct": 1.9, "index": 101.9, "n_datapoints": 93}, "smartwatches": {"median_pct": 0.4, "index": 100.4, "n_datapoints": 39}, "monitore": {"median_pct": 0.2, "index": 100.2, "n_datapoints": 159}, "fernseher": {"median_pct": 0.7, "index": 100.7, "n_datapoints": 94}, "lautsprecher": {"median_pct": 0.5, "index": 100.5, "n_datapoints": 96}, "drucker": {"median_pct": 1.0, "index": 101.0, "n_datapoints": 184}, "ssds": {"median_pct": -9.3, "index": 90.7, "n_datapoints": 173}, "kopfhoerer": {"median_pct": 4.1, "index": 104.1, "n_datapoints": 141}, "kameras": {"median_pct": 3.5, "index": 103.5, "n_datapoints": 116}, "zubehoer": {"median_pct": -0.4, "index": 99.6, "n_datapoints": 62}, "netzwerk": {"median_pct": -0.2, "index": 99.8, "n_datapoints": 135}, "playstation": {"median_pct": 0.1, "index": 100.1, "n_datapoints": 143}, "switch": {"median_pct": -0.7, "index": 99.3, "n_datapoints": 131}, "xbox": {"median_pct": 0.1, "index": 100.1, "n_datapoints": 149}, "videospiele": {"median_pct": -0.3, "index": 99.7, "n_datapoints": 194}, "powerbanks": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 23}, "tablets": {"median_pct": -0.3, "index": 99.7, "n_datapoints": 72}, "notebooks": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 31}}, "avg_discount": 0.0, "n_products": 19, "n_datapoints": 2047, "next_window": {"start": "2026-10-08", "end": "2026-10-09", "estimated": true}}, {"id": "easter", "name": "Oster-Deals", "emoji": "🐣", "description": "Typischerweise Gründonnerstag bis Ostermontag", "category_discounts": {"zubehoer": {"median_pct": 2.5, "index": 102.5, "n_datapoints": 188}, "airpods": {"median_pct": 14.3, "index": 114.3, "n_datapoints": 10}, "smartwatches": {"median_pct": 0.1, "index": 100.1, "n_datapoints": 109}, "monitore": {"median_pct": 1.3, "index": 101.3, "n_datapoints": 357}, "lautsprecher": {"median_pct": 1.4, "index": 101.4, "n_datapoints": 265}, "drucker": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 443}, "ssds": {"median_pct": 0.6, "index": 100.6, "n_datapoints": 399}, "kopfhoerer": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 258}, "kameras": {"median_pct": 1.6, "index": 101.6, "n_datapoints": 315}, "netzwerk": {"median_pct": -0.5, "index": 99.5, "n_datapoints": 369}, "ereader": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 10}, "playstation": {"median_pct": 0.6, "index": 100.6, "n_datapoints": 363}, "switch": {"median_pct": 0.4, "index": 100.4, "n_datapoints": 414}, "xbox": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 342}, "videospiele": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 428}, "powerbanks": {"median_pct": 0.5, "index": 100.5, "n_datapoints": 70}, "smartphones": {"median_pct": 1.3, "index": 101.3, "n_datapoints": 206}, "notebooks": {"median_pct": 0.4, "index": 100.4, "n_datapoints": 59}, "desktop": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 38}, "tablets": {"median_pct": 1.2, "index": 101.2, "n_datapoints": 155}, "fernseher": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 247}, "iphone": {"median_pct": 1.2, "index": 101.2, "n_datapoints": 28}, "mac": {"median_pct": 12.9, "index": 112.9, "n_datapoints": 34}, "ipad": {"median_pct": 5.4, "index": 105.4, "n_datapoints": 20}}, "avg_discount": 0.5, "n_products": 24, "n_datapoints": 5127, "next_window": {"start": "2026-04-17", "end": "2026-04-21", "estimated": true}}, {"id": "backtoschool", "name": "Back-to-School", "emoji": "🎒", "description": "Meist August–September", "category_discounts": {"iphone": {"median_pct": 0.1, "index": 100.1, "n_datapoints": 270}, "zubehoer": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 1694}, "airpods": {"median_pct": -2.4, "index": 97.6, "n_datapoints": 250}, "smartphones": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 3521}, "notebooks": {"median_pct": -0.1, "index": 99.9, "n_datapoints": 1339}, "desktop": {"median_pct": -0.8, "index": 99.2, "n_datapoints": 415}, "smartwatches": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 1472}, "monitore": {"median_pct": -0.2, "index": 99.8, "n_datapoints": 4513}, "fernseher": {"median_pct": 0.5, "index": 100.5, "n_datapoints": 3252}, "lautsprecher": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 3256}, "drucker": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 4610}, "ssds": {"median_pct": -7.3, "index": 92.7, "n_datapoints": 4667}, "kopfhoerer": {"median_pct": -0.3, "index": 99.7, "n_datapoints": 4114}, "kameras": {"median_pct": 0.7, "index": 100.7, "n_datapoints": 3244}, "netzwerk": {"median_pct": -0.2, "index": 99.8, "n_datapoints": 3745}, "smarthome": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 120}, "ereader": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 207}, "playstation": {"median_pct": -0.8, "index": 99.2, "n_datapoints": 4353}, "switch": {"median_pct": -0.2, "index": 99.8, "n_datapoints": 4483}, "xbox": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 4322}, "videospiele": {"median_pct": -0.7, "index": 99.3, "n_datapoints": 4803}, "powerbanks": {"median_pct": 0.0, "index": 100.0, "n_datapoints": 780}, "tablets": {"median_pct": -1.0, "index": 99.0, "n_datapoints": 1932}, "tv_home": {"median_pct": -1.7, "index": 98.3, "n_datapoints": 52}, "ipad": {"median_pct": 2.5, "index": 102.5, "n_datapoints": 636}, "mac": {"median_pct": 0.2, "index": 100.2, "n_datapoints": 381}, "watch": {"median_pct": 5.5, "index": 105.5, "n_datapoints": 57}}, "avg_discount": -0.1, "n_products": 27, "n_datapoints": 62488, "next_window": {"start": "2026-08-01", "end": "2026-09-15", "estimated": true}}], "assessments": {"iphone": {"name": "iPhone", "emoji": "📱", "source": "apple", "current_month": 3, "current_index": 100.0, "deviation_pct": 0.0, "best_month": 5, "best_index": 99.6, "worst_month": 10, "worst_index": 112.3, "next_sale": {"name": "Oster-Deals", "emoji": "🐣", "start": "2026-04-17", "end": "2026-04-21", "days_until": 20, "estimated": true, "expected_discount": 1.2}, "recommendation": {"action": "neutral", "confidence": "medium", "label_de": "Normaler Zeitpunkt", "reason_de": "Preis liegt im saisonalen Normalbereich (+0.0% vom Schnitt). Bester Monat wäre Mai.", "icon": "minus"}, "indices": {"1": 100.0, "2": 99.7, "3": 100.0, "4": 103.1, "5": 99.6, "6": 99.9, "7": 99.8, "8": 100.5, "9": 101.9, "10": 112.3, "11": 102.1, "12": 101.1}}, "mac": {"name": "Mac", "emoji": "💻", "source": "apple", "current_month": 3, "current_index": 100.0, "deviation_pct": 0.0, "best_month": 12, "best_index": 99.2, "worst_month": 5, "worst_index": 106.9, "next_sale": {"name": "Oster-Deals", "emoji": "🐣", "start": "2026-04-17", "end": "2026-04-21", "days_until": 20, "estimated": true, "expected_discount": 12.9}, "recommendation": {"action": "neutral", "confidence": "medium", "label_de": "Normaler Zeitpunkt", "reason_de": "Preis liegt im saisonalen Normalbereich (+0.0% vom Schnitt). Bester Monat wäre Dezember.", "icon": "minus"}, "indices": {"1": 100.8, "2": 100.2, "3": 100.0, "4": 106.1, "5": 106.9, "6": 102.2, "7": 104.3, "8": 100.6, "9": 99.9, "10": 101.9, "11": 101.6, "12": 99.2}}, "ipad": {"name": "iPad", "emoji": "📟", "source": "apple", "current_month": 3, "current_index": 100.0, "deviation_pct": 0.0, "best_month": 12, "best_index": 98.4, "worst_month": 4, "worst_index": 107.8, "next_sale": {"name": "Oster-Deals", "emoji": "🐣", "start": "2026-04-17", "end": "2026-04-21", "days_until": 20, "estimated": true, "expected_discount": 5.4}, "recommendation": {"action": "neutral", "confidence": "medium", "label_de": "Normaler Zeitpunkt", "reason_de": "Preis liegt im saisonalen Normalbereich (+0.0% vom Schnitt). Bester Monat wäre Dezember.", "icon": "minus"}, "indices": {"1": 100.0, "2": 100.0, "3": 100.0, "4": 107.8, "5": 106.1, "6": 103.7, "7": 102.4, "8": 102.4, "9": 102.5, "10": 104.2, "11": 101.5, "12": 98.4}}, "airpods": {"name": "AirPods", "emoji": "🎧", "source": "apple", "current_month": 3, "current_index": 97.9, "deviation_pct": -2.1, "best_month": 8, "best_index": 91.0, "worst_month": 4, "worst_index": 108.9, "next_sale": {"name": "Oster-Deals", "emoji": "🐣", "start": "2026-04-17", "end": "2026-04-21", "days_until": 20, "estimated": true, "expected_discount": 14.3}, "recommendation": {"action": "buy_now", "confidence": "high", "label_de": "Jetzt kaufen", "reason_de": "Aktuell 2.1% unter dem Saisonschnitt. Guter Zeitpunkt!", "icon": "checkmark"}, "indices": {"1": 102.3, "2": 103.0, "3": 97.9, "4": 108.9, "5": 101.5, "6": 98.3, "7": 97.4, "8": 91.0, "9": 97.8, "10": 100.1, "11": 100.0, "12": 101.3}}, "zubehoer": {"name": "Zubehör", "emoji": "⌨️", "source": "electronics", "current_month": 3, "current_index": 100.0, "deviation_pct": 0.0, "best_month": 9, "best_index": 99.7, "worst_month": 4, "worst_index": 101.0, "next_sale": {"name": "Oster-Deals", "emoji": "🐣", "start": "2026-04-17", "end": "2026-04-21", "days_until": 20, "estimated": true, "expected_discount": 2.5}, "recommendation": {"action": "neutral", "confidence": "medium", "label_de": "Normaler Zeitpunkt", "reason_de": "Preis liegt im saisonalen Normalbereich (+0.0% vom Schnitt). Bester Monat wäre September.", "icon": "minus"}, "indices": {"1": 100.0, "2": 100.0, "3": 100.0, "4": 101.0, "5": 100.6, "6": 100.0, "7": 100.0, "8": 100.0, "9": 99.7, "10": 100.0, "11": 100.0, "12": 100.0}}, "watch": {"name": "Apple Watch", "emoji": "⌚", "source": "apple", "current_month": 3, "current_index": 100.0, "deviation_pct": 0.0, "best_month": 2, "best_index": 99.7, "worst_month": 9, "worst_index": 105.6, "next_sale": {"name": "Back-to-School", "emoji": "🎒", "start": "2026-08-01", "end": "2026-09-15", "days_until": 126, "estimated": true, "expected_discount": 5.5}, "recommendation": {"action": "neutral", "confidence": "medium", "label_de": "Normaler Zeitpunkt", "reason_de": "Preis liegt im saisonalen Normalbereich (+0.0% vom Schnitt). Bester Monat wäre Februar.", "icon": "minus"}, "indices": {"1": 100.5, "2": 99.7, "3": 100.0, "4": null, "5": null, "6": null, "7": null, "8": null, "9": 105.6, "10": 104.4, "11": 100.4, "12": 101.4}}, "smartphones": {"name": "Smartphones", "emoji": "📱", "source": "electronics", "current_month": 3, "current_index": 100.3, "deviation_pct": 0.3, "best_month": 6, "best_index": 99.7, "worst_month": 4, "worst_index": 100.5, "next_sale": {"name": "Oster-Deals", "emoji": "🐣", "start": "2026-04-17", "end": "2026-04-21", "days_until": 20, "estimated": true, "expected_discount": 1.3}, "recommendation": {"action": "neutral", "confidence": "medium", "label_de": "Normaler Zeitpunkt", "reason_de": "Preis liegt im saisonalen Normalbereich (+0.3% vom Schnitt). Bester Monat wäre Juni.", "icon": "minus"}, "indices": {"1": 100.0, "2": 100.0, "3": 100.3, "4": 100.5, "5": 100.5, "6": 99.7, "7": 99.8, "8": 100.0, "9": 100.0, "10": 100.0, "11": 100.0, "12": 100.0}}, "notebooks": {"name": "Notebooks", "emoji": "💻", "source": "electronics", "current_month": 3, "current_index": 100.0, "deviation_pct": 0.0, "best_month": 11, "best_index": 99.2, "worst_month": 4, "worst_index": 101.9, "next_sale": {"name": "Oster-Deals", "emoji": "🐣", "start": "2026-04-17", "end": "2026-04-21", "days_until": 20, "estimated": true, "expected_discount": 0.4}, "recommendation": {"action": "neutral", "confidence": "medium", "label_de": "Normaler Zeitpunkt", "reason_de": "Preis liegt im saisonalen Normalbereich (+0.0% vom Schnitt). Bester Monat wäre November.", "icon": "minus"}, "indices": {"1": 100.0, "2": 100.0, "3": 100.0, "4": 101.9, "5": 100.1, "6": 100.8, "7": 101.7, "8": 99.9, "9": 99.7, "10": 100.0, "11": 99.2, "12": 99.4}}, "desktop": {"name": "Desktop-PCs", "emoji": "🖥", "source": "electronics", "current_month": 3, "current_index": 100.0, "deviation_pct": 0.0, "best_month": 8, "best_index": 99.2, "worst_month": 6, "worst_index": 100.9, "next_sale": {"name": "Oster-Deals", "emoji": "🐣", "start": "2026-04-17", "end": "2026-04-21", "days_until": 20, "estimated": true, "expected_discount": 0.0}, "recommendation": {"action": "neutral", "confidence": "medium", "label_de": "Normaler Zeitpunkt", "reason_de": "Preis liegt im saisonalen Normalbereich (+0.0% vom Schnitt). Bester Monat wäre August.", "icon": "minus"}, "indices": {"1": 100.0, "2": 100.0, "3": 100.0, "4": 100.0, "5": 100.0, "6": 100.9, "7": 100.0, "8": 99.2, "9": 100.0, "10": 100.0, "11": 99.9, "12": 99.9}}, "tablets": {"name": "Tablets", "emoji": "📟", "source": "electronics", "current_month": 3, "current_index": 100.4, "deviation_pct": 0.4, "best_month": 8, "best_index": 99.0, "worst_month": 4, "worst_index": 100.8, "next_sale": {"name": "Oster-Deals", "emoji": "🐣", "start": "2026-04-17", "end": "2026-04-21", "days_until": 20, "estimated": true, "expected_discount": 1.2}, "recommendation": {"action": "neutral", "confidence": "medium", "label_de": "Normaler Zeitpunkt", "reason_de": "Preis liegt im saisonalen Normalbereich (+0.4% vom Schnitt). Bester Monat wäre August.", "icon": "minus"}, "indices": {"1": 100.0, "2": 100.4, "3": 100.4, "4": 100.8, "5": 100.2, "6": 100.0, "7": 99.2, "8": 99.0, "9": 99.4, "10": 99.5, "11": 99.6, "12": 100.2}}, "smartwatches": {"name": "Smartwatches", "emoji": "⌚", "source": "electronics", "current_month": 3, "current_index": 100.0, "deviation_pct": 0.0, "best_month": 2, "best_index": 97.7, "worst_month": 6, "worst_index": 101.0, "next_sale": {"name": "Oster-Deals", "emoji": "🐣", "start": "2026-04-17", "end": "2026-04-21", "days_until": 20, "estimated": true, "expected_discount": 0.1}, "recommendation": {"action": "neutral", "confidence": "medium", "label_de": "Normaler Zeitpunkt", "reason_de": "Preis liegt im saisonalen Normalbereich (+0.0% vom Schnitt). Bester Monat wäre Februar.", "icon": "minus"}, "indices": {"1": 99.0, "2": 97.7, "3": 100.0, "4": 100.5, "5": 100.7, "6": 101.0, "7": 100.1, "8": 100.0, "9": 100.5, "10": 100.0, "11": 100.0, "12": 97.8}}, "monitore": {"name": "Monitore", "emoji": "🖥", "source": "electronics", "current_month": 3, "current_index": 101.7, "deviation_pct": 1.7, "best_month": 11, "best_index": 98.8, "worst_month": 4, "worst_index": 101.8, "next_sale": {"name": "Oster-Deals", "emoji": "🐣", "start": "2026-04-17", "end": "2026-04-21", "days_until": 20, "estimated": true, "expected_discount": 1.3}, "recommendation": {"action": "neutral", "confidence": "medium", "label_de": "Normaler Zeitpunkt", "reason_de": "Preis liegt im saisonalen Normalbereich (+1.7% vom Schnitt). Bester Monat wäre November.", "icon": "minus"}, "indices": {"1": 99.4, "2": 100.0, "3": 101.7, "4": 101.8, "5": 100.9, "6": 100.4, "7": 100.0, "8": 100.0, "9": 99.9, "10": 99.6, "11": 98.8, "12": 99.9}}, "fernseher": {"name": "Fernseher", "emoji": "📺", "source": "electronics", "current_month": 3, "current_index": 99.8, "deviation_pct": -0.2, "best_month": 4, "best_index": 99.5, "worst_month": 7, "worst_index": 100.9, "next_sale": {"name": "Oster-Deals", "emoji": "🐣", "start": "2026-04-17", "end": "2026-04-21", "days_until": 20, "estimated": true, "expected_discount": 0.0}, "recommendation": {"action": "neutral", "confidence": "medium", "label_de": "Normaler Zeitpunkt", "reason_de": "Preis liegt im saisonalen Normalbereich (-0.2% vom Schnitt). Bester Monat wäre April.", "icon": "minus"}, "indices": {"1": 100.0, "2": 99.9, "3": 99.8, "4": 99.5, "5": 100.0, "6": 100.0, "7": 100.9, "8": 100.5, "9": 100.9, "10": 100.8, "11": 99.5, "12": 100.0}}, "lautsprecher": {"name": "Lautsprecher", "emoji": "🔊", "source": "electronics", "current_month": 3, "current_index": 100.0, "deviation_pct": 0.0, "best_month": 11, "best_index": 99.8, "worst_month": 4, "worst_index": 100.2, "next_sale": {"name": "Oster-Deals", "emoji": "🐣", "start": "2026-04-17", "end": "2026-04-21", "days_until": 20, "estimated": true, "expected_discount": 1.4}, "recommendation": {"action": "neutral", "confidence": "medium", "label_de": "Normaler Zeitpunkt", "reason_de": "Preis liegt im saisonalen Normalbereich (+0.0% vom Schnitt). Bester Monat wäre November.", "icon": "minus"}, "indices": {"1": 100.0, "2": 100.0, "3": 100.0, "4": 100.2, "5": 100.0, "6": 100.0, "7": 100.0, "8": 100.0, "9": 100.0, "10": 100.0, "11": 99.8, "12": 100.0}}, "drucker": {"name": "Drucker", "emoji": "🖨", "source": "electronics", "current_month": 3, "current_index": 100.2, "deviation_pct": 0.2, "best_month": 11, "best_index": 99.7, "worst_month": 2, "worst_index": 100.2, "next_sale": {"name": "Oster-Deals", "emoji": "🐣", "start": "2026-04-17", "end": "2026-04-21", "days_until": 20, "estimated": true, "expected_discount": 0.0}, "recommendation": {"action": "neutral", "confidence": "medium", "label_de": "Normaler Zeitpunkt", "reason_de": "Preis liegt im saisonalen Normalbereich (+0.2% vom Schnitt). Bester Monat wäre November.", "icon": "minus"}, "indices": {"1": 100.0, "2": 100.2, "3": 100.2, "4": 100.0, "5": 100.0, "6": 100.0, "7": 99.9, "8": 99.9, "9": 100.0, "10": 99.9, "11": 99.7, "12": 100.0}}, "powerbanks": {"name": "Powerbanks", "emoji": "🔋", "source": "electronics", "current_month": 3, "current_index": 100.0, "deviation_pct": 0.0, "best_month": 11, "best_index": 99.6, "worst_month": 4, "worst_index": 100.3, "next_sale": {"name": "Oster-Deals", "emoji": "🐣", "start": "2026-04-17", "end": "2026-04-21", "days_until": 20, "estimated": true, "expected_discount": 0.5}, "recommendation": {"action": "neutral", "confidence": "medium", "label_de": "Normaler Zeitpunkt", "reason_de": "Preis liegt im saisonalen Normalbereich (+0.0% vom Schnitt). Bester Monat wäre November.", "icon": "minus"}, "indices": {"1": 100.0, "2": 100.0, "3": 100.0, "4": 100.3, "5": 100.0, "6": 100.0, "7": 100.0, "8": 100.0, "9": 100.0, "10": 100.0, "11": 99.6, "12": 100.0}}, "ssds": {"name": "Externe SSDs", "emoji": "💾", "source": "electronics", "current_month": 3, "current_index": 100.7, "deviation_pct": 0.7, "best_month": 8, "best_index": 97.4, "worst_month": 2, "worst_index": 102.8, "next_sale": {"name": "Oster-Deals", "emoji": "🐣", "start": "2026-04-17", "end": "2026-04-21", "days_until": 20, "estimated": true, "expected_discount": 0.6}, "recommendation": {"action": "neutral", "confidence": "medium", "label_de": "Normaler Zeitpunkt", "reason_de": "Preis liegt im saisonalen Normalbereich (+0.7% vom Schnitt). Bester Monat wäre August.", "icon": "minus"}, "indices": {"1": 100.6, "2": 102.8, "3": 100.7, "4": 101.1, "5": 100.4, "6": 100.1, "7": 98.4, "8": 97.4, "9": 97.4, "10": 99.8, "11": 102.1, "12": 100.2}}, "kopfhoerer": {"name": "Kopfhörer", "emoji": "🎧", "source": "electronics", "current_month": 3, "current_index": 100.0, "deviation_pct": 0.0, "best_month": 2, "best_index": 99.8, "worst_month": 4, "worst_index": 100.8, "next_sale": {"name": "Oster-Deals", "emoji": "🐣", "start": "2026-04-17", "end": "2026-04-21", "days_until": 20, "estimated": true, "expected_discount": 0.0}, "recommendation": {"action": "neutral", "confidence": "medium", "label_de": "Normaler Zeitpunkt", "reason_de": "Preis liegt im saisonalen Normalbereich (+0.0% vom Schnitt). Bester Monat wäre Februar.", "icon": "minus"}, "indices": {"1": 100.0, "2": 99.8, "3": 100.0, "4": 100.8, "5": 100.8, "6": 100.3, "7": 100.0, "8": 99.9, "9": 100.0, "10": 100.0, "11": 99.9, "12": 99.9}}, "kameras": {"name": "Kameras", "emoji": "📷", "source": "electronics", "current_month": 3, "current_index": 100.1, "deviation_pct": 0.1, "best_month": 11, "best_index": 98.9, "worst_month": 5, "worst_index": 100.9, "next_sale": {"name": "Oster-Deals", "emoji": "🐣", "start": "2026-04-17", "end": "2026-04-21", "days_until": 20, "estimated": true, "expected_discount": 1.6}, "recommendation": {"action": "neutral", "confidence": "medium", "label_de": "Normaler Zeitpunkt", "reason_de": "Preis liegt im saisonalen Normalbereich (+0.1% vom Schnitt). Bester Monat wäre November.", "icon": "minus"}, "indices": {"1": 99.6, "2": 99.7, "3": 100.1, "4": 100.5, "5": 100.9, "6": 100.4, "7": 100.1, "8": 100.1, "9": 100.0, "10": 100.0, "11": 98.9, "12": 99.6}}, "netzwerk": {"name": "Netzwerk", "emoji": "📡", "source": "electronics", "current_month": 3, "current_index": 100.0, "deviation_pct": 0.0, "best_month": 10, "best_index": 99.8, "worst_month": 2, "worst_index": 100.4, "next_sale": {"name": "Oster-Deals", "emoji": "🐣", "start": "2026-04-17", "end": "2026-04-21", "days_until": 20, "estimated": true, "expected_discount": -0.5}, "recommendation": {"action": "neutral", "confidence": "medium", "label_de": "Normaler Zeitpunkt", "reason_de": "Preis liegt im saisonalen Normalbereich (+0.0% vom Schnitt). Bester Monat wäre Oktober.", "icon": "minus"}, "indices": {"1": 100.0, "2": 100.4, "3": 100.0, "4": 100.0, "5": 100.0, "6": 100.0, "7": 99.9, "8": 100.0, "9": 99.9, "10": 99.8, "11": 100.0, "12": 100.0}}, "smarthome": {"name": "Smart Home", "emoji": "🏠", "source": "electronics", "current_month": 3, "current_index": 98.2, "deviation_pct": -1.8, "best_month": 11, "best_index": 92.9, "worst_month": 6, "worst_index": 110.0, "next_sale": {"name": "Back-to-School", "emoji": "🎒", "start": "2026-08-01", "end": "2026-09-15", "days_until": 126, "estimated": true, "expected_discount": 0.0}, "recommendation": {"action": "neutral", "confidence": "medium", "label_de": "Normaler Zeitpunkt", "reason_de": "Preis liegt im saisonalen Normalbereich (-1.8% vom Schnitt). Bester Monat wäre November.", "icon": "minus"}, "indices": {"1": 100.0, "2": 100.0, "3": 98.2, "4": 102.6, "5": 100.0, "6": 110.0, "7": 102.3, "8": 100.0, "9": 100.0, "10": 99.1, "11": 92.9, "12": 97.8}}, "ereader": {"name": "E-Reader", "emoji": "📖", "source": "electronics", "current_month": 3, "current_index": 100.0, "deviation_pct": 0.0, "best_month": 1, "best_index": 100.0, "worst_month": 1, "worst_index": 100.0, "next_sale": {"name": "Oster-Deals", "emoji": "🐣", "start": "2026-04-17", "end": "2026-04-21", "days_until": 20, "estimated": true, "expected_discount": 0.0}, "recommendation": {"action": "neutral", "confidence": "medium", "label_de": "Normaler Zeitpunkt", "reason_de": "Preis liegt im saisonalen Normalbereich (+0.0% vom Schnitt). Bester Monat wäre Januar.", "icon": "minus"}, "indices": {"1": 100.0, "2": 100.0, "3": 100.0, "4": 100.0, "5": 100.0, "6": 100.0, "7": 100.0, "8": 100.0, "9": 100.0, "10": 100.0, "11": 100.0, "12": 100.0}}, "playstation": {"name": "PlayStation 5", "emoji": "🎮", "source": "electronics", "current_month": 3, "current_index": 100.9, "deviation_pct": 0.9, "best_month": 11, "best_index": 98.8, "worst_month": 4, "worst_index": 102.5, "next_sale": {"name": "Oster-Deals", "emoji": "🐣", "start": "2026-04-17", "end": "2026-04-21", "days_until": 20, "estimated": true, "expected_discount": 0.6}, "recommendation": {"action": "neutral", "confidence": "medium", "label_de": "Normaler Zeitpunkt", "reason_de": "Preis liegt im saisonalen Normalbereich (+0.9% vom Schnitt). Bester Monat wäre November.", "icon": "minus"}, "indices": {"1": 100.0, "2": 100.0, "3": 100.9, "4": 102.5, "5": 100.2, "6": 100.0, "7": 100.0, "8": 98.9, "9": 100.0, "10": 100.0, "11": 98.8, "12": 98.8}}, "switch": {"name": "Nintendo Switch", "emoji": "🕹", "source": "electronics", "current_month": 3, "current_index": 100.3, "deviation_pct": 0.3, "best_month": 8, "best_index": 99.1, "worst_month": 1, "worst_index": 100.8, "next_sale": {"name": "Oster-Deals", "emoji": "🐣", "start": "2026-04-17", "end": "2026-04-21", "days_until": 20, "estimated": true, "expected_discount": 0.4}, "recommendation": {"action": "neutral", "confidence": "medium", "label_de": "Normaler Zeitpunkt", "reason_de": "Preis liegt im saisonalen Normalbereich (+0.3% vom Schnitt). Bester Monat wäre August.", "icon": "minus"}, "indices": {"1": 100.8, "2": 100.0, "3": 100.3, "4": 100.3, "5": 100.0, "6": 100.0, "7": 99.8, "8": 99.1, "9": 99.9, "10": 99.4, "11": 99.9, "12": 100.0}}, "xbox": {"name": "Xbox Series", "emoji": "🎯", "source": "electronics", "current_month": 3, "current_index": 100.2, "deviation_pct": 0.2, "best_month": 1, "best_index": 100.0, "worst_month": 3, "worst_index": 100.2, "next_sale": {"name": "Oster-Deals", "emoji": "🐣", "start": "2026-04-17", "end": "2026-04-21", "days_until": 20, "estimated": true, "expected_discount": 0.0}, "recommendation": {"action": "neutral", "confidence": "medium", "label_de": "Normaler Zeitpunkt", "reason_de": "Preis liegt im saisonalen Normalbereich (+0.2% vom Schnitt). Bester Monat wäre Januar.", "icon": "minus"}, "indices": {"1": 100.0, "2": 100.0, "3": 100.2, "4": 100.0, "5": 100.0, "6": 100.0, "7": 100.0, "8": 100.0, "9": 100.0, "10": 100.0, "11": 100.0, "12": 100.0}}, "videospiele": {"name": "Videospiele", "emoji": "👾", "source": "electronics", "current_month": 3, "current_index": 100.0, "deviation_pct": 0.0, "best_month": 8, "best_index": 99.3, "worst_month": 4, "worst_index": 100.3, "next_sale": {"name": "Oster-Deals", "emoji": "🐣", "start": "2026-04-17", "end": "2026-04-21", "days_until": 20, "estimated": true, "expected_discount": 0.0}, "recommendation": {"action": "neutral", "confidence": "medium", "label_de": "Normaler Zeitpunkt", "reason_de": "Preis liegt im saisonalen Normalbereich (+0.0% vom Schnitt). Bester Monat wäre August.", "icon": "minus"}, "indices": {"1": 100.2, "2": 100.0, "3": 100.0, "4": 100.3, "5": 100.0, "6": 100.1, "7": 99.9, "8": 99.3, "9": 100.0, "10": 100.0, "11": 100.0, "12": 99.9}}}, "months_de": ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"], "category_meta": {"iphone": {"name": "iPhone", "emoji": "📱"}, "mac": {"name": "Mac", "emoji": "💻"}, "ipad": {"name": "iPad", "emoji": "📟"}, "watch": {"name": "Apple Watch", "emoji": "⌚"}, "airpods": {"name": "AirPods", "emoji": "🎧"}, "tv_home": {"name": "Apple TV & HomePod", "emoji": "📺"}, "smartphones": {"name": "Smartphones", "emoji": "📱"}, "notebooks": {"name": "Notebooks", "emoji": "💻"}, "tablets": {"name": "Tablets", "emoji": "📟"}, "kopfhoerer": {"name": "Kopfhörer", "emoji": "🎧"}, "smartwatches": {"name": "Smartwatches", "emoji": "⌚"}, "fernseher": {"name": "Fernseher", "emoji": "📺"}, "monitore": {"name": "Monitore", "emoji": "🖥"}, "kameras": {"name": "Kameras", "emoji": "📷"}, "lautsprecher": {"name": "Lautsprecher", "emoji": "🔊"}, "playstation": {"name": "PlayStation 5", "emoji": "🎮"}, "switch": {"name": "Nintendo Switch", "emoji": "🕹"}, "xbox": {"name": "Xbox Series", "emoji": "🎯"}, "videospiele": {"name": "Videospiele", "emoji": "👾"}, "ssds": {"name": "Externe SSDs", "emoji": "💾"}, "netzwerk": {"name": "Netzwerk", "emoji": "📡"}, "drucker": {"name": "Drucker", "emoji": "🖨"}, "powerbanks": {"name": "Powerbanks", "emoji": "🔋"}, "smarthome": {"name": "Smart Home", "emoji": "🏠"}, "ereader": {"name": "E-Reader", "emoji": "📖"}, "desktop": {"name": "Desktop-PCs", "emoji": "🖥"}, "zubehoer": {"name": "Zubehör", "emoji": "⌨️"}}};
+
+const MONTHS_SHORT = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+const MONTHS_LONG  = DATA.months_de || ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+
+let currentCat = null;
+
+// ── Hilfsfunktionen ──────────────────────────────────────────────
+
+function heatColor(index) {
+  if (index === null || index === undefined) return 'var(--bg2)';
+  // Grün (#34c759) bei index <= 96, Gelb bei 100, Rot (#ff3b30) bei index >= 104
+  const norm = Math.max(0, Math.min(1, (index - 96) / 8)); // 0=günstig, 1=teuer
+  if (norm <= 0.5) {
+    // Grün → Gelb
+    const t = norm * 2;
+    const r = Math.round(52 + (255 - 52) * t);
+    const g = Math.round(199 + (204 - 199) * t);
+    const b = Math.round(89 + (2 - 89) * t);
+    return `rgb(${r},${g},${b})`;
+  } else {
+    // Gelb → Rot
+    const t = (norm - 0.5) * 2;
+    const r = Math.round(255);
+    const g = Math.round(204 - (204 - 59) * t);
+    const b = Math.round(2 + (48 - 2) * t);
+    return `rgb(${r},${g},${b})`;
+  }
+}
+
+function textColorForBg(index) {
+  if (index === null || index === undefined) return 'var(--dim)';
+  if (index <= 97) return '#1a5c2a';
+  if (index >= 103) return '#8a1f1f';
+  return 'var(--text)';
+}
+
+function actionBadgeClass(action) {
+  if (action === 'buy_now') return 'badge-buy';
+  if (action === 'wait' || action === 'wait_for_sale') return 'badge-wait';
+  return 'badge-neutral';
+}
+
+function recoClass(action) {
+  if (action === 'buy_now') return 'reco-buy';
+  if (action === 'wait' || action === 'wait_for_sale' || action === 'wait_if_possible') return 'reco-wait';
+  return 'reco-neutral';
+}
+
+function recoIcon(icon) {
+  if (icon === 'checkmark') return '✅';
+  if (icon === 'clock') return '⏳';
+  if (icon === 'xmark') return '❌';
+  return '➖';
+}
+
+function daysUntilStr(dateStr) {
+  const target = new Date(dateStr + 'T00:00:00');
+  const now = new Date();
+  const days = Math.ceil((target - now) / (1000*60*60*24));
+  if (days <= 0) return 'Läuft gerade!';
+  if (days === 1) return 'Morgen!';
+  if (days < 7) return `In ${days} Tagen`;
+  if (days < 30) return `In ${Math.round(days/7)} Wochen`;
+  return `In ${Math.round(days/30)} Monaten`;
+}
+
+// ── Overview ─────────────────────────────────────────────────────
+
+function renderOverview() {
+  const tbody = document.getElementById('overview-body');
+  const assessments = DATA.assessments || {};
+
+  // Sortierung: buy_now zuerst, dann wait, dann neutral
+  const order = {'buy_now': 0, 'wait': 2, 'wait_for_sale': 2, 'wait_if_possible': 1, 'neutral': 1};
+  const sorted = Object.entries(assessments).sort((a, b) => {
+    const oa = order[a[1].recommendation.action] ?? 1;
+    const ob = order[b[1].recommendation.action] ?? 1;
+    if (oa !== ob) return oa - ob;
+    return a[1].deviation_pct - b[1].deviation_pct;
+  });
+
+  tbody.innerHTML = sorted.map(([cat, a]) => {
+    const rec = a.recommendation;
+    const dev = a.deviation_pct;
+    const devClass = dev <= -2 ? 'green' : dev >= 3 ? 'red' : dev >= 1 ? 'orange' : '';
+    const bestMonth = MONTHS_LONG[a.best_month - 1];
+    const badgeClass = actionBadgeClass(rec.action);
+    const badgeText = rec.action === 'buy_now' ? 'Jetzt kaufen' :
+                     (rec.action === 'wait' || rec.action === 'wait_for_sale') ? 'Warten' :
+                     rec.action === 'wait_if_possible' ? 'Wenn möglich warten' : 'Normal';
+
+    return `<tr onclick="showCategory('${cat}')">
+      <td><span class="cat-emoji">${a.emoji}</span> ${a.name}</td>
+      <td><span class="val ${devClass}">${dev > 0 ? '+' : ''}${dev.toFixed(1)}%</span></td>
+      <td><span class="action-badge ${badgeClass}">${badgeText}</span></td>
+      <td>${bestMonth}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderEvents() {
+  const grid = document.getElementById('events-grid');
+  const events = (DATA.sale_events || []).filter(e => e.next_window);
+
+  // Nach Datum sortieren
+  const sorted = events.sort((a, b) => {
+    const da = a.next_window?.start || 'z';
+    const db = b.next_window?.start || 'z';
+    return da.localeCompare(db);
+  });
+
+  grid.innerHTML = sorted.map(ev => {
+    const nw = ev.next_window;
+    const discount = ev.avg_discount;
+    const discountStr = discount < 0 ? `${Math.abs(discount).toFixed(1)}% günstiger` :
+                        discount > 0 ? `${discount.toFixed(1)}% teurer` : 'neutral';
+    const dateStr = nw ? new Date(nw.start + 'T00:00:00').toLocaleDateString('de-DE', {day:'numeric', month:'long', year:'numeric'}) : '?';
+    const countdown = nw ? daysUntilStr(nw.start) : '';
+    const estimated = nw?.estimated ? ' (geschätzt)' : '';
+
+    return `<div class="event-card">
+      <div class="event-header">
+        <span class="event-emoji">${ev.emoji}</span>
+        <span class="event-name">${ev.name}</span>
+      </div>
+      <div class="event-discount">${discount < 0 ? '↓' : '↑'} ${discountStr}</div>
+      <div class="event-date">${dateStr}${estimated}</div>
+      <div class="countdown">${countdown}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── Detail-Ansicht ───────────────────────────────────────────────
+
+function renderCatTabs() {
+  const container = document.getElementById('cat-tabs');
+  const assessments = DATA.assessments || {};
+
+  // Gruppierung: Apple vs Electronics
+  const groups = {'apple': [], 'electronics': []};
+  for (const [cat, a] of Object.entries(assessments)) {
+    const src = a.source || (DATA.category_meta?.[cat]?.source) || 'electronics';
+    if (src === 'apple') groups.apple.push([cat, a]);
+    else groups.electronics.push([cat, a]);
+  }
+
+  let html = '';
+  for (const [cat, a] of [...groups.apple, ...groups.electronics]) {
+    html += `<button class="cat-tab" data-cat="${cat}" onclick="selectCat('${cat}')">${a.emoji} ${a.name}</button>`;
+  }
+  container.innerHTML = html;
+}
+
+function selectCat(cat) {
+  currentCat = cat;
+  // Tab aktiv setzen
+  document.querySelectorAll('.cat-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.cat === cat);
+  });
+  renderDetail(cat);
+}
+
+function renderDetail(cat) {
+  const a = DATA.assessments?.[cat];
+  if (!a) return;
+
+  const rec = a.recommendation;
+  const indices = a.indices || {};
+  const currentMonth = new Date().getMonth() + 1;
+
+  // Empfehlung
+  const recoContainer = document.getElementById('reco-container');
+  recoContainer.innerHTML = `
+    <div class="reco-badge ${recoClass(rec.action)}">
+      <div class="icon">${recoIcon(rec.icon)}</div>
+      <div>
+        <div class="label">${rec.label_de}</div>
+        <div class="reason">${rec.reason_de}</div>
+      </div>
+    </div>
+  `;
+
+  // Status-Zeile
+  const statusRow = document.getElementById('status-row');
+  const dev = a.deviation_pct;
+  const devClass = dev <= -2 ? 'green' : dev >= 3 ? 'red' : dev >= 1 ? 'orange' : '';
+  statusRow.innerHTML = `
+    <div class="status-pill">
+      Monatsindex: <span class="val ${devClass}">${a.current_index}</span>
+    </div>
+    <div class="status-pill">
+      vs. Schnitt: <span class="val ${devClass}">${dev > 0 ? '+' : ''}${dev.toFixed(1)}%</span>
+    </div>
+    <div class="status-pill">
+      Bester Monat: <span class="val green">${MONTHS_LONG[a.best_month - 1]}</span>
+    </div>
+    <div class="status-pill">
+      Teuerster: <span class="val red">${MONTHS_LONG[a.worst_month - 1]}</span>
+    </div>
+  `;
+
+  // Heatmap
+  const heatmap = document.getElementById('heatmap');
+  let hmHtml = '';
+  for (let m = 1; m <= 12; m++) {
+    const val = indices[m];
+    const bg = heatColor(val);
+    const fg = textColorForBg(val);
+    const isCurrent = m === currentMonth;
+    const valStr = val !== null && val !== undefined ? val.toFixed(0) : '–';
+
+    hmHtml += `<div class="hm-cell${isCurrent ? ' current' : ''}" style="background:${bg};color:${fg};"
+      title="${MONTHS_LONG[m-1]}: Index ${valStr}">
+      <span class="month-label">${MONTHS_SHORT[m-1]}</span>
+      <span class="index-val">${valStr}</span>
+    </div>`;
+  }
+  heatmap.innerHTML = hmHtml;
+
+  // Event-Rabatte
+  const catEvents = document.getElementById('cat-events');
+  const saleEvents = DATA.sale_events || [];
+  let evHtml = '<div class="events-grid">';
+  let hasEvents = false;
+
+  for (const ev of saleEvents) {
+    const catDisc = ev.category_discounts?.[cat];
+    if (!catDisc) continue;
+    hasEvents = true;
+    const disc = catDisc.median_pct;
+    const discStr = disc < 0 ? `${Math.abs(disc).toFixed(1)}% günstiger` : `${disc.toFixed(1)}%`;
+    const nw = ev.next_window;
+    const dateStr = nw ? new Date(nw.start + 'T00:00:00').toLocaleDateString('de-DE', {day:'numeric', month:'long'}) : '?';
+
+    evHtml += `<div class="event-card">
+      <div class="event-header">
+        <span class="event-emoji">${ev.emoji}</span>
+        <span class="event-name">${ev.name}</span>
+      </div>
+      <div class="event-discount">${disc < 0 ? '↓' : '↑'} ${discStr}</div>
+      <div class="event-date">Nächster Termin: ${dateStr}</div>
+      <div style="font-size:12px;color:var(--dim);margin-top:4px;">${catDisc.n_datapoints} Datenpunkte</div>
+    </div>`;
+  }
+
+  if (!hasEvents) {
+    evHtml += '<p style="color:var(--dim);font-size:14px;">Keine ausreichenden Event-Daten für diese Kategorie.</p>';
+  }
+  evHtml += '</div>';
+  catEvents.innerHTML = evHtml;
+}
+
+// ── View-Toggle ──────────────────────────────────────────────────
+
+function showView(view) {
+  document.getElementById('view-overview').style.display = view === 'overview' ? '' : 'none';
+  document.getElementById('view-detail').style.display   = view === 'detail' ? '' : 'none';
+  document.querySelectorAll('.view-toggle button').forEach((b, i) => {
+    b.classList.toggle('active', (i === 0 && view === 'overview') || (i === 1 && view === 'detail'));
+  });
+
+  if (view === 'detail' && !currentCat) {
+    const cats = Object.keys(DATA.assessments || {});
+    if (cats.length) selectCat(cats[0]);
+  }
+}
+
+function showCategory(cat) {
+  showView('detail');
+  selectCat(cat);
+}
+
+// ── Init ─────────────────────────────────────────────────────────
+
+renderOverview();
+renderEvents();
+renderCatTabs();
+</script>
+
+</body>
+</html>
