@@ -1,34 +1,24 @@
 {
-  "timestamp": "2026-07-05T02:18:48.463803+00:00",
-  "date": "2026-07-05",
-  "wien_date": "2026-07-05",
-  "run_id": "20260705-013001-566567",
-  "run_number": "20260705013001",
+  "timestamp": "2026-07-06T02:05:24.483128+00:00",
+  "date": "2026-07-06",
+  "wien_date": "2026-07-06",
+  "run_id": "20260706-013001-587243",
+  "run_number": "20260706013001",
   "db_stats": {
     "total_products": 803,
-    "with_price": 564,
-    "without_price": 239,
+    "with_price": 558,
+    "without_price": 245,
     "stale": 0,
-    "updated_today": 564,
+    "updated_today": 558,
     "db_size_kb": 20916.0
   },
   "coupon_stats": {
     "with_coupon": 4
   },
-  "keepa_status": "timeout",
-  "keepa_exit_code": 124,
+  "keepa_status": "success",
+  "keepa_exit_code": 0,
   "data_freshness_pct": 100.0,
   "history": [
-    {
-      "date": "2026-06-06",
-      "total_products": 771,
-      "with_price": 680,
-      "without_price": 91,
-      "stale": 0,
-      "updated_today": 678,
-      "db_size_kb": 20604.0,
-      "with_coupon": 5
-    },
     {
       "date": "2026-06-07",
       "total_products": 771,
@@ -316,6 +306,16 @@
       "without_price": 239,
       "stale": 0,
       "updated_today": 564,
+      "db_size_kb": 20916.0,
+      "with_coupon": 4
+    },
+    {
+      "date": "2026-07-06",
+      "total_products": 803,
+      "with_price": 558,
+      "without_price": 245,
+      "stale": 0,
+      "updated_today": 558,
       "db_size_kb": 20916.0,
       "with_coupon": 4
     }
